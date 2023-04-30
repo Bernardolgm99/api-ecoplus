@@ -48,92 +48,91 @@ const Activity = sequelize.define('activity',
     activitylocation: DataTypes.STRING,
     image: DataTypes.BLOB,
     idCreator: DataTypes.INTEGER
-})
+});
 
-// const Event = sequelize.define('event', 
-// {
-//     idEvent: DataTypes.INTEGER,
-//     eventName: DataTypes.STRING,
-//     eventDesc: DataTypes.STRING,
-//     dateHour: DataTypes.DATE,
-//     eventLocation: DataTypes.STRING,
-//     image: DataTypes.BLOB,
-//     idCreator: DataTypes.INTEGER
-// })
+const Event = sequelize.define('event', 
+{
+    idEvent: DataTypes.INTEGER,
+    eventName: DataTypes.STRING,
+    eventDesc: DataTypes.STRING,
+    dateHour: DataTypes.DATE,
+    eventLocation: DataTypes.STRING,
+    image: DataTypes.BLOB,
+    idCreator: DataTypes.INTEGER
+});
 
-// const Comment = sequelize.define('comment', 
-// {
-//     idComment: DataTypes.INTEGER,
-//     idUser: DataTypes.INTEGER,
-//     dateHour: DataTypes.DATE,
-//     commentDesc: DataTypes.STRING,
-//     idActivity: DataTypes.INTEGER,
-//     idEvent: DataTypes.INTEGER
-// }
-// )
+const Comment = sequelize.define('comment', 
+{
+    idComment: DataTypes.INTEGER,
+    idUser: DataTypes.INTEGER,
+    dateHour: DataTypes.DATE,
+    commentDesc: DataTypes.STRING,
+    idActivity: DataTypes.INTEGER,
+    idEvent: DataTypes.INTEGER
+});
 
-// const Badge = sequelize.define('badge', 
-// {
-//     idBadge: DataTypes.INTEGER,
-//     badgeName: DataTypes.STRING,
-//     badgeLogo: DataTypes.BLOB,
-//     badgeDesc: DataTypes.STRING,
-//     badgeCondition: DataTypes.STRING
-// })
+const Badge = sequelize.define('badge', 
+{
+    idBadge: DataTypes.INTEGER,
+    badgeName: DataTypes.STRING,
+    badgeLogo: DataTypes.BLOB,
+    badgeDesc: DataTypes.STRING,
+    badgeCondition: DataTypes.STRING
+});
 
-// const Mission = sequelize.define('mission', 
-// {
-//     idMission: DataTypes.INTEGER,
-//     missionName: DataTypes.STRING,
-//     missionDesc: DataTypes.STRING,
-//     missionDuration: DataTypes.INTEGER,
-//     missionStart: DataTypes.DATE,
-// })
+const Mission = sequelize.define('mission', 
+{
+    idMission: DataTypes.INTEGER,
+    missionName: DataTypes.STRING,
+    missionDesc: DataTypes.STRING,
+    missionDuration: DataTypes.INTEGER,
+    missionStart: DataTypes.DATE,
+});
 
-// const Logs = sequelize.define('logs', 
-// {
-//     idLogs: DataTypes.INTEGER,
-//     logsDesc: DataTypes.STRING
-// })
+const Logs = sequelize.define('logs', 
+{
+    idLogs: DataTypes.INTEGER,
+    logsDesc: DataTypes.STRING
+});
 
-// const School = sequelize.define('school', 
-// {
-//     idSchool: DataTypes.INTEGER,
-//     schoolDesc: DataTypes.STRING
-// })
+const School = sequelize.define('school', 
+{
+    idSchool: DataTypes.INTEGER,
+    schoolDesc: DataTypes.STRING
+});
 
 //1:M
-// Event.hasMany(Comment)
-// Comment.belongsTo(Event, { through: 'idEvent'})
+Event.hasMany(Comment)
+Comment.belongsTo(Event, { through: 'idEvent'});
 
-// Activity.hasMany(Comment)
-// Comment.belongsTo(Activity, { through: 'idActivity' })
+Activity.hasMany(Comment)
+Comment.belongsTo(Activity, { through: 'idActivity' });
 
-// User.hasMany(Comment)
-// Comment.belongsTo(User, { through: 'idUser' })
+User.hasMany(Comment)
+Comment.belongsTo(User, { through: 'idUser' });
 
-// User.hasMany(Occurrence)
-// Occurrence.belongsTo(User, { through: 'idCreator' })
+User.hasMany(Occurrence)
+Occurrence.belongsTo(User, { through: 'idCreator' });
 
-// School.hasMany(User)
-// User.belongsTo(School, { through: 'idSchool' })
+School.hasMany(User)
+User.belongsTo(School, { through: 'idSchool' });
 
 // //N:M
-// Activity.belongsToMany(User, { through: 'userActivity' })
-// User.belongsToMany(Activity, { through: 'userActivity' })
+Activity.belongsToMany(User, { through: 'userActivity' })
+User.belongsToMany(Activity, { through: 'userActivity' });
 
-// Event.belongsToMany(User, { through: 'userEvent' })
-// User.belongsToMany(Event, { through: 'userEvent' })
+Event.belongsToMany(User, { through: 'userEvent' })
+User.belongsToMany(Event, { through: 'userEvent' });
 
-// User.belongsToMany(Mission, { through: 'userMission' })
-// Mission.belongsToMany(User, { through: 'userMission' })
+User.belongsToMany(Mission, { through: 'userMission' })
+Mission.belongsToMany(User, { through: 'userMission' });
 
-// User.belongsToMany(Badge, { through: 'userBadge' })
-// Badge.belongsToMany(User, { through: 'userBadge' })
+User.belongsToMany(Badge, { through: 'userBadge' })
+Badge.belongsToMany(User, { through: 'userBadge' });
 
 // //alias
 // User.hasMany(Activity)
-// Activity.belongsTo(User, { as: 'idCreator' })
+// Activity.belongsTo(User, { as: 'idCreator' });
 
 // User.hasMany(Event)
 // Event.belongsTo(User, { as: 'idCreator' }) 
@@ -153,10 +152,10 @@ db.sequelize = sequelize;
 db.User = User
 db.Occurrence = Occurrence
 db.Activity = Activity
-// db.Event = Event
-// db.Comment = Comment
-// db.Badge = Badge
-// db.Mission = Mission
-// db.Logs = Logs
-// db.School = School
+db.Event = Event
+db.Comment = Comment
+db.Badge = Badge
+db.Mission = Mission
+db.Logs = Logs
+db.School = School
 module.exports = db
