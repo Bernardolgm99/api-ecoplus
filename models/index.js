@@ -1,8 +1,9 @@
 const { Sequelize, DataTypes } = require('sequelize')
+const config = require('../config/db.config.js')
 const db = {}
-const sequelize = new Sequelize('teresaterroso__pw2_g07', 'teresaterroso__pw2_g07', 'umyDEy)2_oNz',
+const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, 
 {
-    host: 'pw2.joaoferreira.eu',
+    host: config.HOST,
     dialect: 'mysql'
 });
 
