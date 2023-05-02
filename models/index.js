@@ -118,6 +118,9 @@ Occurrence.belongsTo(User, { through: 'idCreator' });
 School.hasMany(User)
 User.belongsTo(School, { through: 'idSchool' });
 
+User.hasMany(Occurrence)
+Occurrence.belongsTo(User, { through: 'idCreator' });
+
 // //N:M
 Activity.belongsToMany(User, { through: 'userActivity' })
 User.belongsToMany(Activity, { through: 'userActivity' });
@@ -132,11 +135,11 @@ User.belongsToMany(Badge, { through: 'userBadge' })
 Badge.belongsToMany(User, { through: 'userBadge' });
 
 // //alias
-// User.hasMany(Activity)
-// Activity.belongsTo(User, { as: 'idCreator' });
+User.hasMany(Activity)
+Activity.belongsTo(User, { as: 'IdCreator' });
 
-// User.hasMany(Event)
-// Event.belongsTo(User, { as: 'idCreator' }) 
+User.hasMany(Event)
+Event.belongsTo(User, { as: 'IdCreator' }); 
 
 
 (async () => {
