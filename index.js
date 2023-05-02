@@ -1,9 +1,12 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 8080;
-const host = process.env.HOST || '127.0.0.1';
+require('dotenv').config();
+const port = process.env.PORT;
+const host = process.env.HOST;
 app.use(express.json()); //enable parsing JSON body data
 
+const config = require('./config/db.config.js');
+console.log(config)
 // root route -- /api/
 app.get('/', function (req, res) {
     res.status(200).json({
