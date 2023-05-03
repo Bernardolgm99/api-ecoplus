@@ -114,14 +114,6 @@ const Occurrence = sequelize.define('occurrence',
         },
         allowNull: false
     },
-    dateHour: {
-        type: DataTypes.DATE,
-        validate: {
-            notEmpty: {msg: `Please provide a date and an hour!`},
-        },
-        allowNull:  false,
-        isDate: true
-    },
     location: {
         type: DataTypes.STRING,
         validate: {
@@ -208,21 +200,13 @@ const Event = sequelize.define('event',
 
 const Comment = sequelize.define('comment', 
 {
-    dateHour: {
-        type: DataTypes.DATE,
-        validate: {
-            notEmpty: {msg: `Please provide a date and an hour!`},
-        },
-        allowNull:  false,
-        isDate: true
-    },
     description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
         },
         allowNull:  false
-    },
+    }
 });
 
 const Badge = sequelize.define('badge', 
