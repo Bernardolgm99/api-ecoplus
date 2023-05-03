@@ -10,129 +10,325 @@ const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD,
 
 const User = sequelize.define("user",
 {
-    idUser: DataTypes.INTEGER,
-    username: DataTypes.STRING,
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    idGenre: DataTypes.INTEGER,
-    genreDesc: DataTypes.STRING,
-    address: DataTypes.STRING,
-    postalCode: DataTypes.INTEGER,
-    localion: DataTypes.STRING,
-    birthDate: DataTypes.DATE,
-    contact: DataTypes.INTEGER,
-    idSchool: DataTypes.INTEGER,
-    schoolDesc: DataTypes.STRING,
-    image: DataTypes.BLOB,
-    icone: DataTypes.BLOB,
-    idCreator: DataTypes.INTEGER
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: {msg: `Please provide username!`},
+        }  
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: {msg: `Please provide a name!`},
+        }
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: {msg: `Please provide an email!`},
+            isEmail: {msg: `Must be a valid email address!`}
+        }
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: {msg: `Please provide a password!`},
+        }
+    },
+    genreDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            isIn: [['M'], ['F'], ['OTHER']]
+        }
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            notEmpty: false
+        }
+    },
+    //Fazer validação para verificar se é código postal ou não
+    postalCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            notEmpty: false
+        }
+    },
+    location: {
+        type: DataTypes.STRING,
+        allowNull:  false,
+        validate: {
+            notEmpty: {msg: `Please provide a location!`}
+        }
+    },
+    birthDate: {
+        allowNull:  false,
+        type: DataTypes.DATE,
+        validate: {
+            notEmpty: {msg: `Please provide a Birth Date!`},
+        },
+        isDate: {msg: `Invalid Birth Date!`}
+    },
+    contact: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        validate: {
+            notEmpty: false
+        },
+        isNumeric: {msg: `Please provide a Phone Number!`}
+    },
+    schoolDesc: {
+        type: DataTypes.STRING,
+        allowNull:  false,
+        validate: {
+            notEmpty: {msg: `Please provide a School name!`}
+        },
+    },
+    image: {
+        type: DataTypes.BLOB        
+    },
+    icone: {
+        type: DataTypes.BLOB
+    },
 });
 
 const Occurrence = sequelize.define('occurrence', 
 {
-    idOccurrence: DataTypes.INTEGER,
-    occurrenceName: DataTypes.STRING,
-    occurrenceDesc: DataTypes.STRING,
-    dateHour: DataTypes.DATE,
-    occurrenceLocation: DataTypes.STRING,
-    images: DataTypes.BLOB,
-    idCreator: DataTypes.INTEGER
+    occurrenceName: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a name!`},
+        },
+        allowNull:  false
+    },
+    occurrenceDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`},
+        },
+        allowNull: false
+    },
+    dateHour: {
+        type: DataTypes.DATE,
+        validate: {
+            notEmpty: {msg: `Please provide a date and an hour!`},
+        },
+        allowNull:  false,
+        isDate: true
+    },
+    occurrenceLocation: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a location!`}
+        },
+        allowNull:  false
+    },
+    images: {
+        type: DataTypes.BLOB
+    },
 });
 
 const Activity = sequelize.define('activity', 
 {
-    idActivity: DataTypes.INTEGER,
-    activityName: DataTypes.STRING,
-    activityDesc: DataTypes.STRING,
-    dateHour: DataTypes.DATE,
-    activitylocation: DataTypes.STRING,
-    image: DataTypes.BLOB,
-    idCreator: DataTypes.INTEGER
+    activityName: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a name!`},
+        },
+        allowNull:  false
+    },
+    activityDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`}
+        },
+        allowNull:  false
+    },
+    dateHour: {
+        type: DataTypes.DATE,
+        validate: {
+            notEmpty: {msg: `Please provide a date and an hour!`}
+        },
+        allowNull:  false,
+        isDate: true
+    },
+    activitylocation: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a location!`}
+        },
+        allowNull:  false
+    },
+    image: {
+        type: DataTypes.BLOB
+    },
 });
 
 const Event = sequelize.define('event', 
 {
-    idEvent: DataTypes.INTEGER,
-    eventName: DataTypes.STRING,
-    eventDesc: DataTypes.STRING,
-    dateHour: DataTypes.DATE,
-    eventLocation: DataTypes.STRING,
-    image: DataTypes.BLOB,
-    idCreator: DataTypes.INTEGER
+    eventName: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a name!`}
+        },
+        allowNull:  false
+    },
+    eventDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`},
+        },
+        allowNull:  false
+    },
+    dateHour: {
+        type: DataTypes.DATE,
+        validate: {
+            notEmpty: {msg: `Please provide a date and an hour!`},
+        },
+        allowNull:  false,
+        isDate: true
+    },
+    eventLocation: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a location!`},
+        },
+        allowNull:  false
+    },
+    image: {
+        type: DataTypes.BLOB
+    },
 });
 
 const Comment = sequelize.define('comment', 
 {
-    idComment: DataTypes.INTEGER,
-    idUser: DataTypes.INTEGER,
-    dateHour: DataTypes.DATE,
-    commentDesc: DataTypes.STRING,
-    idActivity: DataTypes.INTEGER,
-    idEvent: DataTypes.INTEGER
+    dateHour: {
+        type: DataTypes.DATE,
+        validate: {
+            notEmpty: {msg: `Please provide a date and an hour!`},
+        },
+        allowNull:  false,
+        isDate: true
+    },
+    commentDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`},
+        },
+        allowNull:  false
+    },
 });
 
 const Badge = sequelize.define('badge', 
 {
-    idBadge: DataTypes.INTEGER,
-    badgeName: DataTypes.STRING,
-    badgeLogo: DataTypes.BLOB,
-    badgeDesc: DataTypes.STRING,
-    badgeCondition: DataTypes.STRING
+    badgeName: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a name!`},
+        },
+        allowNull:  false
+    },
+    badgeLogo: {
+        type: DataTypes.BLOB
+    },
+    badgeDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`},
+        },
+        allowNull:  false
+    },
+    badgeCondition: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a condition!`},
+        },
+        allowNull:  false
+    }
 });
 
 const Mission = sequelize.define('mission', 
 {
-    idMission: DataTypes.INTEGER,
-    missionName: DataTypes.STRING,
-    missionDesc: DataTypes.STRING,
-    missionDuration: DataTypes.INTEGER,
-    missionStart: DataTypes.DATE,
+    missionName: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a name!`},
+        },
+        allowNull:  false
+    },
+    missionDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`},
+        },
+        allowNull:  false
+    },
+    missionDuration: {
+        type: DataTypes.DATE,
+        validate: {
+            notEmpty: {msg: `Please provide a date and an hour!`},
+        },
+        allowNull:  false,
+        isDate: true
+    },
+    missionStart: {
+        type: DataTypes.DATE
+    },
 });
 
 const Logs = sequelize.define('logs', 
 {
-    idLogs: DataTypes.INTEGER,
-    logsDesc: DataTypes.STRING
+    logsDesc: {
+        type: DataTypes.STRING
+    }
 });
 
 const School = sequelize.define('school', 
 {
-    idSchool: DataTypes.INTEGER,
-    schoolDesc: DataTypes.STRING
+    schoolDesc: {
+        type: DataTypes.STRING,
+        validate: {
+            notEmpty: {msg: `Please provide a description!`},
+        },
+        allowNull:  false
+    }
 });
 
 //1:M
 Event.hasMany(Comment)
-Comment.belongsTo(Event, { through: 'idEvent'});
+Comment.belongsTo(Event);
 
 Activity.hasMany(Comment)
-Comment.belongsTo(Activity, { through: 'idActivity' });
+Comment.belongsTo(Activity);
 
 User.hasMany(Comment)
-Comment.belongsTo(User, { through: 'idUser' });
+Comment.belongsTo(User);
 
 User.hasMany(Occurrence)
-Occurrence.belongsTo(User, { through: 'idCreator' });
+Occurrence.belongsTo(User);
 
 School.hasMany(User)
-User.belongsTo(School, { through: 'idSchool' });
+User.belongsTo(School);
 
-User.hasMany(Occurrence)
-Occurrence.belongsTo(User, { through: 'idCreator' });
 
 // //N:M
-Activity.belongsToMany(User, { through: 'userActivity' })
-User.belongsToMany(Activity, { through: 'userActivity' });
+Activity.belongsToMany(User, {through: 'activityUser'})
+User.belongsToMany(Activity, {through: 'activityUser'});
 
-Event.belongsToMany(User, { through: 'userEvent' })
-User.belongsToMany(Event, { through: 'userEvent' });
+Event.belongsToMany(User, {through: 'eventUser'})
+User.belongsToMany(Event, {through: 'eventUser'});
 
-User.belongsToMany(Mission, { through: 'userMission' })
-Mission.belongsToMany(User, { through: 'userMission' });
+User.belongsToMany(Mission, {through: 'missionUser'})
+Mission.belongsToMany(User, {through: 'missionUser'});
 
-User.belongsToMany(Badge, { through: 'userBadge' })
-Badge.belongsToMany(User, { through: 'userBadge' });
+User.belongsToMany(Badge, {through: 'badgeUser'})
+Badge.belongsToMany(User, {through: 'badgeUser'});
 
 // //alias
 User.hasMany(Activity)
