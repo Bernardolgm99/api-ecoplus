@@ -83,7 +83,7 @@ const User = sequelize.define("user",
         },
         isNumeric: {msg: `Please provide a Phone Number!`}
     },
-    schoolDesc: {
+    description: {
         type: DataTypes.STRING,
         allowNull:  false,
         validate: {
@@ -100,14 +100,14 @@ const User = sequelize.define("user",
 
 const Occurrence = sequelize.define('occurrence', 
 {
-    occurrenceName: {
+    name: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a name!`},
         },
         allowNull:  false
     },
-    occurrenceDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
@@ -122,28 +122,28 @@ const Occurrence = sequelize.define('occurrence',
         allowNull:  false,
         isDate: true
     },
-    occurrenceLocation: {
+    location: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a location!`}
         },
         allowNull:  false
     },
-    images: {
+    image: {
         type: DataTypes.BLOB
     },
 });
 
 const Activity = sequelize.define('activity', 
 {
-    activityName: {
+    name: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a name!`},
         },
         allowNull:  false
     },
-    activityDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`}
@@ -158,7 +158,7 @@ const Activity = sequelize.define('activity',
         allowNull:  false,
         isDate: true
     },
-    activitylocation: {
+    location: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a location!`}
@@ -167,19 +167,19 @@ const Activity = sequelize.define('activity',
     },
     image: {
         type: DataTypes.BLOB
-    },
+    }
 });
 
 const Event = sequelize.define('event', 
 {
-    eventName: {
+    name: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a name!`}
         },
         allowNull:  false
     },
-    eventDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
@@ -194,7 +194,7 @@ const Event = sequelize.define('event',
         allowNull:  false,
         isDate: true
     },
-    eventLocation: {
+    location: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a location!`},
@@ -216,7 +216,7 @@ const Comment = sequelize.define('comment',
         allowNull:  false,
         isDate: true
     },
-    commentDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
@@ -227,24 +227,24 @@ const Comment = sequelize.define('comment',
 
 const Badge = sequelize.define('badge', 
 {
-    badgeName: {
+    name: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a name!`},
         },
         allowNull:  false
     },
-    badgeLogo: {
+    logo: {
         type: DataTypes.BLOB
     },
-    badgeDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
         },
         allowNull:  false
     },
-    badgeCondition: {
+    condition: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a condition!`},
@@ -255,21 +255,21 @@ const Badge = sequelize.define('badge',
 
 const Mission = sequelize.define('mission', 
 {
-    missionName: {
+    name: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a name!`},
         },
         allowNull:  false
     },
-    missionDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
         },
         allowNull:  false
     },
-    missionDuration: {
+    duration: {
         type: DataTypes.DATE,
         validate: {
             notEmpty: {msg: `Please provide a date and an hour!`},
@@ -277,21 +277,21 @@ const Mission = sequelize.define('mission',
         allowNull:  false,
         isDate: true
     },
-    missionStart: {
+    durationStart: {
         type: DataTypes.DATE
     },
 });
 
 const Logs = sequelize.define('logs', 
 {
-    logsDesc: {
+    description: {
         type: DataTypes.STRING
     }
 });
 
 const School = sequelize.define('school', 
 {
-    schoolDesc: {
+    description: {
         type: DataTypes.STRING,
         validate: {
             notEmpty: {msg: `Please provide a description!`},
