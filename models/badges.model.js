@@ -1,7 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-
-        const occurrence = sequelize.define('occurrence', 
-        {
+    const badge = sequelize.define('badge', 
+    {
         name: {
             type: DataTypes.STRING,
             validate: {
@@ -9,28 +8,30 @@ module.exports = (sequelize, DataTypes) => {
             },
             allowNull:  false
         },
+        logo: {
+            type: DataTypes.BLOB
+        },
         description: {
             type: DataTypes.STRING,
             validate: {
                 notEmpty: {msg: `Please provide a description!`},
             },
-            allowNull: false
+            allowNull:  false
         },
-        location: {
+        conditionType: {
             type: DataTypes.STRING,
             validate: {
-                notEmpty: {msg: `Please provide a location!`}
+                notEmpty: {msg: `Please provide a condition!`},
             },
             allowNull:  false
         },
-        image: {
-            type: DataTypes.BLOB
-        },
-        status: {
+        value: {
             type: DataTypes.INTEGER,
-            isIn: [0, 1, 2],
-            defaultValue: 0
+            validate: {
+                notEmpty: {msg: `Please provide a value!`},
+            },
+            allowNull:  false
         }
     });
-    return occurrence
+    return badge
 }

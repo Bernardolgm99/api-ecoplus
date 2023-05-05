@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-        const activity = sequelize.define('activity', 
-        {
+    const mission = sequelize.define('mission', 
+    {
         name: {
             type: DataTypes.STRING,
             validate: {
@@ -11,36 +11,26 @@ module.exports = (sequelize, DataTypes) => {
         description: {
             type: DataTypes.STRING,
             validate: {
-                notEmpty: {msg: `Please provide a description!`}
+                notEmpty: {msg: `Please provide a description!`},
             },
             allowNull:  false
-        },
-        start: {
-            type: DataTypes.DATE,
-            validate: {
-                notEmpty: {msg: `Please provide a date and an hour!`}
-            },
-            allowNull:  false,
-            isDate: true
         },
         end: {
             type: DataTypes.DATE,
             validate: {
-                notEmpty: {msg: `Please provide a date and an hour!`}
+                notEmpty: {msg: `Please provide a date and an hour!`},
             },
             allowNull:  false,
             isDate: true
         },
-        location: {
-            type: DataTypes.STRING,
+        start: {
+            type: DataTypes.DATE,
             validate: {
-                notEmpty: {msg: `Please provide a location!`}
+                notEmpty: {msg: `Please provide a date and an hour!`},
             },
-            allowNull:  false
+            allowNull:  false,
+            isDate: true
         },
-        image: {
-            type: DataTypes.BLOB
-        }
     });
-    return activity
+    return mission
 }

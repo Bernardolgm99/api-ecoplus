@@ -1,7 +1,46 @@
-let events = [
-    {id: 1, title: "Titulo 1", subtitle: "subtitle 1", banner: "./image1", description: "description 1", files:["file1.txt", "file2.txt"], location: "Porto", date: "19990307"},
-    {id: 1, title: "Titulo 2", subtitle: "subtitle 2", banner: "./image2", description: "description 2", files:["file1.txt", "file2.txt"], location: "Porto", date: "19650518"},
-    {id: 1, title: "Titulo 3", subtitle: "subtitle 3", banner: "./image3", description: "description 3", files:["file1.txt", "file2.txt"], location: "Lisboa", date: "19930415"}
-];
-
-module.exports = events;
+module.exports = (sequelize, DataTypes) => {
+            const event = sequelize.define('event', 
+        {
+            name: {
+                type: DataTypes.STRING,
+                validate: {
+                    notEmpty: {msg: `Please provide a name!`}
+                },
+                allowNull:  false
+            },
+            description: {
+                type: DataTypes.STRING,
+                validate: {
+                    notEmpty: {msg: `Please provide a description!`},
+                },
+                allowNull:  false
+            },
+            start: {
+                type: DataTypes.DATE,
+                validate: {
+                    notEmpty: {msg: `Please provide a date and an hour!`},
+                },
+                allowNull:  false,
+                isDate: true
+            },
+            end: {
+                type: DataTypes.DATE,
+                validate: {
+                    notEmpty: {msg: `Please provide a date and an hour!`}
+                },
+                allowNull:  false,
+                isDate: true
+            },
+            location: {
+                type: DataTypes.STRING,
+                validate: {
+                    notEmpty: {msg: `Please provide a location!`},
+                },
+                allowNull:  false
+            },
+            image: {
+                type: DataTypes.BLOB
+            },
+        });
+        return event
+}
