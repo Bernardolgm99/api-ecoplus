@@ -1,13 +1,14 @@
+const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
+const bcrypt = require("bcryptjs"); //password encryption
+
 const db = require("../models/index.js");
 const User = db.user;
 const { ValidationError } = require("sequelize");
 
-exports.createUser = async (req, res) => {
-  console.log(req.body.location)
+exports.create = async (req, res) => {
   try {
-    let newUser = await User.create(req.body)
-    console.log(`yau`)
-    console.log(req.body)
+    req.body.password = bcrypt.hashSync(req.body.password, 10);
+    let newUser = await User.create(newUser)
     res.status(201).json({
       sucess: true,
       msg: `User created successfully`,
@@ -15,7 +16,6 @@ exports.createUser = async (req, res) => {
     })
 
   } catch (err) {
-    console.log("cenas");
     res.status(500).json({
       success: false,
       msg: err.message || 'Some error occurred while creating a new user.'
@@ -23,12 +23,36 @@ exports.createUser = async (req, res) => {
   }
 }
 
+exports.login = async (req, res) => {
+  try {
+    if (!req.body || !req.body.username || !req.body.password)
+      return res.status(400).json({ success: false, msg: "Must provide username and password." });
+
+    let user = await User.findOne({ where: { username: req.body.username } }); //get user data from DB
+    if (!user) return res.status(404).json({ success: false, msg: "User not found." });
+    // tests a string (password in body) against a hash (password in database)
+    const check = bcrypt.compareSync(req.body.password, user.password);
+    if (!check) return res.status(401).json({ success: false, accessToken: null, msg: "Invalid credentials!" });
+    // sign the given payload (user ID and role) into a JWT payload – builds JWT token, using secret key
+    const token = jwt.sign({ id: user.id, role: user.role },
+      config.SECRET, {
+      expiresIn: '24h' // 24 hours
+    });
+    return res.status(200).json({ success: true, accessToken: token });
+  } catch (err) {
+    if (err instanceof ValidationError)
+      res.status(400).json({ success: false, msg: err.errors.map(e => e.message) });
+    else
+      res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
+  };
+}
+
 exports.findAll = async (req, res) => {
   try {
     let users = await User.findAll()
     if (users != null) {
       res.status(200).json({
-        success: true, 
+        success: true,
         message: users
       })
     } else {
@@ -70,7 +94,7 @@ exports.findOne = async (req, res) => {
   }
 }
 
-exports.deleteUser = async (req, res) => {
+exports.delete = async (req, res) => {
   try {
     let user = await User.findByPk(req.params.userId)
     
@@ -100,7 +124,7 @@ exports.deleteUser = async (req, res) => {
   }
 }
 
-exports.editUser = async (req, res, next) => {
+exports.edit = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
 
@@ -146,7 +170,7 @@ exports.editUser = async (req, res, next) => {
   }
 }
 
-exports.blockUser = async (req, res) => {
+exports.block = async (req, res) => {
   try {
     console.log(req.body.block)
     let user = await User.findByPk(req.params.userId)

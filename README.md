@@ -28,6 +28,8 @@ DB_HOST: ''
 DB_USER: ''
 DB_PASSWORD: ''
 DB_NAME: ''
+# Secret key to encode and decode JWT token
+SECRET: "introduce-here-your-encoder"
 ```
 Complete the empty spaces with your database credentials.
 **It's done to use**.
