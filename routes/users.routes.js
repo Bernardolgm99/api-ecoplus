@@ -18,12 +18,12 @@ router.use((req, res, next) => {
 
 router.route('/')
         .get(userController.findAll)
-        .post(userController.createUser)
+        .post(userController.create)
 
 router.route('/:userId')
         .get(userController.findOne)
-        .delete(userController.deleteUser)
-        .put(userController.editUser, userController.blockUser)
+        .delete(userController.delete)
+        .put(userController.edit, userController.block)
 
 
 //export this router

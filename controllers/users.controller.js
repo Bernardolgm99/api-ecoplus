@@ -2,7 +2,7 @@ const db = require("../models/index.js");
 const User = db.user;
 const { ValidationError } = require("sequelize");
 
-exports.createUser = async (req, res) => {
+exports.create = async (req, res) => {
   console.log(req.body.location)
   try {
     let newUser = await User.create(req.body)
@@ -70,7 +70,7 @@ exports.findOne = async (req, res) => {
   }
 }
 
-exports.deleteUser = async (req, res) => {
+exports.delete = async (req, res) => {
   try {
     let user = await User.findByPk(req.params.userId)
     
@@ -100,7 +100,7 @@ exports.deleteUser = async (req, res) => {
   }
 }
 
-exports.editUser = async (req, res, next) => {
+exports.edit = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
 
@@ -110,34 +110,34 @@ exports.editUser = async (req, res, next) => {
         sucess: false,
         msg: `User not found`
       })
-    } else {
+    } else if(req.body.block === true || req.body.block === false) {
 
-      if(req.body.block) {
         console.log(req.body.block)
         next()
+        
       } else {
-        User.update({
-          where: {id: req.params.userId}
-        },
-        {username: req.body.username},
-        {name: req.body.name},
-        {email: req.body.email},
-        {password: req.body.password},
-        {genreDesc: req.body.genreDesc},
-        {address: req.body.address},
-        {postalCode: req.body.postalCode},
-        {location: req.body.location},
-        {birthDate: req.body.birthDate},
-        {contact: req.body.contact},
-        {schoolDesc: req.body.schoolDesc})
+        User.update({username: req.body.username},
+          {name: req.body.name},
+          {email: req.body.email},
+          {password: req.body.password},
+          {genreDesc: req.body.genreDesc},
+          {address: req.body.address},
+          {postalCode: req.body.postalCode},
+          {location: req.body.location},
+          {birthDate: req.body.birthDate},
+          {contact: req.body.contact},
+          {schoolDesc: req.body.schoolDesc},
+          {
+            where: {id: req.params.userId}
+          }
+        )
   
         res.status(202).json({
           succes: true,
           msg: `User ${user.username} updated successfully`
         })
       }
-    }
-
+    
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -146,11 +146,9 @@ exports.editUser = async (req, res, next) => {
   }
 }
 
-exports.blockUser = async (req, res) => {
+exports.block = async (req, res) => {
   try {
-    console.log(req.body.block)
     let user = await User.findByPk(req.params.userId)
-    
     if(user == undefined || user == null) {
       console.log('yau')
       res.status(404).json({
@@ -158,23 +156,23 @@ exports.blockUser = async (req, res) => {
         msg: `User not found`
       })
       
-    } else if(req.body.block > 1 || req.body.block < 0) {
-
+    } else if(typeof req.body.block == Boolean) {
+      console.log(`yau2`)
       res.status(400).json({
         success: false,
         msg: `Invalid value!`
       })
 
     } else {
-      
-      User.update({
+      console.log(`yau3`)
+      User.update({block: req.body.block},  
+      {
         where: {id: req.params.userId}
-      },
-      {block: req.body.block})
+      })
       
       res.status(202).json({
         succes: true,
-        msg: `User ${user.username} updated successfully. Block is now set to ${user.block}`
+        msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
       })
     }
     
