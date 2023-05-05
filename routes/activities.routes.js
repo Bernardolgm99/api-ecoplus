@@ -17,8 +17,9 @@ router.use((req, res, next) => {
   });
 
 router.route('/')
-        .put(activityController.create)
-
-
+  .put(activityController.create)
+  .get(activityController.findAll)
+router.route('/:idA')
+  .get(activityController.findOne)
 //export this router
 module.exports = router;
