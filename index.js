@@ -5,8 +5,6 @@ const port = process.env.PORT;
 const host = process.env.HOST;
 app.use(express.json()); //enable parsing JSON body data
 
-const config = require('./config/db.config.js');
-console.log(config)
 // root route -- /api/
 app.get('/', function (req, res) {
     res.status(200).json({
