@@ -136,7 +136,7 @@ exports.edit = async (req, res, next) => {
     } else {
       if (req.body.name) user.name = req.body.name;
       if (req.body.email) user.email = req.body.email;
-      if (req.body.password) user.password = req.body.password;
+      if (req.body.password) user.password = bcrypt.hashSync(req.body.password, 10);
       if (req.body.address) user.address = req.body.address;
       if (req.body.postalCode) user.postalCode = req.body.postalCode;
       if (req.body.contact) user.contact = req.body.contact;
