@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
 const bcrypt = require("bcryptjs"); //password encryption
-
+const config = require("../config/config");
 const db = require("../models/index.js");
 const User = db.user;
 const { ValidationError } = require("sequelize");
@@ -8,7 +8,7 @@ const { ValidationError } = require("sequelize");
 exports.create = async (req, res) => {
   try {
     req.body.password = bcrypt.hashSync(req.body.password, 10);
-    let newUser = await User.create(newUser)
+    let newUser = await User.create(req.body)
     res.status(201).json({
       sucess: true,
       msg: `User created successfully`,
@@ -97,8 +97,8 @@ exports.findOne = async (req, res) => {
 exports.delete = async (req, res) => {
   try {
     let user = await User.findByPk(req.params.userId)
-    
-    if(user == undefined || user == null) {
+
+    if (user == undefined || user == null) {
       console.log('yau')
       res.status(404).json({
         sucess: false,
@@ -107,14 +107,14 @@ exports.delete = async (req, res) => {
     } else {
 
       User.destroy({
-        where: {id: req.params.userId}
+        where: { id: req.params.userId }
       })
 
       res.status(200).json({
         sucess: true,
         msg: `User ${user.username} deleted successfully`
       })
-    } 
+    }
 
   } catch (err) {
     res.status(500).json({
@@ -127,41 +127,48 @@ exports.delete = async (req, res) => {
 exports.edit = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
-
-    if(user == undefined || user == null) {
+    if (user == undefined || user == null) {
       console.log('yau')
       res.status(404).json({
         sucess: false,
         msg: `User not found`
       })
-    } else if(req.body.block === true || req.body.block === false) {
+    } else if (req.body.block === true || req.body.block === false) {
 
-        console.log(req.body.block)
-        next()
-        
-      } else {
-        User.update({username: req.body.username},
-          {name: req.body.name},
-          {email: req.body.email},
-          {password: req.body.password},
-          {genreDesc: req.body.genreDesc},
-          {address: req.body.address},
-          {postalCode: req.body.postalCode},
-          {location: req.body.location},
-          {birthDate: req.body.birthDate},
-          {contact: req.body.contact},
-          {schoolDesc: req.body.schoolDesc},
-          {
-            where: {id: req.params.userId}
-          }
-        )
-  
-        res.status(202).json({
-          succes: true,
-          msg: `User ${user.username} updated successfully`
-        })
-      }
-    
+      console.log(req.body.block)
+      next()
+    } else {
+      if (req.body.name) user.name = req.body.name;
+      if (req.body.email) user.email = req.body.email;
+      if (req.body.password) user.password = req.body.password;
+      if (req.body.address) user.address = req.body.address;
+      if (req.body.postalCode) user.postalCode = req.body.postalCode;
+      if (req.body.contact) user.contact = req.body.contact;
+      if (req.body.schoolDesc) user.schoolDesc = req.body.schoolDesc;
+      await User.update(
+        {
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          genreDesc: user.genreDesc,
+          address: user.address,
+          postalCode: user.postalCode,
+          location: user.location,
+          birthDate: user.birthDate,
+          contact: user.contact,
+          schoolDesc: user.schoolDesc
+        },
+        {
+          where: { id: req.params.userId }
+        }
+      )
+
+      res.status(202).json({
+        succes: true,
+        msg: `User ${user.username} updated successfully`
+      })
+    }
+
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -173,14 +180,14 @@ exports.edit = async (req, res, next) => {
 exports.block = async (req, res) => {
   try {
     let user = await User.findByPk(req.params.userId)
-    if(user == undefined || user == null) {
+    if (user == undefined || user == null) {
       console.log('yau')
       res.status(404).json({
         sucess: false,
         msg: `User not found`
       })
-      
-    } else if(typeof req.body.block == Boolean) {
+
+    } else if (typeof req.body.block == Boolean) {
       console.log(`yau2`)
       res.status(400).json({
         success: false,
@@ -189,17 +196,17 @@ exports.block = async (req, res) => {
 
     } else {
       console.log(`yau3`)
-      User.update({block: req.body.block},  
-      {
-        where: {id: req.params.userId}
-      })
-      
+      User.update({ block: req.body.block },
+        {
+          where: { id: req.params.userId }
+        })
+
       res.status(202).json({
         succes: true,
         msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
       })
     }
-    
+
   } catch (err) {
     res.status(500).json({
       success: false,

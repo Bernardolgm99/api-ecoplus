@@ -4,9 +4,9 @@ module.exports = (sequelize, DataTypes) => {
         username: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
             validate: {
-                notEmpty: {msg: `Please provide username!`},
-                unique: true
+                notEmpty: {msg: `Please provide username!`}
             }  
         },
         role: {
