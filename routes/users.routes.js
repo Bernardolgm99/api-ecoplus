@@ -27,8 +27,8 @@ router.route('/login')
 router.route('/:userId')
         .get(userController.findOne)
         .delete(userController.delete)
-        .put(userController.edit, userController.block)
-
+        .put(userController.edit)
+        .patch(userController.block)
 
 //export this router
 module.exports = router;

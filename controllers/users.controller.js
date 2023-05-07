@@ -133,10 +133,6 @@ exports.edit = async (req, res, next) => {
         sucess: false,
         msg: `User not found`
       })
-    } else if (req.body.block === true || req.body.block === false) {
-
-      console.log(req.body.block)
-      next()
     } else {
       if (req.body.name) user.name = req.body.name;
       if (req.body.email) user.email = req.body.email;
