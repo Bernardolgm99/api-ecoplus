@@ -133,14 +133,10 @@ exports.edit = async (req, res, next) => {
       res.status(404).json({
         sucess: false,
         msg: `User not found`
-      })
-    } else if(req.body.block === true || req.body.block === false) {
-
-        console.log(req.body.block)
-        next()
-        
+      })        
       } else {
-        User.update({username: req.body.username},
+        User.update([
+          {username: req.body.username},
           {name: req.body.name},
           {email: req.body.email},
           {password: req.body.password},
@@ -150,7 +146,7 @@ exports.edit = async (req, res, next) => {
           {location: req.body.location},
           {birthDate: req.body.birthDate},
           {contact: req.body.contact},
-          {schoolDesc: req.body.schoolDesc},
+          {schoolDesc: req.body.schoolDesc}],
           {
             where: {id: req.params.userId}
           }
