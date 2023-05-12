@@ -21,5 +21,7 @@ router.route('/')
   .get(activityController.findAll)
 router.route('/:idA')
   .get(activityController.findOne)
+  .put(activityController.edit)
+  .delete(activityController.delete)
 //export this router
 module.exports = router;
