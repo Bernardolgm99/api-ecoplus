@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
 const config = require("../config/config.js");
+const { errorUnathorized } = require('../utilities/messages');
+
 
 exports.verifyToken = (req, res, next) => {
     // search token in headers most commonly used for authorization
@@ -10,9 +12,9 @@ exports.verifyToken = (req, res, next) => {
     const token = bearer[1];
     try {
         let decoded = jwt.verify(token, config.SECRET);
-        req.loggedUser = { id: decoded.id, role: decoded.role}  // save user ID and role into request object
+        req.loggedUser = { id: decoded.id, role: decoded.role }  // save user ID and role into request object
         next();
     } catch (err) {
-        return res.status(401).json({ success: false, msg: "Unauthorized!" });
+        return res.status(401).json(errorUnathorized());
     }
 };
