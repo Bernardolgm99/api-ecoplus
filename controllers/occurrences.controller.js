@@ -29,8 +29,40 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        let newOccurrence = await Occurrence.create(req.body);
-        res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
+        console.log(req.loggedUser.id);
+        let occurrence = {};
+        switch ("validationBodyData") {
+
+            case "validationBodyData":
+
+                // Validation if body have everything required
+                if (!req.body.name) { res.status(401).json(messages.errorBadRequest(1, "name")); break; };
+                if (!req.body.description) { res.status(401).json(messages.errorBadRequest(1, "description")); break; };
+                if (!req.body.location) { res.status(401).json(messages.errorBadRequest(1, "location")); break; };
+                if (!req.body.image) { res.status(401).json(messages.errorBadRequest(1, "image")); break; };
+
+
+                // Validation if body values are passed parameters with the correct type
+                if (typeof (req.body.name) != "string") { res.status(401).json(messages.errorBadRequest(0, "Name", "string")); break; }
+                else occurrence.name = req.body.name;
+
+                if (typeof (req.body.description) != "string") { res.status(401).json(messages.errorBadRequest(0, "Description", "string")); break; }
+                else occurrence.description = req.body.description;
+
+                if (typeof (req.body.location) != "string") { res.status(401).json(messages.errorBadRequest(0, "Location", "string")); break; }
+                else occurrence.location = req.body.location;
+
+                if (validationImage(req.body.image)) { res.status(401).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                else occurrence.image = req.body.image;
+
+
+                occurrence.userId = req.loggedUser.id;
+
+            case "update":
+                let newOccurrence = await Occurrence.create(occurrence);
+                res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
+        };
+
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     };
@@ -86,7 +118,7 @@ exports.editStatus = async (req, res) => {
         if (req.loggedUser.role == "admin") {
             switch ("validationBodyData") {
                 case "validationBodyData":
-                    if (req.body.status) { res.status(401).json(messages.errorBadRequest(1, "Status")); break; };
+                    if (!req.body.status) { res.status(401).json(messages.errorBadRequest(1, "Status")); break; };
 
                     if (![0, 1, 2].includes(req.body.status)) { res.status(401).json(messages.errorBadRequest(0, "Status", "integer number between 0 and 2")); break; };
 
