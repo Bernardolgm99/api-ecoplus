@@ -7,8 +7,13 @@ const auth = require('../controllers/auth.controller');
 
 
 router.route('/')
-    .get(eventsController.findEvents)
+    .get(eventsController.findAll)
     .post(auth.verifyToken, eventsController.create);
+
+router.route('/:id')
+    .get(eventsController.findByID)
+    .put(auth.verifyToken, eventsController.edit)
+    .delete(auth.verifyToken, eventsController.delete);
 
 //export this router
 module.exports = router;
