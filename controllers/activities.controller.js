@@ -1,74 +1,46 @@
 const db = require("../models/index.js");
 const Activity = db.activity;
 const { ValidationError } = require('sequelize'); //necessary for model validations using sequelize
+const {validationDates} = require('../utilities/validation');
+const messages = require('../utilities/messages');
 
 exports.create = async (req, res) => {
-  const date = new Date();
-  const todayDate = date.getFullYear() + "-" + ('0' + (date.getMonth() + 1)).slice(-2) + "-" + ('0' + date.getDate()).slice(-2);
   try {
     if(req.loggedUser.role == 'admin') {
-      if(req.body.start <= todayDate || req.body.start >= req.body.end || req.body.end <= todayDate)
-        return res.status(400).json({
-          success: false,
-          msg: 'Please provide a valid date'
-        })
-      let activity = await Activity.create(req.body)
-      return res.status(201).json({
-        success: true,
-        message: `Activity successful created!`,
-        URL: `/activities/${activity.id}`
-      });
+      if(validationDates) return res.status(400).json(messages.errorBadRequest(2,'date interval'));
+      let activity = await Activity.create(req.body);
+      return res.status(201).json(messages.successCreated('Activity', activity.id));
     }
-    res.status(400).json({
-      succes: false,
-      message: 'Invalid credentials'
-    })
-    } catch (err) {
-      if (err instanceof ValidationError)
-        res.status(400).json({ success:false, msg: err.errors.map(e => e.message) });
-      else
-        res.status(500).json(
-          {message: 'Something went wrong. Please try again later'}
-        )
-    }
+    res.status(400).json(messages.errorBadRequest(2, 'credential'));
+  } catch (err) {
+    if (err instanceof ValidationError)
+      res.status(400).json(messages.errorBadRequest(3));
+    else
+      res.status(500).json(messages.errorInternalServerError());
+  }
 };
 exports.findAll = async (req, res) => {
   try {
     let activities = await Activity.findAll();
     if(activities === null){
-      return res.status(404).json({
-          success: false, msg: `Cannot find any activity.`
-      });
+      return res.status(404).json(messages.errorNotFound('Activity'));
   }
-    res.status(200).json({
-        success: true,
-        activities: activities
-    });
+    res.status(200).json(activities);
   } catch (err) {
-    res.status(500).json({
-        success: false, msg: err.message || "Some error as occurred"
-    })
+    res.status(500).json(messages.errorInternalServerError())
   }
 }
 exports.findOne = async (req, res) => {
   try{
     let activity = await Activity.findByPk(req.params.idA)
     if(activity === null)
-      return res.status(404).json({
-        success: false,
-        msg: `activity id${req.params.idA} not founded.`,
-      });
-    res.status(200).json({
-      success: true,
-      message: activity
-    });
+      return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
+    res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published
-        res.status(400).json({ success:false, msg: err.errors.map(e => e.message) });
+        res.status(400).json(messages.errorBadRequest(3));
       else
-        res.status(500).json(
-          {error: 'Something went wrong. Please try again later'}
-        )
+        res.status(500).json(messages.errorInternalServerError())
   }
 }
 exports.edit = async (req, res) => {
@@ -76,17 +48,20 @@ exports.edit = async (req, res) => {
     if(req.loggedUser.role == 'admin'){
       let activity = await Activity.findByPk(req.params.idA)
       if(activity === null){
-        return res.status(404).json({
-          sucess: false,
-          msg: `Activity not found.`
-        })
+        return res.status(404).json(messages.errorNotFound('Activity'));
       }
-      if (req.body.name) activity.name = req.body.name;
-      if (req.body.description) activity.description = req.body.description;
-      if (req.body.start) activity.start = req.body.start;
-      if (req.body.end) activity.end = req.body.end;
-      if (req.body.location) activity.location = req.body.location;
-      if (req.body.image) activity.image = req.body.image;
+      if (!req.body.name) res.status(400).json(messages.errorBadRequest(0, "Name", "string")) 
+      else activity.name = req.body.name;
+      if (!req.body.description) res.status(400).json(messages.errorBadRequest(0, "Description", "string"))
+      else activity.description = req.body.description;
+      if (!req.body.start) res.status(400).json(messages.errorBadRequest(0, "Start", "date"))
+      else activity.start = req.body.start;
+      if (!req.body.end) res.status(400).json(messages.errorBadRequest(0, "End", "date"))
+      else activity.end = req.body.end;
+      if (!req.body.location) res.status(400).json(messages.errorBadRequest(0, "Location", "string"))
+      else activity.location = req.body.location;
+      if (!req.body.image) res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
+      else activity.image = req.body.image;
       Activity.update(
         {name: req.body.name,
         description: req.body.description,
@@ -98,20 +73,11 @@ exports.edit = async (req, res) => {
           where: {id: req.params.idA}
         }
         )
-      return res.status(202).json({
-        succes: true,
-        msg: `Activity with ID ${activity.id} updated successfully`
-      })
+      return res.status(202).json(messages.successAccepted);
     }
-    res.status(400).json({
-      succes: false,
-      message: 'Invalid credentials'
-    })
+    res.status(400).json(messages.errorBadRequest(2, 'credential'));
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      msg: err.message || 'Some error occurred while creating a new user.'
-    })
+    res.status(500).json(messages.errorInternalServerError);
   }
 }
 exports.delete = async (req, res) => {
@@ -121,24 +87,15 @@ exports.delete = async (req, res) => {
           where: {id: req.params.idA}
       })
       if(result == 0) {
-        return res.status(404).json({
-            success: false,
-            msg: `Activity with ID ${req.params.idA} Not Found`
-        });
+        return res.status(404).json(messages.errorNotFound('Activity'));
       }
       res.status(200).json({
           success: true,
           msg: `Deleted Activity with ID ${req.params.idA} successfully`
       });
     }
-    res.status(400).json({
-        success: false,
-        msg: 'Invalid credentials'
-    });
+    res.status(400).json(messages.errorNotFound('Activity'));
   } catch (err) {
-    res.status(500).json({
-        success: false,
-        msg: err.message || `Some error occurred while getting the activity with ID ${req.params.idA}.`
-    });
+    res.status(500).json(messages.errorInternalServerError);
 }
 }
