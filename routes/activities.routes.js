@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const activityController = require('../controllers/activities.controller')
+const auth = require('../controllers/auth.controller')
 
 // middleware for all routes related with tutorials
 // can be cleared, being used just for testing purposes
@@ -17,11 +18,11 @@ router.use((req, res, next) => {
   });
 
 router.route('/')
-  .put(activityController.create)
+  .post(auth.verifyToken, activityController.create)
   .get(activityController.findAll)
 router.route('/:idA')
   .get(activityController.findOne)
-  .put(activityController.edit)
-  .delete(activityController.delete)
+  .put(auth.verifyToken, activityController.edit)
+  .delete(auth.verifyToken, activityController.delete)
 //export this router
 module.exports = router;
