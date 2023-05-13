@@ -13,10 +13,10 @@ exports.findAll = async (req, res) => {
             limit = req.body.limit;
 
         if (typeof (page) !== 'number')
-            res.status(400).json({ error: "Page must be a number" });
+            res.status(400).json(messages.errorBadRequest(0, "Page", "number"));
 
         if (typeof (limit) !== 'number')
-            res.status(400).json({ error: "Limit must be a number" });
+            res.status(400).json(messages.errorBadRequest(0, "Limit", "number"));
 
         let occurrences = await Occurrence.findAll({ offset: limit * page, limit: limit });
 
@@ -29,7 +29,6 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        console.log(req.loggedUser.id);
         let occurrence = {};
         switch ("validationBodyData") {
 
@@ -52,13 +51,13 @@ exports.create = async (req, res) => {
                 if (typeof (req.body.location) != "string") { res.status(401).json(messages.errorBadRequest(0, "Location", "string")); break; }
                 else occurrence.location = req.body.location;
 
-                if (validationImage(req.body.image)) { res.status(401).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                if (validationImage(req.body.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                 else occurrence.image = req.body.image;
 
 
                 occurrence.userId = req.loggedUser.id;
 
-            case "update":
+            case "create":
                 let newOccurrence = await Occurrence.create(occurrence);
                 res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
         };
@@ -70,7 +69,7 @@ exports.create = async (req, res) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.id)
+        let occurrence = await Occurrence.findByPk(req.params.id);
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.id} not founded` });
         } else res.status(200).json(occurrence);
