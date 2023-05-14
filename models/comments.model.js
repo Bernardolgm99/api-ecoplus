@@ -7,6 +7,18 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: {msg: `Please provide a description!`},
             },
             allowNull:  false
+        },
+        edited: {
+            type: DataTypes.BOOLEAN,
+            default: false
+        },
+        like: {
+            type: DataTypes.INTEGER,
+            default: 0
+        },
+        dislike: {
+            type: DataTypes.INTEGER,
+            default: 0
         }
     });
     return comment

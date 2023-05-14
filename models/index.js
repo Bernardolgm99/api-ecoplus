@@ -60,13 +60,13 @@ db.event.belongsTo(db.user, { as: 'IdCreator' });
 
 
 // (async () => {
-    //     try {
+//         try {
         
-        //       await sequelize.sync({alter:true});
-        //       console.log("DB is successfully synchronized");
-        //     } catch (error) {
-            //       console.log(error);
-            //     }
-            //   })();
+//               await sequelize.sync({alter:true});
+//               console.log("DB is successfully synchronized");
+//             } catch (error) {
+//                   console.log(error);
+//                 }
+//               })();
             
 module.exports = db;

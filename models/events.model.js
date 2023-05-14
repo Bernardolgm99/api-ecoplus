@@ -8,6 +8,19 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 allowNull:  false
             },
+            subtitle: {
+                type: DataTypes.STRING,
+                validate: {
+                    notEmpty: {msg: `Please provide a subtitle!`}
+                },
+                allowNull: false
+            },
+            files:{
+                type: DataTypes.BLOB,
+                validate: {
+                    notEmpty: {msg: `Please provide some files!`}
+                }, 
+            },
             description: {
                 type: DataTypes.STRING,
                 validate: {

@@ -17,6 +17,7 @@ app.use('/activities', require('./routes/activities.routes.js'))
 app.use('/events', require('./routes/events.routes.js'))
 app.use('/occurrences', require('./routes/occurrences.routes.js'))
 app.use('/users', require('./routes/users.routes.js'))
+app.use('/comments', require('./routes/comments.routes.js'))
 
 // handle invalid routes
 app.get('*', function (req, res) {
