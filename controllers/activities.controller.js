@@ -1,5 +1,6 @@
 const db = require("../models/index.js");
 const Activity = db.activity;
+const User = db.user;
 const { ValidationError } = require('sequelize'); //necessary for model validations using sequelize
 const {validationDates} = require('../utilities/validation');
 const messages = require('../utilities/messages');
@@ -7,7 +8,8 @@ const messages = require('../utilities/messages');
 exports.create = async (req, res) => {
   try {
     if(req.loggedUser.role == 'admin') {
-      if(validationDates) return res.status(400).json(messages.errorBadRequest(2,'date interval'));
+      if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(2,'date interval'));
+      req.body.IdCreatorId = req.loggedUser.id;
       let activity = await Activity.create(req.body);
       return res.status(201).json(messages.successCreated('Activity', activity.id));
     }
@@ -91,11 +93,40 @@ exports.delete = async (req, res) => {
       }
       res.status(200).json({
           success: true,
-          msg: `Deleted Activity with ID ${req.params.idA} successfully`
+          msg: `Deleted Activity ${req.params.idA} successfully`
       });
     }
     res.status(400).json(messages.errorNotFound('Activity'));
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError);
 }
+}
+exports.subscribe = async (req, res) => {
+  let arrayUsers;
+  try {
+    let activity = await Activity.findByPk(req.params.idA)
+    if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
+    let user = await User.findByPk(req.params.idU)
+    if(user === null) return res.status(404).json(messages.errorNotFound(`User ${req.params.idU}`));
+    
+    if(activity.userId == null) arrayUsers = [];
+    else arrayUsers = activity.userId;
+    console.log(arrayUsers)
+
+    if(arrayUsers.find(usersId => usersId == req.params.idU) != undefined){
+      return res.status(404).json({success: false, msg: `User ${req.params.idU} already subscribed to Activity ${req.params.idA}`})
+    } else {
+      arrayUsers.push(req.params.idU);
+      activity.userId = arrayUsers;
+      Activity.update({
+        userId: {arrayUsers}
+      })
+      return res.status(200).json({success: true, msg: `User ${req.params.idU} enrolled in Activity ${req.params.idA}`})
+    }
+  } catch (err) {
+    res.status(500).json(messages.errorInternalServerError)
+  }
+
+}
+exports.unsubscribe = async (req, res) => {
 }
