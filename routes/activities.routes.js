@@ -24,5 +24,8 @@ router.route('/:idA')
   .get(activityController.findOne)
   .put(auth.verifyToken, activityController.edit)
   .delete(auth.verifyToken, activityController.delete)
+router.route('/:idA/users/:idU')
+  .put(activityController.subscribe)
+  .put(activityController.unsubscribe)
 //export this router
 module.exports = router;
