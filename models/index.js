@@ -38,6 +38,7 @@ db.user.belongsTo(db.school);
 db.school.hasMany(db.user)
 db.user.belongsTo(db.school);
 
+
 // //N:M
 db.activity.belongsToMany(db.user, {through: 'activityUser'})
 db.user.belongsToMany(db.activity, {through: 'activityUser'});
@@ -52,11 +53,9 @@ db.user.belongsToMany(db.badge, {through: 'badgeUser'})
 db.badge.belongsToMany(db.user, {through: 'badgeUser'});
 
 // //alias
-db.user.hasMany(db.activity)
-db.activity.belongsTo(db.user, { as: 'IdCreator' });
+db.activity.belongsTo(db.user, {foreignKey: 'IdCreator'});
 
-db.user.hasMany(db.event)
-db.event.belongsTo(db.user, { as: 'IdCreator' }); 
+db.event.belongsTo(db.user, {foreignKey: 'IdCreator'}); 
 
 
 // (async () => {

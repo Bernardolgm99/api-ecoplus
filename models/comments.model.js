@@ -10,15 +10,18 @@ module.exports = (sequelize, DataTypes) => {
         },
         edited: {
             type: DataTypes.BOOLEAN,
-            default: false
+            allowNull: false,
+            defaultValue: false
         },
         like: {
             type: DataTypes.INTEGER,
-            default: 0
+            allowNull: false,
+            defaultValue: 0
         },
         dislike: {
             type: DataTypes.INTEGER,
-            default: 0
+            allowNull: false,
+            defaultValue: 0
         }
     });
     return comment

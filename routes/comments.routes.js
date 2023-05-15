@@ -6,13 +6,13 @@ const commentsController = require('../controllers/comments.controller.js')
 const auth = require('../controllers/auth.controller.js')
 
 router.route('/')
-    .post(commentsController.create)
+    .post(auth.verifyToken, commentsController.create)
     .get(commentsController.findAll)
 
 router.route('/:commentId')
     .get(commentsController.findOne)
-    .put(commentsController.edit)
-    .delete(commentsController.delete)
+    .put(auth.verifyToken, commentsController.edit)
+    .delete(auth.verifyToken, commentsController.delete)
     .patch(commentsController.rating)
 
 //export this router
