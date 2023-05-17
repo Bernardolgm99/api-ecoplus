@@ -72,7 +72,7 @@ exports.findOne = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
         
-        // if(req.params.id != null ){
+        if(req.params.id != null ){
 
             if(comment != undefined){
                 res.status(200).json(comment)
@@ -80,14 +80,14 @@ exports.findOne = async (req, res) => {
                 res.status(400).json({succes: false, message: 'Invalid comment.'})
             }
 
-        // } else {
+        } else {
 
-            // if(comment != undefined){
-            //     res.status(200).json(comment)
-            // } else {
-            //     res.status(400).json({succes: false, message: 'Invalid comment.'})
-            // }
-        // } 
+            if(comment != undefined){
+                res.status(200).json(comment)
+            } else {
+                res.status(400).json({succes: false, message: 'Invalid comment.'})
+            }
+        } 
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
