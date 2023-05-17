@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const activityController = require('../controllers/activities.controller')
+const commentsRouter = require('../routes/comments.routes.js')
 const auth = require('../controllers/auth.controller')
 
 // middleware for all routes related with tutorials

@@ -17,6 +17,7 @@ db.badge = require('./badges.model.js')(sequelize, DataTypes)
 db.mission = require('./missions.model.js')(sequelize, DataTypes)
 db.log = require('./logs.model.js')(sequelize, DataTypes)
 db.school = require('./schools.model.js')(sequelize, DataTypes)
+db.rating = require('./rating.model.js')(sequelize, DataTypes)
 
 
 //1:M
@@ -38,6 +39,11 @@ db.user.belongsTo(db.school);
 db.school.hasMany(db.user)
 db.user.belongsTo(db.school);
 
+db.user.hasMany(db.rating)
+db.rating.belongsTo(db.user);
+
+db.comment.hasMany(db.rating)
+db.rating.belongsTo(db.comment);
 
 // //N:M
 db.activity.belongsToMany(db.user, {through: 'activityUser'})
