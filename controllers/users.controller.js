@@ -28,16 +28,19 @@ exports.login = async (req, res) => {
     if (!req.body || !req.body.username || !req.body.password)
       return res.status(400).json({ success: false, msg: "Must provide username and password." });
 
-    let user = await User.findOne({ where: { username: req.body.username } }); //get user data from DB
-    if (!user) return res.status(404).json({ success: false, msg: "User not found." });
-    // tests a string (password in body) against a hash (password in database)
-    const check = bcrypt.compareSync(req.body.password, user.password);
-    if (!check) return res.status(401).json({ success: false, accessToken: null, msg: "Invalid credentials!" });
+    const token = await User.findOne({ where: { username: req.body.username } })
+      .then(user => {
+        if (user.verifyPassword(req.body.password, user.password)) {
+          return jwt.sign({ id: user.id, role: user.role },
+            config.SECRET, {
+            expiresIn: '24h' // 24 hours
+          });
+        };
+        return false;
+      });
+
+    if (!token) return res.status(401).json({ success: false, accessToken: null, msg: "Invalid credentials!" });
     // sign the given payload (user ID and role) into a JWT payload – builds JWT token, using secret key
-    const token = jwt.sign({ id: user.id, role: user.role },
-      config.SECRET, {
-      expiresIn: '24h' // 24 hours
-    });
     return res.status(200).json({ success: true, accessToken: token });
   } catch (err) {
     if (err instanceof ValidationError)
