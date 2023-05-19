@@ -13,8 +13,6 @@ exports.validationDate = (object) => {
 exports.validationDates = (start, end) => {
     const date = new Date();
     const todayDate = date.getFullYear() + "-" + ('0' + (date.getMonth() + 1)).slice(-2) + "-" + ('0' + date.getDate()).slice(-2);
-    console.log(todayDate, start, end);
-    console.log(start < todayDate, start > end, end < todayDate);
     if(start < todayDate || start > end || end < todayDate)
         return false;
     else return true;

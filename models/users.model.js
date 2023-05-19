@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
                 validate: {
                     notEmpty: { msg: `Please provide an email!` },
                     isEmail: { msg: `Must be a valid email address!` }
-                }
+                },
+                unique: true
             },
             password: {
                 type: DataTypes.STRING,
@@ -42,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 validate: {
                     isIn: [['M'], ['F'], ['OTHER']]
-                }
+                },
             },
             address: {
                 type: DataTypes.STRING,
@@ -80,6 +81,7 @@ module.exports = (sequelize, DataTypes) => {
                 validate: {
                     notEmpty: false
                 },
+                unique: true,
                 isNumeric: { msg: `Please provide a Phone Number!` }
             },
             schoolDesc: {

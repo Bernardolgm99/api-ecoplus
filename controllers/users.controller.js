@@ -4,22 +4,49 @@ const config = require("../config/config");
 const db = require("../models/index.js");
 const User = db.user;
 const { ValidationError } = require("sequelize");
+const validation = require('../utilities/validation.js')
+const messages = require('../utilities/messages');
+const date = new Date();
 
 exports.create = async (req, res) => {
   try {
-    req.body.password = bcrypt.hashSync(req.body.password, 10);
-    let newUser = await User.create(req.body)
-    res.status(201).json({
-      sucess: true,
-      msg: `User created successfully`,
-      URL: `/users/${newUser.id}`
-    })
 
+    if(!req.body.username) res.status(400).json(messages.errorBadRequest(1, "username"))
+    else
+    if(!req.body.email) res.status(400).json(messages.errorBadRequest(1, "email"))
+    else
+    if(!req.body.password) res.status(400).json(messages.errorBadRequest(1, "password"))
+    else
+    if(!req.body.postalCode) res.status(400).json(messages.errorBadRequest(1, "postal code"))
+    else
+    if(!req.body.district) res.status(400).json(messages.errorBadRequest(1, "district"))
+    else
+    if(!req.body.city) res.status(400).json(messages.errorBadRequest(1, "city"))
+    else
+    if(validation.validationDates(req.body.birthDate)) res.status(400).json(messages.errorBadRequest(2, "birthday"))
+    else
+    if(req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) res.status(400).json(messages.errorBadRequest(2, "gender"))
+    else {
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+      let newUser = await User.create(req.body)
+      res.status(201).json({
+        sucess: true,
+        msg: `User created successfully`,
+        URL: `/users/${newUser.id}`
+      })
+    }
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      msg: err.message || 'Some error occurred while creating a new user.'
-    })
+    if (err.name == 'SequelizeUniqueConstraintError'){
+      res.status(409).json({
+          success: false,
+          msg: `${err.errors[0].path} already exist`
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        msg: err.message || 'Some error occurred while creating a new user.'
+      })
+    }
   }
 }
 
