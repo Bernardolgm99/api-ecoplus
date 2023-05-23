@@ -4,9 +4,24 @@ const config = require("../config/config");
 const db = require("../models/index.js");
 const User = db.user;
 const { ValidationError } = require("sequelize");
+const validation = require('../utilities/validation.js')
+const messages = require('../utilities/messages');
 
 exports.create = async (req, res) => {
   try {
+
+    if (!req.body.username) { res.status(400).json(messages.errorBadRequest(1, "username")); return }
+    if (!req.body.email) { res.status(400).json(messages.errorBadRequest(1, "email")); return }
+    if (!req.body.password) { res.status(400).json(messages.errorBadRequest(1, "password")); return }
+    if (!req.body.postalCode) { res.status(400).json(messages.errorBadRequest(1, "postal code")); return }
+    if (!req.body.district) { res.status(400).json(messages.errorBadRequest(1, "district")); return }
+    if (!req.body.city) { res.status(400).json(messages.errorBadRequest(1, "city")); return }
+    if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthdate")); return }
+
+    if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(2, "birthday")); return }
+    if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(2, "gender")); return }
+
+
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     let newUser = await User.create(req.body)
     res.status(201).json({
@@ -14,12 +29,18 @@ exports.create = async (req, res) => {
       msg: `User created successfully`,
       URL: `/users/${newUser.id}`
     })
-
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      msg: err.message || 'Some error occurred while creating a new user.'
-    })
+    if (err.name == 'SequelizeUniqueConstraintError') {
+      res.status(409).json({
+        success: false,
+        msg: `${err.errors[0].path} already exist`
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        msg: err.message || 'Some error occurred while creating a new user.'
+      })
+    }
   }
 }
 
