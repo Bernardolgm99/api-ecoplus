@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs"); //password encryption
 const config = require("../config/config");
 const db = require("../models/index.js");
 const User = db.user;
+const School = db.school;
 const { ValidationError } = require("sequelize");
 const validation = require('../utilities/validation.js')
 const messages = require('../utilities/messages');
@@ -10,16 +11,22 @@ const messages = require('../utilities/messages');
 exports.create = async (req, res) => {
   try {
 
+    if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); return }
     if (!req.body.username) { res.status(400).json(messages.errorBadRequest(1, "username")); return }
     if (!req.body.email) { res.status(400).json(messages.errorBadRequest(1, "email")); return }
     if (!req.body.password) { res.status(400).json(messages.errorBadRequest(1, "password")); return }
-    if (!req.body.postalCode) { res.status(400).json(messages.errorBadRequest(1, "postal code")); return }
-    if (!req.body.district) { res.status(400).json(messages.errorBadRequest(1, "district")); return }
-    if (!req.body.city) { res.status(400).json(messages.errorBadRequest(1, "city")); return }
-    if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthdate")); return }
+    if (!req.body.schoolDesc) { res.status(400).json(messages.errorBadRequest(1, "schoolDesc")); return }
+    if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthDate")); return }
 
-    if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(2, "birthday")); return }
-    if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(2, "gender")); return }
+
+    if (req.body.name != "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); return };
+    if (req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return };
+    if (req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return };
+    if (req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return };
+    if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(0, "birthday", "instace of Date")); return };
+    if (School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return };
+    if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", `include in ["M", "F", "OTHER"]`)); return };
+    if (!!req.body.contact && req.body.contact != "string") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return };
 
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
@@ -152,27 +159,29 @@ exports.edit = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
     if (user == undefined || user == null) {
-      console.log('yau')
       res.status(404).json({
         sucess: false,
         msg: `User not found`
       })
     } else {
-      if (req.body.name) user.name = req.body.name;
-      if (req.body.email) user.email = req.body.email;
-      if (req.body.password) user.password = bcrypt.hashSync(req.body.password, 10);
-      if (req.body.district) user.district = req.body.district;
-      if (req.body.city) user.city = req.body.city;
-      if (req.body.contact) user.contact = req.body.contact;
-      if (req.body.schoolDesc) user.schoolDesc = req.body.schoolDesc;
+      if (!!req.body.username && req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
+      else user.username = req.body.username;
+      if (!!req.body.email && req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
+      else user.email = req.body.email;
+      if (!!req.body.password && req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
+      else user.password = bcrypt.hashSync(req.body.password, 10);
+      if (!!req.body.schoolDesc && School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
+      else user.schoolDesc = req.body.schoolDesc;
+      if (!!req.body.contact && req.body.contact != "string") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return }
+      else user.contact = req.body.contact;
+
+
       await User.update(
         {
           name: user.name,
           email: user.email,
           password: user.password,
           genreDesc: user.genreDesc,
-          district: user.district,
-          city: user.city,
           birthDate: user.birthDate,
           contact: user.contact,
           schoolDesc: user.schoolDesc
