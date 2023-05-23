@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
   try {
     if(req.loggedUser.role == 'admin') {
       if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(2,'date interval'));
-      req.body.IdCreatorId = req.loggedUser.id;
+      req.body.IdCreator = req.loggedUser.id;
       let activity = await Activity.create(req.body);
       return res.status(201).json(messages.successCreated('Activity', activity.id));
     }
@@ -111,7 +111,6 @@ exports.subscribe = async (req, res) => {
     
     if(activity.userId == null) arrayUsers = [];
     else arrayUsers = activity.userId;
-    console.log(arrayUsers)
 
     if(arrayUsers.find(usersId => usersId == req.params.idU) != undefined){
       return res.status(404).json({success: false, msg: `User ${req.params.idU} already subscribed to Activity ${req.params.idA}`})
