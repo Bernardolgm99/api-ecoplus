@@ -140,8 +140,8 @@ exports.edit = async (req, res, next) => {
       if (req.body.name) user.name = req.body.name;
       if (req.body.email) user.email = req.body.email;
       if (req.body.password) user.password = bcrypt.hashSync(req.body.password, 10);
-      if (req.body.address) user.address = req.body.address;
-      if (req.body.postalCode) user.postalCode = req.body.postalCode;
+      if (req.body.district) user.district = req.body.district;
+      if (req.body.city) user.city = req.body.city;
       if (req.body.contact) user.contact = req.body.contact;
       if (req.body.schoolDesc) user.schoolDesc = req.body.schoolDesc;
       await User.update(
@@ -150,9 +150,8 @@ exports.edit = async (req, res, next) => {
           email: user.email,
           password: user.password,
           genreDesc: user.genreDesc,
-          address: user.address,
-          postalCode: user.postalCode,
-          location: user.location,
+          district: user.district,
+          city: user.city,
           birthDate: user.birthDate,
           contact: user.contact,
           schoolDesc: user.schoolDesc

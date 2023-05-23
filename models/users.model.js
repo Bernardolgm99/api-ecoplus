@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
                     isIn: [['M'], ['F'], ['OTHER']]
                 }
             },
-            address: {
+            city: {
                 type: DataTypes.STRING,
                 allowNull: true,
                 validate: {
@@ -52,14 +52,7 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             //Fazer validação para verificar se é código postal ou não
-            postalCode: {
-                type: DataTypes.STRING,
-                allowNull: true,
-                validate: {
-                    notEmpty: false
-                }
-            },
-            location: {
+            disctrict: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {

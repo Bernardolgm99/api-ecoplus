@@ -1,3 +1,5 @@
+console.clear(); // Clear the console before running
+
 const { Sequelize, DataTypes } = require('sequelize')
 const config = require('../config/db.config.js')
 const db = {}

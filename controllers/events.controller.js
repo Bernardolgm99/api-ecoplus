@@ -33,40 +33,45 @@ exports.create = async (req, res) => {
         switch ("validationBodyData") {
             case "validationBodyData":
 
+                // Validation if user is a admin to do this action
+                if (req.loggedUser.role !== "admin") { res.status(403).json(messages.errorForbidden()); break; };
+
                 // Validation if body have everything required
-                if (!req.body.name) { res.status(401).json(messages.errorBadRequest(1, "name")); break; };
-                if (!req.body.description) { res.status(401).json(messages.errorBadRequest(1, "description")); break; };
-                if (!req.body.location) { res.status(401).json(messages.errorBadRequest(1, "location")); break; };
-                if (!req.body.start) { res.status(401).json(messages.errorBadRequest(1, "start")); break; };
-                if (!req.body.end) { res.status(401).json(messages.errorBadRequest(1, "end")); break; };
+                if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
+                if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
+                if (!req.body.location) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
+                // if (!req.body.start) { res.status(400).json(messages.errorBadRequest(1, "start")); break; };
+                // if (!req.body.end) { res.status(400).json(messages.errorBadRequest(1, "end")); break; };
 
 
                 // Validation if body values are passed parameters with the correct type
-                if (typeof req.body.name !== "string") { res.status(401).json(messages.errorBadRequest(0, "Name", "string")); break; }
+                if (typeof req.body.name !== "string") { res.status(400).json(messages.errorBadRequest(0, "Name", "string")); break; }
                 else event.name = req.body.name;
 
-                if (typeof req.body.description !== "string") { res.status(401).json(messages.errorBadRequest(0, "Description", "string")); break; }
+                if (typeof req.body.description !== "string") { res.status(400).json(messages.errorBadRequest(0, "Description", "string")); break; }
                 else event.description = req.body.description;
 
-                if (typeof req.body.location !== "string") { res.status(401).json(messages.errorBadRequest(0, "Location", "string")); break; }
+                if (typeof req.body.location !== "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                 else event.location = req.body.location;
 
-                if (typeof req.body.subtitle !== "string") { res.status(401).json(messages.errorBadRequest(0, "Subtitle", "string")); break; }
+                if (req.body.subtitle && typeof req.body.subtitle !== "string") { res.status(400).json(messages.errorBadRequest(0, "Subtitle", "string")); break; }
                 else event.subtitle = req.body.subtitle;
 
-                if (!validationDate(req.body.start)) { res.status(401).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
-                else event.start = req.body.start;
+                // if (req.body.start && !validationDate(req.body.start)) { res.status(400).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
+                // else event.start = req.body.start;
+                event.start = req.body.start;
+                
+                // if (req.body.end && !validationDate(req.body.end)) { res.status(400).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
+                // else event.end = req.body.end;
+                event.end = req.body.end;
 
-                if (!validationDate(req.body.end)) { res.status(401).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
-                else event.end = req.body.end;
-
-                if (req.body.files && !validationFiles(req.body.files)) { res.status(401).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
+                if (req.body.file && req.body.files && !validationFiles(req.body.files)) { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
                 else event.files = req.body.files;
 
                 if (req.body.image && !validationImage(req.body.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                 else event.image = req.body.image;
 
-                event.IdCreatorId = req.loggedUser.id;
+                event.IdCreator = req.loggedUser.id;
 
             case "create":
                 let newEvent = await Event.create(event);
@@ -92,32 +97,32 @@ exports.edit = async (req, res) => {
     try {
         let event = await Event.findByPk(req.params.id);
 
-        if (event.IdCreatorId != req.loggedUser.id || req.loggedUser.role == "admin") res.status(403).json(messages.errorForbidden());
+        if (event.idCreator != req.loggedUser.id || req.loggedUser.role == "admin") res.status(403).json(messages.errorForbidden());
 
         else {
             switch ("validationBodyData") {
 
                 case "validationBodyData":
 
-                    if (req.body.name && typeof req.body.name !== "string") { res.status(401).json(messages.errorBadRequest(0, "Name", "string")); break; }
+                    if (req.body.name && typeof req.body.name !== "string") { res.status(400).json(messages.errorBadRequest(0, "Name", "string")); break; }
                     else event.name = req.body.name;
 
-                    if (req.body.description && typeof req.body.description !== "string") { res.status(401).json(messages.errorBadRequest(0, "Description", "string")); break; }
+                    if (req.body.description && typeof req.body.description !== "string") { res.status(400).json(messages.errorBadRequest(0, "Description", "string")); break; }
                     else event.description = req.body.description;
 
-                    if (req.body.location && typeof req.body.location !== "string") { res.status(401).json(messages.errorBadRequest(0, "Location", "string")); break; }
+                    if (req.body.location && typeof req.body.location !== "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                     else event.location = req.body.location;
 
-                    if (req.body.subtitle && typeof req.body.subtitle !== "string") { res.status(401).json(messages.errorBadRequest(0, "Subtitle", "string")); break; }
+                    if (req.body.subtitle && typeof req.body.subtitle !== "string") { res.status(400).json(messages.errorBadRequest(0, "Subtitle", "string")); break; }
                     else event.subtitle = req.body.subtitle;
 
-                    if (req.body.start && !validationDate(req.body.start)) { res.status(401).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
+                    if (req.body.start && !validationDate(req.body.start)) { res.status(400).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
                     else event.start = req.body.start;
 
-                    if (req.body.end && !validationDate(req.body.end)) { res.status(401).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
+                    if (req.body.end && !validationDate(req.body.end)) { res.status(400).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
                     else event.end = req.body.end;
 
-                    if (req.body.files && !validationFiles(req.body.files)) { res.status(401).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
+                    if (req.body.files && !validationFiles(req.body.files)) { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
                     else event.files = req.body.files;
 
                     if (req.body.image && !validationImage(req.body.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }

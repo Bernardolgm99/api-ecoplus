@@ -40,7 +40,42 @@ module.exports = (sequelize, DataTypes) => {
         },
         image: {
             type: DataTypes.BLOB
-        }
+        },
+        diagnosis: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: {msg: `Please provide a diagnosis!`}
+            }
+        },
+        objectives: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: {msg: `Please provide a objectives!`}
+            }
+        },
+        resources: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: {msg: `Please provide a resources!`}
+            }
+        },
+        evaluation_ind: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: {msg: `Please provide a evaluation_ind!`}
+            }
+        },
+        evaluation_inst: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: {msg: `Please provide a evaluation_inst!`}
+            }
+        },
     });
     return activity
 }
