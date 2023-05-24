@@ -3,8 +3,6 @@ const router = express.Router();
 const activityController = require('../controllers/activities.controller')
 const commentsRouter = require('../routes/comments.routes.js')
 const auth = require('../controllers/auth.controller')
-const commentsRouter = require('../routes/comments.routes.js')
-
 // middleware for all routes related with tutorials
 // can be cleared, being used just for testing purposes
 router.use((req, res, next) => {
@@ -31,5 +29,7 @@ router.route('/:idA')
 router.route('/:idA/users/:idU')
   .put(activityController.subscribe)
   .put(activityController.unsubscribe)
+router.route('/:idA/users')
+  .get(activityController.getAllsubscribed)
 //export this router
 module.exports = router;

@@ -8,15 +8,15 @@ const messages = require('../utilities/messages');
 exports.create = async (req, res) => {
   try {
     if(req.loggedUser.role == 'admin') {
-      if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(2,'date interval'));
+      if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(1,'date interval', 'valid one'));
       req.body.IdCreator = req.loggedUser.id;
       let activity = await Activity.create(req.body);
       return res.status(201).json(messages.successCreated('Activity', activity.id));
     }
-    res.status(400).json(messages.errorBadRequest(2, 'credential'));
+    res.status(400).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     if (err instanceof ValidationError)
-      res.status(400).json(messages.errorBadRequest(3));
+      res.status(400).json(messages.errorBadRequest(2));
     else
       res.status(500).json(messages.errorInternalServerError());
   }
@@ -40,7 +40,7 @@ exports.findOne = async (req, res) => {
     res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published
-        res.status(400).json(messages.errorBadRequest(3));
+        res.status(400).json(messages.errorBadRequest(2));
       else
         res.status(500).json(messages.errorInternalServerError())
   }
@@ -77,7 +77,7 @@ exports.edit = async (req, res) => {
         )
       return res.status(202).json(messages.successAccepted);
     }
-    res.status(400).json(messages.errorBadRequest(2, 'credential'));
+    res.status(400).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError);
   }
@@ -108,24 +108,23 @@ exports.subscribe = async (req, res) => {
     if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
     let user = await User.findByPk(req.params.idU)
     if(user === null) return res.status(404).json(messages.errorNotFound(`User ${req.params.idU}`));
-    
-    if(activity.userId == null) arrayUsers = [];
-    else arrayUsers = activity.userId;
-
-    if(arrayUsers.find(usersId => usersId == req.params.idU) != undefined){
-      return res.status(404).json({success: false, msg: `User ${req.params.idU} already subscribed to Activity ${req.params.idA}`})
-    } else {
-      arrayUsers.push(req.params.idU);
-      activity.userId = arrayUsers;
-      Activity.update({
-        userId: {arrayUsers}
-      })
-      return res.status(200).json({success: true, msg: `User ${req.params.idU} enrolled in Activity ${req.params.idA}`})
-    }
+    let result = await activity.addUser(user);
+    console.log(result)
+    res.status(200).json(result);
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError)
   }
 
 }
 exports.unsubscribe = async (req, res) => {
+}
+exports.getAllsubscribed = async (req, res) => {
+  try {
+    let activity = await Activity.findByPk(req.params.idA)
+    if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
+    res.status(200).json(activity.getUsers());
+  } catch (err){
+    console.log(err)
+    res.status(500).json(messages.errorInternalServerError)
+  }
 }

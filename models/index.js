@@ -47,7 +47,7 @@ db.rating.belongsTo(db.user);
 db.comment.hasMany(db.rating)
 db.rating.belongsTo(db.comment);
 
-// //N:M
+//N:M
 db.activity.belongsToMany(db.user, {through: 'activityUser'})
 db.user.belongsToMany(db.activity, {through: 'activityUser'});
 
