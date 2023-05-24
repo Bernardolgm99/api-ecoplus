@@ -30,6 +30,6 @@ router.route('/:activityId')
 router.route('/:activityId/users')
   .post(auth.verifyToken, activityController.subscribe)
   .delete(auth.verifyToken, activityController.unsubscribe)
-  .get(activityController.getAllsubscribed)
+  .get(activityController.getAllSubscribed)
 //export this router
 module.exports = router;
