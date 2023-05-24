@@ -3,7 +3,10 @@ const router = express.Router({mergeParams: true});
 
 // import controllers middleware
 const commentsController = require('../controllers/comments.controller.js')
+const ratingRouter = require('../routes/rating.routes.js')
 const auth = require('../controllers/auth.controller.js')
+
+router.use('/:commentId/rating', ratingRouter)
 
 router.route('/')
     .post(auth.verifyToken, commentsController.create)
@@ -13,7 +16,6 @@ router.route('/:commentId')
     .get(commentsController.findOne)
     .put(auth.verifyToken, commentsController.edit)
     .delete(auth.verifyToken, commentsController.delete)
-    .patch(commentsController.rating)
 
-//export this router
+    //export this router
 module.exports = router;

@@ -3,7 +3,6 @@ const router = express.Router();
 const activityController = require('../controllers/activities.controller')
 const commentsRouter = require('../routes/comments.routes.js')
 const auth = require('../controllers/auth.controller')
-const commentsRouter = require('../routes/comments.routes.js')
 
 // middleware for all routes related with tutorials
 // can be cleared, being used just for testing purposes

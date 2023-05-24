@@ -1,5 +1,6 @@
 const db = require('../models/index');
 const Comment = db.comment
+const Rating = db.rating
 const messages = require('../utilities/messages');
 const validation = require('../utilities/validation.js');
 
@@ -105,23 +106,6 @@ exports.delete = async (req, res) => {
                 msg: `Comment deleted successfully`,
               })
         }
-    } catch (err) {
-        res.status(500).json(messages.errorInternalServerError());
-    }
-}
-
-exports.rating = async (req, res) => {
-    try {
-        let comment = await Comment.findByPk(req.params.commentId)
-        console.log(comment.like)
-        if(req.body.rating == "like") {
-                comment.like = comment.like + 1;
-                res.status(200).send({msg: `Comment liked`, rating: comment.like})
-        } else if (req.body.rating == "dislike"){
-            comment.dislike += 1;
-            res.status(200).send({msg: `Comment disliked`})
-        }
-
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     }
