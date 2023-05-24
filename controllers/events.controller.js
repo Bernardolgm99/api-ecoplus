@@ -1,4 +1,5 @@
 const db = require('../models/index');
+const User = db.event;
 const Event = db.event;
 const { validationImage, validationDate, validationFiles } = require('../utilities/validation');
 const messages = require('../utilities/messages');
@@ -60,7 +61,7 @@ exports.create = async (req, res) => {
                 // if (req.body.start && !validationDate(req.body.start)) { res.status(400).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
                 // else event.start = req.body.start;
                 event.start = req.body.start;
-                
+
                 // if (req.body.end && !validationDate(req.body.end)) { res.status(400).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
                 // else event.end = req.body.end;
                 event.end = req.body.end;
@@ -150,3 +151,38 @@ exports.delete = async (req, res) => {
         res.status(500).json(messages.errorInternalServerError());
     };
 };
+
+exports.subscribe = async (req, res) => {
+    try {
+        let event = await Event.findByPk(req.params.activityId);
+        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.activityId}`)); return };
+        let user = await User.findByPk(req.loggedUser.id);
+        await event.addUser(user);
+        res.status(200).json("Subscribed");
+    } catch (err) {
+        res.status(500).json(messages.errorInternalServerError());
+    };
+};
+
+exports.unsubscribe = async (req, res) => {
+    try {
+        let event = await Event.findByPk(req.params.activityId);
+        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.activityId}`)); return };
+        let user = await User.findByPk(req.loggedUser.id);
+        await event.removeUser(user);
+        res.status(200).json("Unsubscribed");
+    } catch (err) {
+        res.status(500).json(messages.errorInternalServerError());
+    }
+}
+
+exports.getAllSubscribed = async (req, res) => {
+    try {
+        let event = await Event.findByPk(req.params.activityId);
+        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.activityId}`)); return };
+        const activityUser = await Event.findAll({ where: { id: req.params.activityId }, include: { model: User, attributes: ['id', 'username', 'image', 'role'] }, attributes: ['id'] });
+        res.status(200).json(activityUser);
+    } catch (err) {
+        res.status(500).json(messages.errorInternalServerError());
+    }
+}

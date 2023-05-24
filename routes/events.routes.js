@@ -12,11 +12,16 @@ router.route('/')
     .get(eventsController.findAll)
     .post(auth.verifyToken, eventsController.create);
 
-router.route('/:id')
+router.route('/:eventId')
     .get(eventsController.findByID)
     .put(auth.verifyToken, eventsController.edit)
     .delete(auth.verifyToken, eventsController.delete);
 
-    
+router.route('/:eventId/users')
+    .post(auth.verifyToken, activityController.subscribe)
+    .delete(auth.verifyToken, activityController.unsubscribe)
+    .get(activityController.getAllsubscribed)
+
+
 //export this router
 module.exports = router;

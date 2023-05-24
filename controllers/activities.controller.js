@@ -34,9 +34,9 @@ exports.findAll = async (req, res) => {
 }
 exports.findOne = async (req, res) => {
   try{
-    let activity = await Activity.findByPk(req.params.idA)
+    let activity = await Activity.findByPk(req.params.activityId)
     if(activity === null)
-      return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
+      return res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`));
     res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published
@@ -48,7 +48,7 @@ exports.findOne = async (req, res) => {
 exports.edit = async (req, res) => {
   try {
     if(req.loggedUser.role == 'admin'){
-      let activity = await Activity.findByPk(req.params.idA)
+      let activity = await Activity.findByPk(req.params.activityId)
       if(activity === null){
         return res.status(404).json(messages.errorNotFound('Activity'));
       }
@@ -72,7 +72,7 @@ exports.edit = async (req, res) => {
         location: req.body.location,
         image: req.body.image},
         {
-          where: {id: req.params.idA}
+          where: {id: req.params.activityId}
         }
         )
       return res.status(202).json(messages.successAccepted);
@@ -86,45 +86,53 @@ exports.delete = async (req, res) => {
   try {
     if(req.loggedUser.role == 'admin'){
       let result = await Activity.destroy({
-          where: {id: req.params.idA}
+          where: {id: req.params.activityId}
       })
       if(result == 0) {
         return res.status(404).json(messages.errorNotFound('Activity'));
       }
       res.status(200).json({
           success: true,
-          msg: `Deleted Activity ${req.params.idA} successfully`
+          msg: `Deleted Activity ${req.params.activityId} successfully`
       });
     }
     res.status(400).json(messages.errorNotFound('Activity'));
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError);
-}
-}
-exports.subscribe = async (req, res) => {
-  let arrayUsers;
-  try {
-    let activity = await Activity.findByPk(req.params.idA)
-    if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
-    let user = await User.findByPk(req.params.idU)
-    if(user === null) return res.status(404).json(messages.errorNotFound(`User ${req.params.idU}`));
-    let result = await activity.addUser(user);
-    console.log(result)
-    res.status(200).json(result);
-  } catch (err) {
-    res.status(500).json(messages.errorInternalServerError)
   }
+}
 
-}
-exports.unsubscribe = async (req, res) => {
-}
-exports.getAllsubscribed = async (req, res) => {
+exports.subscribe = async (req, res) => {
   try {
-    let activity = await Activity.findByPk(req.params.idA)
-    if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.idA}`));
-    res.status(200).json(activity.getUsers());
-  } catch (err){
-    console.log(err)
-    res.status(500).json(messages.errorInternalServerError)
+    let activity = await Activity.findByPk(req.params.activityId)
+    if (!activity) { res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`)); return };
+    let user = await User.findByPk(req.loggedUser.id)
+    await activity.addUser(user);
+    res.status(200).json("Subscribed");
+  } catch (err) {
+    res.status(500).json(messages.errorInternalServerError());
+  }
+}
+
+exports.unsubscribe = async (req, res) => {
+  try {
+    let activity = await Activity.findByPk(req.params.activityId)
+    if (!activity) { res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`)); return };
+    let user = await User.findByPk(req.loggedUser.id)
+    await activity.removeUser(user);
+    res.status(200).json("Unsubscribed");
+  } catch (err) {
+    res.status(500).json(messages.errorInternalServerError());
+  }
+}
+
+exports.getAllSubscribed = async (req, res) => {
+  try {
+    let activity = await Activity.findByPk(req.params.activityId)
+    if (!activity) { res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`)); return };
+    const activityUser = await Activity.findAll({where: {id: req.params.activityId}, include: {model: User, attributes: ['id','username', 'image', 'role']}, attributes: ['id'] })
+    res.status(200).json(activityUser)
+  } catch (err) {
+    res.status(500).json(messages.errorInternalServerError())
   }
 }
