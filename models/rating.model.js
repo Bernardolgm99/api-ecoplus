@@ -3,13 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     {
         like: {
             type: DataTypes.BOOLEAN,
-            allowNull:  false,
-            defaultValue: false
-        },
-        dislike: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
+            allowNull:  false
         }
     });
     return rating
