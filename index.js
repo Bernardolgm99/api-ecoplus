@@ -1,3 +1,4 @@
+console.clear()
 const express = require('express');
 const app = express();
 require('dotenv').config();
@@ -19,6 +20,7 @@ app.use('/occurrences', require('./routes/occurrences.routes.js'))
 app.use('/users', require('./routes/users.routes.js'))
 app.use('/comments', require('./routes/comments.routes.js'))
 app.use('/rating', require('./routes/rating.routes.js'));
+app.use('/badges', require('./routes/badges.routes.js'));
 
 // handle invalid routes
 app.get('*', function (req, res) {
