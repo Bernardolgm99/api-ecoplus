@@ -85,9 +85,9 @@ exports.create = async (req, res) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let event = await Event.findByPk(req.params.id);
+        let event = await Event.findByPk(req.params.eventId);
         if (!event) {
-            res.status(404).json({ error: `${req.params.id} not founded` });
+            res.status(404).json({ error: `${req.params.eventId} not founded` });
         } else res.status(200).json(event);
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
@@ -96,7 +96,7 @@ exports.findByID = async (req, res) => {
 
 exports.edit = async (req, res) => {
     try {
-        let event = await Event.findByPk(req.params.id);
+        let event = await Event.findByPk(req.params.eventId);
 
         if (event.idCreator != req.loggedUser.id || req.loggedUser.role == "admin") res.status(403).json(messages.errorForbidden());
 
@@ -142,8 +142,8 @@ exports.edit = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         if (req.loggedUser.id || req.loggedUser.role == "admin") {
-            await Event.destroy({ where: { id: req.params.id } });
-            res.status(200).json({ msg: `Event ${req.params.id} was successfully deleted!` });
+            await Event.destroy({ where: { id: req.params.eventId } });
+            res.status(200).json({ msg: `Event ${req.params.eventId} was successfully deleted!` });
         } else {
             res.status(403).json(messages.errorForbidden());
         }
@@ -152,13 +152,15 @@ exports.delete = async (req, res) => {
     };
 };
 
-exports.subscribe = async (req, res) => {
+exports.subscribe = async (req, res, next) => {
     try {
-        let event = await Event.findByPk(req.params.activityId);
-        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.activityId}`)); return };
+        let event = await Event.findByPk(req.params.eventId);
+        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.eventId}`)); return };
         let user = await User.findByPk(req.loggedUser.id);
         await event.addUser(user);
         res.status(200).json("Subscribed");
+        req.user = user;
+        next();
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     };
@@ -166,8 +168,8 @@ exports.subscribe = async (req, res) => {
 
 exports.unsubscribe = async (req, res) => {
     try {
-        let event = await Event.findByPk(req.params.activityId);
-        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.activityId}`)); return };
+        let event = await Event.findByPk(req.params.eventId);
+        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.eventId}`)); return };
         let user = await User.findByPk(req.loggedUser.id);
         await event.removeUser(user);
         res.status(200).json("Unsubscribed");
@@ -178,9 +180,9 @@ exports.unsubscribe = async (req, res) => {
 
 exports.getAllSubscribed = async (req, res) => {
     try {
-        let event = await Event.findByPk(req.params.activityId);
-        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.activityId}`)); return };
-        const activityUser = await Event.findAll({ where: { id: req.params.activityId }, include: { model: User, attributes: ['id', 'username', 'image', 'role'] }, attributes: ['id'] });
+        let event = await Event.findByPk(req.params.eventId);
+        if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.eventId}`)); return };
+        const activityUser = await Event.findAll({ where: { id: req.params.eventId }, include: { model: User, attributes: ['id', 'username', 'image', 'role'] }, attributes: ['id'] });
         res.status(200).json(activityUser);
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
