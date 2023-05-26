@@ -19,14 +19,17 @@ exports.create = async (req, res) => {
     if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthDate")); return }
 
 
-    if (req.body.name != "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); return };
-    if (req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return };
-    if (req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return };
-    if (req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return };
+    if (typeof(req.body.name) != "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); return };
+    if (typeof(req.body.username) != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return };
+    if (typeof(req.body.email) != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return };
+    if (typeof(req.body.password) != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return };
     if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(0, "birthday", "instace of Date")); return };
-    if (School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return };
+    if (await School.findOne({ where: { school: req.body.schoolDesc } }).then(result => {
+      if (result) return false;
+      else return true
+    })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return };
     if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", `include in ["M", "F", "OTHER"]`)); return };
-    if (!!req.body.contact && req.body.contact != "string") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return };
+    if (!!req.body.contact && typeof(req.body.contact) != "number") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return };
 
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
