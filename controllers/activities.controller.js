@@ -102,13 +102,14 @@ exports.delete = async (req, res) => {
   }
 }
 
-exports.subscribe = async (req, res) => {
+exports.subscribe = async (req, res, next) => {
   try {
     let activity = await Activity.findByPk(req.params.activityId)
     if (!activity) { res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`)); return };
     let user = await User.findByPk(req.loggedUser.id)
     await activity.addUser(user);
     res.status(200).json("Subscribed");
+    next();
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError());
   }
@@ -130,6 +131,9 @@ exports.getAllSubscribed = async (req, res) => {
   try {
     let activity = await Activity.findByPk(req.params.activityId)
     if (!activity) { res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`)); return };
+    // console.log(await activity.getUsers());
+    console.log(await activity.getUser());
+    console.log("bom dia")
     const activityUser = await Activity.findAll({where: {id: req.params.activityId}, include: {model: User, attributes: ['id','username', 'image', 'role']}, attributes: ['id'] })
     res.status(200).json(activityUser)
   } catch (err) {

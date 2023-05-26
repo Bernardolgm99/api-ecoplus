@@ -1,6 +1,7 @@
 const db = require('../models/index');
 const Badge = db.badge
-const messages = require('../utilities/message');
+const User = db.user
+const messages = require('../utilities/messages');
 
 exports.findAll = async (req, res) => {
     try {
@@ -77,18 +78,64 @@ exports.delete = async (req, res) => {
 };
 
 
-exports.verifyEventBadges = async (req, res) => {
+exports.verifyEvent = async (req, res) => {
     try {
-        const badges = await Badge.getAll({ where: { conditionType: 'badge' } });
-        await db.badge.count({ where: { id: req.params.eventId }, include: { model: User, where: { userId: req.loggedUser.id } } })
+        const badges = await Badge.findAll({ where: { conditionType: 'event' } });
+        await req.user.countEvents()
             .then(count => {
                 badges.forEach(async badge => {
-                    if (badge.value >= 0) {
+                    if (count >= badge.value) {
                         await req.user.addBadge(badge);
                     };
                 });
             });
     } catch (err) {
-        res.status(500).json(messages.errorInternalServerError());
+        console.log(err);
+    };
+};
+
+exports.verifyActivity = async (req, res) => {
+    try {
+        const badges = await Badge.findAll({ where: { conditionType: 'activity' } });
+        await req.user.countActivities()
+            .then(count => {
+                badges.forEach(async badge => {
+                    if (count >= badge.value) {
+                        await req.user.addBadge(badge);
+                    };
+                });
+            });
+    } catch (err) {
+        console.log(err);
+    };
+};
+exports.verifyOccurrence = async (req, res) => {
+    try {
+        const badges = await Badge.findAll({ where: { conditionType: 'occurrence' } });
+        await req.user.countOccurrences()
+            .then(count => {
+                badges.forEach(async badge => {
+                    if (count >= badge.value) {
+                        await req.user.addBadge(badge);
+                    };
+                });
+            });
+    } catch (err) {
+        console.log(err);
+    };
+};
+exports.verifyComment = async (req, res) => {
+    try {
+        const badges = await Badge.findAll({ where: { conditionType: 'comment' } });
+        await req.user.countComments()
+            .then(count => {
+                badges.forEach(async badge => {
+                    if (count >= badge.value) {
+                        await req.user.addBadge(badge);
+                    };
+                });
+            });
+    } catch (err) {
+        console.log(err);
     };
 };

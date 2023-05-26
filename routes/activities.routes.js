@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const activityController = require('../controllers/activities.controller')
 const commentsRouter = require('../routes/comments.routes.js')
+const badgesController = require('../controllers/badges.controller.js')
 const auth = require('../controllers/auth.controller')
 
 // middleware for all routes related with tutorials
@@ -28,7 +29,7 @@ router.route('/:activityId')
   .put(auth.verifyToken, activityController.edit)
   .delete(auth.verifyToken, activityController.delete)
 router.route('/:activityId/users')
-  .post(auth.verifyToken, activityController.subscribe)
+  .post(auth.verifyToken, activityController.subscribe, badgesController.verifyActivity)
   .delete(auth.verifyToken, activityController.unsubscribe)
   .get(activityController.getAllSubscribed)
 //export this router

@@ -3,13 +3,14 @@ const router = express.Router({mergeParams: true});
 
 // import controllers middleware
 const commentsController = require('../controllers/comments.controller.js')
+const badgesController = require('../controllers/badges.controller.js')
 const ratingRouter = require('../routes/rating.routes.js')
 const auth = require('../controllers/auth.controller.js')
 
 router.use('/:commentId/rating', ratingRouter)
 
 router.route('/')
-    .post(auth.verifyToken, commentsController.create)
+    .post(auth.verifyToken, commentsController.create, badgesController.verifyComment)
     .get(commentsController.findAll)
 
 router.route('/:commentId')

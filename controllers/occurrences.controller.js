@@ -27,7 +27,7 @@ exports.findAll = async (req, res) => {
     };
 };
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         let occurrence = {};
         switch ("validationBodyData") {
@@ -60,6 +60,7 @@ exports.create = async (req, res) => {
             case "create":
                 let newOccurrence = await Occurrence.create(occurrence);
                 res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
+            next();
         };
 
     } catch (err) {

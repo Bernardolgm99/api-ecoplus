@@ -1,5 +1,5 @@
 const db = require('../models/index');
-const User = db.event;
+const User = db.user;
 const Event = db.event;
 const { validationImage, validationDate, validationFiles } = require('../utilities/validation');
 const messages = require('../utilities/messages');
@@ -182,9 +182,10 @@ exports.getAllSubscribed = async (req, res) => {
     try {
         let event = await Event.findByPk(req.params.eventId);
         if (!event) { res.status(404).json(messages.errorNotFound(`Event ${req.params.eventId}`)); return };
-        const activityUser = await Event.findAll({ where: { id: req.params.eventId }, include: { model: User, attributes: ['id', 'username', 'image', 'role'] }, attributes: ['id'] });
-        res.status(200).json(activityUser);
+        const eventUser = await Event.findAll({ where: { id: req.params.eventId }, include: { model: User, attributes: ['id', 'username', 'image', 'role'] }, attributes: ['id'] });
+        res.status(200).json(eventUser);
     } catch (err) {
+        console.log(err);
         res.status(500).json(messages.errorInternalServerError());
     }
 }

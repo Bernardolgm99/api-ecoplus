@@ -4,7 +4,7 @@ const Rating = db.rating
 const messages = require('../utilities/messages');
 const validation = require('../utilities/validation.js');
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         let comment = {}
         comment.description = req.body.description
@@ -24,6 +24,7 @@ exports.create = async (req, res) => {
             msg: `Comment created successfully`,
             URL: `/comments/${newComment.id}`
           })
+        next();
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     }

@@ -3,7 +3,8 @@ const router = express.Router();
 
 // import controllers middleware
 const eventsController = require('../controllers/events.controller.js');
-const commentsRouter = require('../routes/comments.routes.js')
+const badgesController = require('../controllers/badges.controller.js');
+const commentsRouter = require('../routes/comments.routes.js');
 const auth = require('../controllers/auth.controller');
 
 router.use('/:id/comments', commentsRouter)
@@ -18,7 +19,7 @@ router.route('/:eventId')
     .delete(auth.verifyToken, eventsController.delete);
 
 router.route('/:eventId/users')
-    .post(auth.verifyToken, eventsController.subscribe)
+    .post(auth.verifyToken, eventsController.subscribe, badgesController.verifyEvent)
     .delete(auth.verifyToken, eventsController.unsubscribe)
     .get(eventsController.getAllSubscribed)
 
