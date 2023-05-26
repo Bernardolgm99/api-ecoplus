@@ -25,11 +25,11 @@ exports.like = async (req, res) => {
       rating = {};
       rating.commentId = req.params.commentId;
       rating.userId = req.loggedUser.id;
-      rating.like = req.body.rating;
+      rating.rating = req.body.rating;
       await Rating.create(rating);
-      res.status(200).send({ msg: `Like Created`, rating: rating.like });
+      res.status(200).send({ msg: `Like Created`, rating: rating.rating });
     } else {
-      await rating.update({ like: req.body.rating });
+      await rating.update({ rating: req.body.rating });
       res.status(200).send({ msg: `Like Updated`, rating: rating.like });
     }
   } catch (err) {
