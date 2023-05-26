@@ -66,14 +66,14 @@ db.activity.belongsTo(db.user, {foreignKey: 'IdCreator'});
 db.event.belongsTo(db.user, {foreignKey: 'IdCreator'}); 
 
 
-// (async () => {
-//         try {
+(async () => {
+        try {
         
-//               await sequelize.sync({alter:true});
-//               console.log("DB is successfully synchronized");
-//             } catch (error) {
-//                   console.log(error);
-//                 }
-//               })();
+              await sequelize.sync({alter:true});
+              console.log("DB is successfully synchronized");
+            } catch (error) {
+                  console.log(error);
+                }
+              })();
             
 module.exports = db;

@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
     const rating = sequelize.define('rating',
     {
-        like: {
+        rating: {
             type: DataTypes.BOOLEAN,
             allowNull:  false
         }
