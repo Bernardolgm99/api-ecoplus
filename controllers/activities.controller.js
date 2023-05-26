@@ -109,6 +109,7 @@ exports.subscribe = async (req, res, next) => {
     let user = await User.findByPk(req.loggedUser.id)
     await activity.addUser(user);
     res.status(200).json("Subscribed");
+    req.user = user;
     next();
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError());
