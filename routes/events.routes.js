@@ -18,9 +18,9 @@ router.route('/:eventId')
     .delete(auth.verifyToken, eventsController.delete);
 
 router.route('/:eventId/users')
-    .post(auth.verifyToken, activityController.subscribe)
-    .delete(auth.verifyToken, activityController.unsubscribe)
-    .get(activityController.getAllSubscribed)
+    .post(auth.verifyToken, eventsController.subscribe)
+    .delete(auth.verifyToken, eventsController.unsubscribe)
+    .get(eventsController.getAllSubscribed)
 
 
 //export this router
