@@ -33,3 +33,11 @@ SECRET: "introduce-here-your-encoder"
 ```
 Complete the empty spaces with your database credentials.
 **It's done to use**.
+
+```
+
+Commands being used on jest to stablish a connection with the db:
+
+npx sequelize-cli model:generate --name TableName --attributes column:atribute,(name:string,age:integer)
+
+

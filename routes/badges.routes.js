@@ -3,6 +3,7 @@ const router = express.Router();
 
 // import controllers middleware
 const badgesController = require('../controllers/badges.controller.js')
+const eventsController = require('../controllers/events.controller.js')
 const auth = require('../controllers/auth.controller');
 
 router.route('/')
