@@ -82,7 +82,7 @@ exports.create = async (req, res) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let event = await Event.findByPk(req.params.eventId, { include: [{ model: User }, { model: db.comment, include: [{ model: User, attributes: ["username"] }, { model: db.rating }] }] });
+        let event = await Event.findByPk(req.params.eventId, { include: { model: User, attributes: ["username", "image", "role"], through: { attributes: [] } } }).then();
         if (!event) {
             res.status(404).json({ error: `${req.params.eventId} not founded` });
         } else res.status(200).json(event);
