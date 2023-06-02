@@ -1,10 +1,12 @@
 console.clear()
 const express = require('express');
+const cors = require('cors');
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT;
 const host = process.env.HOST;
 app.use(express.json()); //enable parsing JSON body data
+app.use (cors({ origin: '*'}))
 
 // root route -- /api/
 app.get('/', function (req, res) {
