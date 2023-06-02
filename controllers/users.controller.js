@@ -18,6 +18,7 @@ exports.create = async (req, res) => {
     if (!req.body.password) { res.status(400).json(messages.errorBadRequest(1, "password")); return }
     if (!req.body.schoolDesc) { res.status(400).json(messages.errorBadRequest(1, "schoolDesc")); return }
     if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthDate")); return }
+    if (!req.body.contact) { res.status(400).json(messages.errorBadRequest(1, "contact")); return }
 
 
     if (typeof (req.body.name) != "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); return };
@@ -140,15 +141,25 @@ exports.delete = async (req, res) => {
         msg: `User not found`
       })
     } else {
+      
+      if(req.loggedUser.role == 'admin'){
+        
+        User.destroy({
+          where: { id: req.params.userId }
+        })
+  
+        res.status(200).json({
+          sucess: true,
+          msg: `User ${user.username} deleted successfully`
+        })
 
-      User.destroy({
-        where: { id: req.params.userId }
-      })
+      } else {
+        res.status(403).json({
+          success: false,
+          msg: `You do not have permission to delete this user.`
+        })
+      }
 
-      res.status(200).json({
-        sucess: true,
-        msg: `User ${user.username} deleted successfully`
-      })
     }
 
   } catch (err) {
@@ -162,81 +173,120 @@ exports.delete = async (req, res) => {
 exports.edit = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
-    if (user == undefined || user == null) {
+    if (user == undefined) {
       res.status(404).json({
         sucess: false,
         msg: `User not found`
       })
     } else {
-      if (!!req.body.username && req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
-      else user.username = req.body.username;
-      if (!!req.body.email && req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
-      else user.email = req.body.email;
-      if (!!req.body.password && req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
-      else user.password = bcrypt.hashSync(req.body.password, 10);
-      if (!!req.body.schoolDesc && School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
-      else user.schoolDesc = req.body.schoolDesc;
-      if (!!req.body.contact && req.body.contact != "string") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return }
-      else user.contact = req.body.contact;
 
+      if(req.loggedUser.id == req.params.userId){
 
-      await User.update(
-        {
-          name: user.name,
-          email: user.email,
-          password: user.password,
-          genreDesc: user.genreDesc,
-          birthDate: user.birthDate,
-          contact: user.contact,
-          schoolDesc: user.schoolDesc
-        },
-        {
-          where: { id: req.params.userId }
-        }
-      )
+        if (req.body.username && req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
+        else if(req.body.username) {
+          if( await User.findOne({where: {username: req.body.username}})) 
+          { 
+            res.status(400).json({success: false, message: `Username already in use.`}); 
+            return 
+          } else user.username = req.body.username
+        } else user.username = user.username
 
-      res.status(202).json({
-        succes: true,
-        msg: `User ${user.username} updated successfully`
-      })
+        if (req.body.email && req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
+        else if(req.body.email) {
+          if( await User.findOne({where: {email: req.body.email}}) ) { 
+            res.status(400).json({success: false, message: `Email already in use.`}); 
+            return 
+          } else user.email = req.body.email
+        } else user.email = user.email
+
+        if (req.body.password && req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
+        else if(req.body.password) {user.password = bcrypt.hashSync(req.body.password, 10)} 
+        else user.password = user.password
+
+        if (req.body.schoolDesc && !School.findOne({ where: { school: req.body.schoolDesc } }) ) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
+        else if(req.body.schoolDesc) { user.schoolDesc = req.body.schoolDesc 
+        } else {user.schoolDesc = user.schoolDesc}
+
+        if ((req.body.contact && typeof req.body.contact != "number")) { res.status(400).json(messages.errorBadRequest(0, "contact", "number")); return }
+        if(req.body.contact) {
+          if( await User.findOne({where: {contact: req.body.contact}})) { 
+            res.status(400).json({success: false, message: `Phone Number already in use.`}); return 
+          } else user.contact = req.body.contact
+        } else user.contact = user.contact
+        
+  
+        await User.update(
+          {
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            genreDesc: user.genreDesc,
+            birthDate: user.birthDate,
+            contact: user.contact,
+            schoolDesc: user.schoolDesc
+          },
+          {
+            where: { id: req.params.userId }
+          }
+        )
+  
+        res.status(202).json({
+          succes: true,
+          msg: `User ${user.username} updated successfully`
+        })
+
+      } else {
+        res.status(401).json({
+          succes: false,
+          msg: `You are not allowed to update this user`
+        })
+      
+      }
     }
 
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       success: false,
       msg: err.message || 'Some error occurred while creating a new user.'
     })
-  }
-}
+  }}
+
 
 exports.block = async (req, res) => {
   try {
-    let user = await User.findByPk(req.params.userId)
-    if (user == undefined || user == null) {
-      console.log('yau')
-      res.status(404).json({
-        sucess: false,
-        msg: `User not found`
-      })
 
-    } else if (typeof req.body.block == Boolean) {
-      console.log(`yau2`)
-      res.status(400).json({
-        success: false,
-        msg: `Invalid value!`
-      })
+    if(req.loggedUser.role == 'admin') {
 
-    } else {
-      console.log(`yau3`)
-      User.update({ block: req.body.block },
-        {
-          where: { id: req.params.userId }
+      let user = await User.findByPk(req.params.userId)
+  
+      if (user == undefined || user == null) {
+        console.log('yau')
+        res.status(404).json({
+          sucess: false,
+          msg: `User not found`
         })
+  
+      } else if (typeof req.body.block == 'string') {
+        res.status(400).json({
+          success: false,
+          msg: `Invalid value!`
+        })
+        
+      } else {
 
-      res.status(202).json({
-        succes: true,
-        msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
-      })
+        User.update({ block: req.body.block },
+          {
+            where: { id: req.params.userId }
+          })
+  
+        res.status(202).json({
+          succes: true,
+          msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
+        })
+      }
+    } else {
+      res.status(403).json({message: `You are not allowed to block this user.`})
     }
 
   } catch (err) {

@@ -15,9 +15,10 @@ exports.successAccepted = () => {
 
 //400
 exports.errorBadRequest = (messageType, variable, error) => {
+    console.log(error)
     if (messageType == 0) return { success: false, msg: `${variable} must be a ${error}.` };
     else if (messageType == 1) return { success: false, msg: `Please provide a ${variable}.` };
-    else if (messageType == 2) return { success: false, msg: err.errors.map(e => e.message) };
+    else if (messageType == 2) return { success: false, msg: error.errors.map(e => e.message) };
 };
 
 //401

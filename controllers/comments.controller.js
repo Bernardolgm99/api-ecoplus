@@ -9,17 +9,17 @@ exports.create = async (req, res, next) => {
         let comment = {}
         comment.description = req.body.description
         
-        if(req.params.id != null) {
-            comment.eventId = req.params.id
+        if(req.params.eventId != null) {
+            comment.eventId = req.params.eventId
         } else {
-            comment.activityId = req.params.idA
+            comment.activityId = req.params.activityId
         }
 
         comment.userId = req.loggedUser.id
         
 
         let newComment = await Comment.create(comment)
-        res.status(200).json({
+        res.status(201).json({
             sucess: true,
             msg: `Comment created successfully`,
             URL: `/comments/${newComment.id}`
@@ -57,11 +57,11 @@ exports.findAll = async (req, res) => {
     try {
         let comments
 
-        if(req.params.id != null ){
-            comments = await Comment.findAll({where: {eventId: req.params.id}})
+        if(req.params.eventId != null ){
+            comments = await Comment.findAll({where: {eventId: req.params.eventId}})
             res.status(200).json(comments)
         } else {
-            comments = await Comment.findAll({where: {activityId: req.params.idA}})
+            comments = await Comment.findAll({where: {activityId: req.params.activityId}})
             res.status(200).json(comments)
         }
 
@@ -74,7 +74,7 @@ exports.findOne = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
         
-        if(req.params.id != null ){
+        if(req.params.eventId != null ){
 
             if(comment != undefined){
                 res.status(200).json(comment)
