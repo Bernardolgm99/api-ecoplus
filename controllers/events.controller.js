@@ -7,21 +7,18 @@ const messages = require('../utilities/messages');
 exports.findAll = async (req, res) => {
     try {
         let page = 0, limit = 5;
-        if (req.body.page)
-            page = req.body.page;
+        if (req.query.page)
+            page = +req.query.page;
 
-        if (req.body.limit)
-            limit = req.body.limit;
+        if (req.query.limit)
+            limit = +req.query.limit;
 
-        if (typeof (page) !== 'number')
-            res.status(400).json(messages.errorBadRequest(0, "Page", "number"));
+        if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Page", "number")); return; };
 
-        if (typeof (limit) !== 'number')
-            res.status(400).json(messages.errorBadRequest(0, "Limit", "number"));
+        if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
 
-        let event = await Event.findAll({ offset: limit * page, limit: limit });
-
-        res.status(200).json(event);
+        let events = await Event.findAll({ offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, include: { model: User, attributes: ['username'] } }] });
+        res.status(200).json(events);
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
@@ -85,7 +82,7 @@ exports.create = async (req, res) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let event = await Event.findByPk(req.params.eventId);
+        let event = await Event.findByPk(req.params.eventId, { include: [{ model: User }, { model: db.comment, include: [{ model: User, attributes: ["username"] }, { model: db.rating }] }] });
         if (!event) {
             res.status(404).json({ error: `${req.params.eventId} not founded` });
         } else res.status(200).json(event);
