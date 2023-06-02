@@ -100,12 +100,14 @@ exports.delete = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
         
-        if(req.loggedUser.id == comment.userId) {
+        if(req.loggedUser.id == comment.userId || req.loggedUser.role == 'admin') {
             await Comment.destroy({where: {id: req.params.commentId}})
             res.status(200).json({
                 sucess: true,
                 msg: `Comment deleted successfully`,
               })
+        } else {
+            res.status(403).json(messages.errorForbidden())
         }
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
