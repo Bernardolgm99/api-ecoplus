@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
 };
 exports.findAll = async (req, res) => {
   try {
-    let activities = await Activity.findAll();
+    let activities = await Activity.findAll({include: {model: User, attributes: ["username", "id", "role"], through: {attributes: []}}});
     if(activities === null){
       return res.status(404).json(messages.errorNotFound('Activity'));
   }
