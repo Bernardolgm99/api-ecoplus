@@ -24,6 +24,9 @@ router.route('/')
 router.route('/login')
         .post(userController.login)
 
+router.route('/loggedUser')
+        .get(authController.verifyToken, userController.findOne)
+        
 router.route('/:userId')
         .get(userController.findOne)
         .delete(authController.verifyToken, userController.delete)

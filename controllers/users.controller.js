@@ -108,8 +108,8 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    let findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge }, {model: db.event}] }, {})
-
+    if(req.loggedUser == undefined) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge }, {model: db.event}] }, {})
+    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge }, {model: db.event}] }, {})
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
