@@ -7,10 +7,10 @@ exports.findAll = async (req, res) => {
     try {
         let page = 0, limit = 5;
         if (req.body.page)
-            page = req.body.page;
+            page = +req.body.page;
 
         if (req.body.limit)
-            limit = req.body.limit;
+            limit = +req.body.limit;
 
         if (typeof (page) !== 'number')
             res.status(400).json(messages.errorBadRequest(0, "Page", "number"));
@@ -18,7 +18,7 @@ exports.findAll = async (req, res) => {
         if (typeof (limit) !== 'number')
             res.status(400).json(messages.errorBadRequest(0, "Limit", "number"));
 
-        let occurrences = await Occurrence.findAll({ offset: limit * page, limit: limit });
+        let occurrences = await Occurrence.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });
 
         res.status(200).json(occurrences);
 
@@ -60,7 +60,7 @@ exports.create = async (req, res, next) => {
             case "create":
                 let newOccurrence = await Occurrence.create(occurrence);
                 res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
-            next();
+                next();
         };
 
     } catch (err) {

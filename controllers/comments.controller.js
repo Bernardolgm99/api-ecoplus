@@ -8,8 +8,8 @@ exports.create = async (req, res, next) => {
     try {
         let comment = {}
         comment.description = req.body.description
-        
-        if(req.params.eventId != null) {
+
+        if (req.params.eventId != null) {
             comment.eventId = req.params.eventId
         } else if (req.params.activityId != null) {
             comment.activityId = req.params.activityId
@@ -18,14 +18,14 @@ exports.create = async (req, res, next) => {
         }
 
         comment.userId = req.loggedUser.id
-        
+
 
         let newComment = await Comment.create(comment)
         res.status(201).json({
             sucess: true,
             msg: `Comment created successfully`,
             URL: `/comments/${newComment.id}`
-          })
+        })
         next();
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
@@ -36,16 +36,16 @@ exports.edit = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
         console.log(req.loggedUser.id)
-        if(req.loggedUser.id == comment.userId){
-            
-            if(req.body.description != comment.description) {
+        if (req.loggedUser.id == comment.userId) {
+
+            if (req.body.description != comment.description) {
                 comment.description = req.body.description
                 comment.edited = true
-                
+
                 res.status(200).json({
                     sucess: true,
                     msg: `Comment updated successfully`
-                  })
+                })
             }
         }
 
@@ -57,16 +57,90 @@ exports.edit = async (req, res) => {
 
 exports.findAll = async (req, res) => {
     try {
-        let comments
+        // Pagination
+        let page = 0, limit = 5;
+        if (req.query.page)
+            page = +req.query.page;
 
-        if(req.params.eventId != null ){
-            comments = await Comment.findAll({where: {eventId: req.params.eventId}})
+        if (req.query.limit)
+            limit = +req.query.limit;
+
+        // Verify data
+        if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Page", "number")); return; };
+
+        if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
+
+        if (req.originalUrl.split('/')[1] == 'events') {
+            let comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { eventId: req.params.eventId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] }).then(
+                (comments) => {
+                    let count = 0;
+
+                    let newComments = JSON.parse(JSON.stringify(comments, null, 4))
+
+                    newComments.forEach(comment => {
+                        count = 0;
+                        comment.ratings.forEach(rating => {
+                            console.log(rating.rating)
+                            if (rating.rating)
+                                count++;
+                            else
+                                count--;
+                        });
+                        comment.ratings = count;
+
+                    });
+
+                    return newComments
+                });
+
             res.status(200).json(comments)
-        } else if (req.params.activityId != null ){
-            comments = await Comment.findAll({where: {activityId: req.params.activityId}})
+        } else if (req.originalUrl.split('/')[1] == 'activities') {
+            let comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { activityId: req.params.activityId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] }).then(
+                (comments) => {
+                    let count = 0;
+
+                    let newComments = JSON.parse(JSON.stringify(comments, null, 4))
+
+                    newComments.forEach(comment => {
+                        count = 0;
+                        comment.ratings.forEach(rating => {
+                            console.log(rating.rating)
+                            if (rating.rating)
+                                count++;
+                            else
+                                count--;
+                        });
+                        comment.ratings = count;
+
+                    });
+
+                    return newComments
+                });
+
             res.status(200).json(comments)
         } else {
-            comments = await Comment.findAll({where: {occurrenceId: req.params.occurrenceId}})
+            let comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { occurrenceId: req.params.occurrenceId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] }).then(
+                (comments) => {
+                    let count = 0;
+
+                    let newComments = JSON.parse(JSON.stringify(comments, null, 4))
+
+                    newComments.forEach(comment => {
+                        count = 0;
+                        comment.ratings.forEach(rating => {
+                            console.log(rating.rating)
+                            if (rating.rating)
+                                count++;
+                            else
+                                count--;
+                        });
+                        comment.ratings = count;
+
+                    });
+
+                    return newComments
+                });
+
             res.status(200).json(comments)
         }
 
@@ -78,28 +152,10 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
-        
-        if(req.params.eventId != null ){
-
-            if(comment != undefined){
-                res.status(200).json(comment)
-            } else {
-                res.status(400).json({succes: false, message: 'Invalid comment.'})
-            }
-
-        } else if (req.params.activityId != null){
-
-            if(comment != undefined){
-                res.status(200).json(comment)
-            } else {
-                res.status(400).json({succes: false, message: 'Invalid comment.'})
-            }
+        if (comment != undefined) {
+            res.status(200).json(comment)
         } else {
-            if(comment != undefined){
-                res.status(200).json(comment)
-            } else {
-                res.status(400).json({succes: false, message: 'Invalid comment.'})
-            }
+            res.status(400).json({ succes: false, message: 'Invalid comment.' })
         }
 
     } catch (err) {
@@ -110,13 +166,13 @@ exports.findOne = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
-        
-        if(req.loggedUser.id == comment.userId || req.loggedUser.role == 'admin') {
-            await Comment.destroy({where: {id: req.params.commentId}})
+
+        if (req.loggedUser.id == comment.userId || req.loggedUser.role == 'admin') {
+            await Comment.destroy({ where: { id: req.params.commentId } })
             res.status(200).json({
                 sucess: true,
                 msg: `Comment deleted successfully`,
-              })
+            })
         } else {
             res.status(403).json(messages.errorForbidden())
         }

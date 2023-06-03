@@ -17,7 +17,7 @@ exports.findAll = async (req, res) => {
 
         if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
 
-        let events = await Event.findAll({ offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, include: { model: User, attributes: ['username'] } }] });
+        let events = await Event.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']], include: { model: User, attributes: ['username'] } }] });
         res.status(200).json(events);
 
     } catch (err) {
