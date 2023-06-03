@@ -26,11 +26,17 @@ db.rating = require('./rating.model.js')(sequelize, DataTypes)
 db.event.hasMany(db.comment)
 db.comment.belongsTo(db.event);
 
+db.occurrence.hasMany(db.comment)
+db.comment.belongsTo(db.occurrence);
+
 db.activity.hasMany(db.comment)
 db.comment.belongsTo(db.activity);
 
 db.user.hasMany(db.comment)
 db.comment.belongsTo(db.user);
+
+db.comment.hasMany(db.rating)
+db.rating.belongsTo(db.comment);
 
 db.user.hasMany(db.occurrence)
 db.occurrence.belongsTo(db.user);
@@ -44,8 +50,6 @@ db.user.belongsTo(db.school);
 db.user.hasMany(db.rating)
 db.rating.belongsTo(db.user);
 
-db.comment.hasMany(db.rating)
-db.rating.belongsTo(db.comment);
 
 //N:M
 db.activity.belongsToMany(db.user, {through: 'activityUser'})

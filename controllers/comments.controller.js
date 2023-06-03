@@ -11,8 +11,10 @@ exports.create = async (req, res, next) => {
         
         if(req.params.eventId != null) {
             comment.eventId = req.params.eventId
-        } else {
+        } else if (req.params.activityId != null) {
             comment.activityId = req.params.activityId
+        } else {
+            comment.occurrenceId = req.params.occurrenceId
         }
 
         comment.userId = req.loggedUser.id
@@ -60,8 +62,11 @@ exports.findAll = async (req, res) => {
         if(req.params.eventId != null ){
             comments = await Comment.findAll({where: {eventId: req.params.eventId}})
             res.status(200).json(comments)
-        } else {
+        } else if (req.params.activityId != null ){
             comments = await Comment.findAll({where: {activityId: req.params.activityId}})
+            res.status(200).json(comments)
+        } else {
+            comments = await Comment.findAll({where: {occurrenceId: req.params.occurrenceId}})
             res.status(200).json(comments)
         }
 
@@ -82,14 +87,20 @@ exports.findOne = async (req, res) => {
                 res.status(400).json({succes: false, message: 'Invalid comment.'})
             }
 
-        } else {
+        } else if (req.params.activityId != null){
 
             if(comment != undefined){
                 res.status(200).json(comment)
             } else {
                 res.status(400).json({succes: false, message: 'Invalid comment.'})
             }
-        } 
+        } else {
+            if(comment != undefined){
+                res.status(200).json(comment)
+            } else {
+                res.status(400).json({succes: false, message: 'Invalid comment.'})
+            }
+        }
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());

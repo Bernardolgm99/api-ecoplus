@@ -19,7 +19,7 @@ router.use((req, res, next) => {
     next();
   });
 
-router.use('/:id/comments', commentsRouter)
+router.use('/:activityId/comments', commentsRouter)
 
 router.route('/')
   .post(auth.verifyToken, activityController.create)

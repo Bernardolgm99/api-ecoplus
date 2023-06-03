@@ -7,7 +7,7 @@ const badgesController = require('../controllers/badges.controller.js');
 const commentsRouter = require('../routes/comments.routes.js');
 const auth = require('../controllers/auth.controller');
 
-router.use('/:id/comments', commentsRouter)
+router.use('/:eventid/comments', commentsRouter)
 
 router.route('/')
     .get(eventsController.findAll)
