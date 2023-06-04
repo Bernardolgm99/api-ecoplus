@@ -120,13 +120,14 @@ exports.editStatus = async (req, res) => {
         if (req.loggedUser.role == "admin") {
             switch ("validationBodyData") {
                 case "validationBodyData":
-                    if (!req.body.status) { res.status(401).json(messages.errorBadRequest(1, "Status")); break; };
+                    console.log(req.body.status)
+                    if (!req.body.status && req.body.status != 0) { res.status(401).json(messages.errorBadRequest(1, "Status")); break; };
 
                     if (![0, 1, 2].includes(req.body.status)) { res.status(401).json(messages.errorBadRequest(0, "Status", "integer number between 0 and 2")); break; };
 
                 case "update":
                     await Occurrence.update({ status: req.body.status }, { where: { id: req.params.occurrenceId } });
-                    res.status(200).json({ msg: `Occurrence ${req.params.id} status was successfully changed!` });
+                    res.status(200).json({ msg: `Occurrence ${req.params.occurrenceId} status was successfully changed!` });
             };
 
         } else {
