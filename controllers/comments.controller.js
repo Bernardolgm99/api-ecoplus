@@ -6,6 +6,7 @@ const validation = require('../utilities/validation.js');
 
 exports.create = async (req, res, next) => {
     try {
+
         let comment = {}
         comment.description = req.body.description
 
