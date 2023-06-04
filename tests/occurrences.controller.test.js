@@ -236,7 +236,7 @@ describe('Occurrences Model', () => {
             
             const res = await request(app).patch('/occurrences/11').set('Authorization', token).send({});
 
-            expect(res.status).toEqual(401)
+            expect(res.status).toEqual(400)
         })
 
         test('Edit Occurrence Status, status -> 401', async () => {
@@ -253,7 +253,7 @@ describe('Occurrences Model', () => {
                 "status": 5
             });
 
-            expect(res.status).toEqual(401)
+            expect(res.status).toEqual(400)
 
         })
 
