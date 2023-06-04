@@ -30,16 +30,15 @@ exports.findAll = async (req, res) => {
 exports.create = async (req, res, next) => {
     try {
         let occurrence = {};
-
         switch ("validationBodyData") {
 
             case "validationBodyData":
 
                 // Validation if body have everything required
-                if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
-                if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
-                if (!req.body.location) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
-                if (!req.body.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
+                if (!req.body.name) { res.status(401).json(messages.errorBadRequest(1, "name")); break; };
+                if (!req.body.description) { res.status(401).json(messages.errorBadRequest(1, "description")); break; };
+                if (!req.body.location) { res.status(401).json(messages.errorBadRequest(1, "location")); break; };
+                if (!req.body.image) { res.status(401).json(messages.errorBadRequest(1, "image")); break; };
 
 
                 // Validation if body values are passed parameters with the correct type
@@ -71,7 +70,7 @@ exports.create = async (req, res, next) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.occurrenceId);
+        let occurrence = await Occurrence.findByPk(req.params.id);
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.id} not founded` });
         } else res.status(200).json(occurrence);
@@ -82,26 +81,25 @@ exports.findByID = async (req, res) => {
 
 exports.edit = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.occurrenceId);
+        let occurrence = await Occurrence.findByPk(req.params.id);
 
         if (occurrence.userId != req.loggedUser.id) res.status(403).json(messages.errorForbidden());
+
         else {
             switch ("validationBodyData") {
 
                 case "validationBodyData":
 
-                    if (req.body.name && typeof (req.body.name) != "string") { res.status(400).json(messages.errorBadRequest(0, "Name", "string")); break; }
+                    if (req.body.name && typeof (req.body.name) != "string") { res.status(401).json(messages.errorBadRequest(0, "Name", "string")); break; }
                     else occurrence.name = req.body.name;
 
-                    if (req.body.description && typeof (req.body.description) != "string") { res.status(400).json(messages.errorBadRequest(0, "Description", "string")); break; }
+                    if (req.body.description && typeof (req.body.description) != "string") { res.status(401).json(messages.errorBadRequest(0, "Description", "string")); break; }
                     else occurrence.description = req.body.description;
 
-                    if (req.body.location && typeof (req.body.location) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
+                    if (req.body.location && typeof (req.body.location) != "string") { res.status(401).json(messages.errorBadRequest(0, "Location", "string")); break; }
                     else occurrence.location = req.body.location;
 
-                    console.log(typeof req.body.i)
-
-                    if (req.body.image && validationImage(req.body.image)) { res.status(400).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                    if (req.body.image && validationImage(req.body.image)) { res.status(401).json(messages.errorBadRequest(0, "Image", "image")); break; }
                     else occurrence.image = req.body.image;
 
                 case "update":
@@ -142,8 +140,8 @@ exports.editStatus = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         if (req.loggedUser.id || req.loggedUser.role == "admin") {
-            await Occurrence.destroy({ where: { id: req.params.occurrenceId } });
-            res.status(200).json({ msg: `Occcurrence ${req.params.occurrenceId} was successfully deleted!` });
+            await Occurrence.destroy({ where: { id: req.params.id } });
+            res.status(200).json({ msg: `Occcurrence ${req.params.id} was successfully deleted!` });
         } else {
             res.status(403).json(messages.errorForbidden());
         }
