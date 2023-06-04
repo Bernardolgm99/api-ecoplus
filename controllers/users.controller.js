@@ -85,7 +85,12 @@ exports.login = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   try {
-    let users = await User.findAll()
+    let users = await User.findAll({ include: [
+      { model: db.badge, through: { attributes: [] } },
+      { model: db.event, through: { attributes: [] } },
+      { model: db.activity, through: { attributes: [] } },
+      /* { model: db.occurrence, through: { attributes: [] } } */
+    ]})
     if (users != null) {
       res.status(200).json({
         success: true,
