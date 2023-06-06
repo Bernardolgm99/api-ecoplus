@@ -85,13 +85,14 @@ exports.login = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   try {
-    console.log(await db.occurrence.findAll())
-    let users = await User.findAll({ include: [
-      { model: db.badge, through: { attributes: [] } },
-      { model: db.event, through: { attributes: [] } },
-      { model: db.activity, through: { attributes: [] } },
-      { model: db.occurrence }
-    ]})
+    let users = await User.findAll({
+      include: [
+        { model: db.badge, through: { attributes: [] } },
+        { model: db.event, through: { attributes: [] } },
+        { model: db.activity, through: { attributes: [] } },
+        { model: db.occurrence }
+      ]
+    })
     if (users != null) {
       res.status(200).json({
         success: true,
@@ -104,18 +105,18 @@ exports.findAll = async (req, res) => {
       })
     }
 
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      msg: err.message || 'Some error occurred while creating a new user.'
-    })
-  }
+} catch (err) {
+  res.status(500).json({
+    success: false,
+    msg: err.message || 'Some error occurred while creating a new user.'
+  })
+}
 }
 
 exports.findOne = async (req, res) => {
   try {
-    if(req.loggedUser == undefined) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge }, {model: db.event}] }, {})
-    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge }, {model: db.event}] }, {})
+    if (req.loggedUser == undefined) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge }, { model: db.event }] }, {})
+    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge }, { model: db.event }] }, {})
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
@@ -147,13 +148,13 @@ exports.delete = async (req, res) => {
         msg: `User not found`
       })
     } else {
-      
-      if(req.loggedUser.role == 'admin'){
-        
+
+      if (req.loggedUser.role == 'admin') {
+
         User.destroy({
           where: { id: req.params.userId }
         })
-  
+
         res.status(200).json({
           sucess: true,
           msg: `User ${user.username} deleted successfully`
@@ -186,41 +187,41 @@ exports.edit = async (req, res, next) => {
       })
     } else {
 
-      if(req.loggedUser.id == req.params.userId){
+      if (req.loggedUser.id == req.params.userId) {
 
         if (req.body.username && req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
-        else if(req.body.username) {
-          if( await User.findOne({where: {username: req.body.username}})) 
-          { 
-            res.status(400).json({success: false, message: `Username already in use.`}); 
-            return 
+        else if (req.body.username) {
+          if (await User.findOne({ where: { username: req.body.username } })) {
+            res.status(400).json({ success: false, message: `Username already in use.` });
+            return
           } else user.username = req.body.username
         } else user.username = user.username
 
         if (req.body.email && req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
-        else if(req.body.email) {
-          if( await User.findOne({where: {email: req.body.email}}) ) { 
-            res.status(400).json({success: false, message: `Email already in use.`}); 
-            return 
+        else if (req.body.email) {
+          if (await User.findOne({ where: { email: req.body.email } })) {
+            res.status(400).json({ success: false, message: `Email already in use.` });
+            return
           } else user.email = req.body.email
         } else user.email = user.email
 
         if (req.body.password && req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
-        else if(req.body.password) {user.password = bcrypt.hashSync(req.body.password, 10)} 
+        else if (req.body.password) { user.password = bcrypt.hashSync(req.body.password, 10) }
         else user.password = user.password
 
-        if (req.body.schoolDesc && !School.findOne({ where: { school: req.body.schoolDesc } }) ) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
-        else if(req.body.schoolDesc) { user.schoolDesc = req.body.schoolDesc 
-        } else {user.schoolDesc = user.schoolDesc}
+        if (req.body.schoolDesc && !School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
+        else if (req.body.schoolDesc) {
+          user.schoolDesc = req.body.schoolDesc
+        } else { user.schoolDesc = user.schoolDesc }
 
         if ((req.body.contact && typeof req.body.contact != "number")) { res.status(400).json(messages.errorBadRequest(0, "contact", "number")); return }
-        if(req.body.contact) {
-          if( await User.findOne({where: {contact: req.body.contact}})) { 
-            res.status(400).json({success: false, message: `Phone Number already in use.`}); return 
+        if (req.body.contact) {
+          if (await User.findOne({ where: { contact: req.body.contact } })) {
+            res.status(400).json({ success: false, message: `Phone Number already in use.` }); return
           } else user.contact = req.body.contact
         } else user.contact = user.contact
-        
-  
+
+
         await User.update(
           {
             name: user.name,
@@ -235,7 +236,7 @@ exports.edit = async (req, res, next) => {
             where: { id: req.params.userId }
           }
         )
-  
+
         res.status(202).json({
           succes: true,
           msg: `User ${user.username} updated successfully`
@@ -246,7 +247,7 @@ exports.edit = async (req, res, next) => {
           succes: false,
           msg: `You are not allowed to update this user`
         })
-      
+
       }
     }
 
@@ -256,43 +257,44 @@ exports.edit = async (req, res, next) => {
       success: false,
       msg: err.message || 'Some error occurred while creating a new user.'
     })
-  }}
+  }
+}
 
 
 exports.block = async (req, res) => {
   try {
 
-    if(req.loggedUser.role == 'admin') {
+    if (req.loggedUser.role == 'admin') {
 
       let user = await User.findByPk(req.params.userId)
-  
+
       if (user == undefined || user == null) {
         console.log('yau')
         res.status(404).json({
           sucess: false,
           msg: `User not found`
         })
-  
+
       } else if (typeof req.body.block == 'string') {
         res.status(400).json({
           success: false,
           msg: `Invalid value!`
         })
-        
+
       } else {
 
         User.update({ block: req.body.block },
           {
             where: { id: req.params.userId }
           })
-  
+
         res.status(202).json({
           succes: true,
           msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
         })
       }
     } else {
-      res.status(403).json({message: `You are not allowed to block this user.`})
+      res.status(403).json({ message: `You are not allowed to block this user.` })
     }
 
   } catch (err) {

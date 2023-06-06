@@ -11,7 +11,7 @@ router.use('/:commentId/rating', ratingRouter)
 
 router.route('/')
     .post(auth.verifyToken, commentsController.create, badgesController.verifyComment)
-    .get(commentsController.findAll)
+    .get(auth.autheticationNotNeeded, commentsController.findAll)
 
 router.route('/:commentId')
     .get(commentsController.findOne)

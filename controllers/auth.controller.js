@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
 const config = require("../config/config.js");
-const { errorUnathorized } = require('../utilities/messages');
+const { errorUnathorized, errorInternalServerError } = require('../utilities/messages');
 
 
 exports.verifyToken = (req, res, next) => {
@@ -13,6 +13,19 @@ exports.verifyToken = (req, res, next) => {
         req.loggedUser = { id: decoded.id, role: decoded.role }  // save user ID and role into request object
         next();
     } catch (err) {
-        return res.status(401).json(errorUnathorized());
+        return res.status(500).json(errorInternalServerError());
+    }
+};
+
+exports.autheticationNotNeeded = (req, res, next) => {
+    try {
+        const header = req.headers['x-access-token'] || req.headers.authorization;
+        if (!!header) {
+            let decoded = jwt.verify(header, config.SECRET);
+            req.loggedUser = { id: decoded.id, role: decoded.role }  // save user ID and role into request object
+        }
+        next();
+    } catch (err) {
+        return res.status(500).json(errorInternalServerError());
     }
 };

@@ -70,80 +70,41 @@ exports.findAll = async (req, res) => {
         if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Page", "number")); return; };
 
         if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
-
+        let comments
         if (req.originalUrl.split('/')[1] == 'events') {
-            let comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { eventId: req.params.eventId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] }).then(
-                (comments) => {
-                    let count = 0;
-
-                    let newComments = JSON.parse(JSON.stringify(comments, null, 4))
-
-                    newComments.forEach(comment => {
-                        count = 0;
-                        comment.ratings.forEach(rating => {
-                            console.log(rating.rating)
-                            if (rating.rating)
-                                count++;
-                            else
-                                count--;
-                        });
-                        comment.ratings = count;
-
-                    });
-
-                    return newComments
-                });
-
-            res.status(200).json(comments)
+            comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { eventId: req.params.eventId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
         } else if (req.originalUrl.split('/')[1] == 'activities') {
-            let comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { activityId: req.params.activityId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] }).then(
-                (comments) => {
-                    let count = 0;
-
-                    let newComments = JSON.parse(JSON.stringify(comments, null, 4))
-
-                    newComments.forEach(comment => {
-                        count = 0;
-                        comment.ratings.forEach(rating => {
-                            console.log(rating.rating)
-                            if (rating.rating)
-                                count++;
-                            else
-                                count--;
-                        });
-                        comment.ratings = count;
-
-                    });
-
-                    return newComments
-                });
-
-            res.status(200).json(comments)
+            comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { activityId: req.params.activityId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
         } else {
-            let comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { occurrenceId: req.params.occurrenceId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] }).then(
-                (comments) => {
-                    let count = 0;
-
-                    let newComments = JSON.parse(JSON.stringify(comments, null, 4))
-
-                    newComments.forEach(comment => {
-                        count = 0;
-                        comment.ratings.forEach(rating => {
-                            console.log(rating.rating)
-                            if (rating.rating)
-                                count++;
-                            else
-                                count--;
-                        });
-                        comment.ratings = count;
-
-                    });
-
-                    return newComments
-                });
-
-            res.status(200).json(comments)
+            comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { occurrenceId: req.params.occurrenceId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
         }
+
+        comments.forEach((comment) => {
+            let trueCount = 0;
+            let falseCount = 0;
+            let userRated = { rated: false, value: null }
+            comment.ratings.forEach(rating => {
+                if (rating.rating)
+                    trueCount += 1;
+                else
+                    falseCount += 1;
+                if (rating.userId) {
+                    userRated = {
+                        rated: true,
+                        value: rating.rating
+                    };
+                };
+            });
+            delete comment.dataValues.ratings;
+            comment.dataValues.userRated = userRated;
+            comment.dataValues.rate = {
+                like: trueCount,
+                dislike: falseCount
+            };
+
+        });
+
+        res.status(200).json(comments)
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
