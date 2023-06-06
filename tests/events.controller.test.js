@@ -23,9 +23,13 @@ describe('Event Model', () => {
 
             const res = await request(app).post('/events').set('Authorization', token).send({    
                 "name": "Teste-TESTES",
+                "subtitle": "EZ-TESTES",
                 "description": "oh no",
                 "location": "Porto",
-                "file" : config
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "file" : {},
+                "image" : {},
             });
 
             expect(res.status).toEqual(403)
@@ -44,8 +48,11 @@ describe('Event Model', () => {
 
             const res = await request(app).post('/events').set('Authorization', token).send({
                 "description": "oh no",
+                "subtitle": "EZ-TESTES",
                 "location": "Porto",
-                "file" : config
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "file" : {}
             });
 
             expect(res.status).toEqual(400)
@@ -63,8 +70,11 @@ describe('Event Model', () => {
 
             const res = await request(app).post('/events').set('Authorization', token).send({
                 "name": "Teste-TESTES",
+                "subtitle": "EZ-TESTES",
                 "location": "Porto",
-                "file" : config
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "file" : {}
             });
 
             expect(res.status).toEqual(400)
@@ -82,51 +92,81 @@ describe('Event Model', () => {
 
             const res = await request(app).post('/events').set('Authorization', token).send({
                 "name": "Teste-TESTES",
+                "subtitle": "EZ-TESTES",
                 "description": "oh no",
-                "file" : config
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "file" : {}
             });
 
             expect(res.status).toEqual(400)
         })
 
-        //ficheiros de teste em falta
+        test('Create event, status -> 400 (file/image)', async () => {
+            const token = await User.findOne({ where: { id: 12 } })
+            .then(user => {
+                  return jwt.sign({ id: user.id, role: user.role },
+                        config.SECRET, {
+                        expiresIn: '24h' // 24 hours
+                  });
+            });
 
-        // test('Create event, status -> 400 (file)', async () => {
-        //     const token = await User.findOne({ where: { id: 12 } })
-        //     .then(user => {
-        //           return jwt.sign({ id: user.id, role: user.role },
-        //                 config.SECRET, {
-        //                 expiresIn: '24h' // 24 hours
-        //           });
-        //     });
+            const res = await request(app).post('/events').set('Authorization', token).send({
+                "name": "Teste-TESTES",
+                "subtitle": "EZ-TESTES",
+                "description": "oh no",
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "location": "Porto",
+            });
 
-        //     const res = await request(app).post('/events').set('Authorization', token).send({
-        //         "name": "Teste-TESTES",
-        //         "description": "oh no",
-        //         "location": "Porto",
-        //     });
+            expect(res.status).toEqual(400)
+        })
 
-        //     expect(res.status).toEqual(400)
-        // })
+        test('Create event, status -> 400 (subtitle)', async () => {
+            const token = await User.findOne({ where: { id: 12 } })
+            .then(user => {
+                  return jwt.sign({ id: user.id, role: user.role },
+                        config.SECRET, {
+                        expiresIn: '24h' // 24 hours
+                  });
+            });
 
-        // test('Create event, status -> 201', async () => {
-        //     const token = await User.findOne({ where: { id: 12 } })
-        //     .then(user => {
-        //           return jwt.sign({ id: user.id, role: user.role },
-        //                 config.SECRET, {
-        //                 expiresIn: '24h' // 24 hours
-        //           });
-        //     });
+            const res = await request(app).post('/events').set('Authorization', token).send({
+                "name": "Teste-TESTES",
+                "description": "oh no",
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "location": "Porto",
+                "image": {},
+                "file" : {}
+            });
 
-        //     const res = await request(app).post('/events').set('Authorization', token).send({
-        //         "name": "Teste-TESTES",
-        //         "description": "oh no",
-        //         "location": "Porto",
-        //         "file" : config
-        //     });
+            expect(res.status).toEqual(400)
+        })
 
-        //     expect(res.status).toEqual(201)
-        // })
+        test('Create event, status -> 201', async () => {
+            const token = await User.findOne({ where: { id: 12 } })
+            .then(user => {
+                  return jwt.sign({ id: user.id, role: user.role },
+                        config.SECRET, {
+                        expiresIn: '24h' // 24 hours
+                  });
+            });
+
+            const res = await request(app).post('/events').set('Authorization', token).send({
+                "name": "Teste-TESTES",
+                "subtitle": "EZ-TESTES",
+                "description": "oh no",
+                "location": "Porto",
+                "start": "2023-09-15",
+                "end": "2023-09-20",
+                "image": {},
+                "file" : {}
+            });
+
+            expect(res.status).toEqual(201)
+        })
 
     })
 
@@ -167,7 +207,7 @@ describe('Event Model', () => {
 
     describe('Edit Event', () => {
         
-        test('Edit Occurrence, status -> 403', async () =>{
+        test('Edit Events, status -> 403', async () =>{
             const token = await User.findOne({ where: { id: 17 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
@@ -183,7 +223,7 @@ describe('Event Model', () => {
             expect(res.status).toEqual(403)
         })
 
-        test('Edit Occurrence, status -> 400 (name)', async () =>{
+        test('Edit Events, status -> 400 (name)', async () =>{
             const token = await User.findOne({ where: { id: 12 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
@@ -199,7 +239,7 @@ describe('Event Model', () => {
             expect(res.status).toEqual(400)
         })
 
-        test('Edit Occurrence, status -> 400 (description)', async () =>{
+        test('Edit Events, status -> 400 (description)', async () =>{
             const token = await User.findOne({ where: { id: 12 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
@@ -215,7 +255,7 @@ describe('Event Model', () => {
             expect(res.status).toEqual(400)
         })
 
-        test('Edit Occurrence, status -> 400 (location)', async () =>{
+        test('Edit Events, status -> 400 (location)', async () =>{
             const token = await User.findOne({ where: { id: 12 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
@@ -231,7 +271,7 @@ describe('Event Model', () => {
             expect(res.status).toEqual(400)
         })
 
-        test('Edit Occurrence, status -> 400 (subtitle)', async () =>{
+        test('Edit Events, status -> 400 (subtitle)', async () =>{
             const token = await User.findOne({ where: { id: 12 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
@@ -247,7 +287,7 @@ describe('Event Model', () => {
             expect(res.status).toEqual(400)
         })
 
-        test('Edit Occurrence, status -> 200', async () =>{
+        test('Edit Events, status -> 200', async () =>{
             const token = await User.findOne({ where: { id: 12 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
@@ -267,36 +307,28 @@ describe('Event Model', () => {
 
     describe('Delete Event', () => {
 
-        // test('Delete Occurrence, status -> 403', async () => {
-        //     const token = await User.findOne({ where: { id: 11 } })
-        //     .then(user => {
-        //         return jwt.sign({ id: user.id, role: user.role },
-        //             config.SECRET, {
-        //             expiresIn: '24h' // 24 hours
-        //         });
-        //     });
+        test('Delete Occurrence, status -> 401', async () => {
             
-        //     const res = await request(app).delete('/events/12').set('Authorization', token).send({});
+            const res = await request(app).delete('/events/12').send({});
 
-        //     expect(res.status).toBe(403)
-        // })
+            expect(res.status).toBe(401)
+        })
 
-        // test('Delete Occurrence, status -> 200', async () => {
-        //     const token = await User.findOne({ where: { id: 12 } })
-        //     .then(user => {
-        //         return jwt.sign({ id: user.id, role: user.role },
-        //             config.SECRET, {
-        //             expiresIn: '24h' // 24 hours
-        //         });
-        //     });
+        test('Delete Occurrence, status -> 200', async () => {
+            const token = await User.findOne({ where: { id: 12 } })
+            .then(user => {
+                return jwt.sign({ id: user.id, role: user.role },
+                    config.SECRET, {
+                    expiresIn: '24h' // 24 hours
+                });
+            });
 
-        //     const event = await Event.findOne({ where: { name: "Teste-TESTES"}})
+            const event = await Event.findOne({ where: { name: "Teste-TESTES"}})
 
-        //     const res = await request(app).delete(`/events/${event.id}`).set('Authorization', token).send({});
+            const res = await request(app).delete(`/events/${event.id}`).set('Authorization', token).send({});
 
-        //     expect(res.status).toEqual(200)
-        // })
-
+            expect(res.status).toEqual(200)
+        })
 
     })
 
@@ -344,7 +376,7 @@ describe('Event Model', () => {
 
     })
 
-    describe('Unsubscribe an Event', () => {
+    describe('Unsubscribe', () => {
        
         test('Unsubscribe an Event, status -> 401', async () => {
            
@@ -387,7 +419,8 @@ describe('Event Model', () => {
         })
     })
 
-    describe('Get All Subscribed', () => {
+    describe('Get All Subscriptions', () => {
+        
         test('Unsubscribe an Event, status -> 404', async () => {
            
             const token = await User.findOne({ where: { id: 11 } })

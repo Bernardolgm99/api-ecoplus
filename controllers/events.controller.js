@@ -1,7 +1,7 @@
 const db = require('../models/index');
 const User = db.user;
 const Event = db.event;
-const { validationImage, validationDate, validationFiles } = require('../utilities/validation');
+const { validationImage, validationDate, validationDates,validationFiles } = require('../utilities/validation');
 const messages = require('../utilities/messages');
 
 exports.findAll = async (req, res) => {
@@ -38,8 +38,12 @@ exports.create = async (req, res) => {
                 if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
                 if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
                 if (!req.body.location) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
-                // if (!req.body.start) { res.status(400).json(messages.errorBadRequest(1, "start")); break; };
-                // if (!req.body.end) { res.status(400).json(messages.errorBadRequest(1, "end")); break; };
+                if (!req.body.subtitle) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
+
+                if (!req.body.start) { res.status(400).json(messages.errorBadRequest(1, "start")); break; };
+                if (!req.body.end) { res.status(400).json(messages.errorBadRequest(1, "end")); break; };
+                if (!req.body.image && !req.body.files) { res.status(400).json(messages.errorBadRequest(1, "image or files")); break; };
+                if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(1,'date interval', 'valid one'));
 
 
                 // Validation if body values are passed parameters with the correct type
@@ -55,18 +59,20 @@ exports.create = async (req, res) => {
                 if (req.body.subtitle && typeof req.body.subtitle !== "string") { res.status(400).json(messages.errorBadRequest(0, "Subtitle", "string")); break; }
                 else event.subtitle = req.body.subtitle;
 
-                // if (req.body.start && !validationDate(req.body.start)) { res.status(400).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
-                // else event.start = req.body.start;
-                event.start = req.body.start;
+                if (req.body.start && typeof req.body.start != "string") { res.status(400).json(messages.errorBadRequest(0, "Start", "instance of Date")); break; }
+                else event.start = req.body.start;
+                // event.start = req.body.start;
 
-                // if (req.body.end && !validationDate(req.body.end)) { res.status(400).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
-                // else event.end = req.body.end;
-                event.end = req.body.end;
+                if (req.body.end && typeof req.body.end != "string") { res.status(400).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
+                else event.end = req.body.end;
+                // event.end = req.body.end;
 
-                if (req.body.file && req.body.files && !validationFiles(req.body.files)) { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
+
+
+                if (req.body.files && typeof req.body.files != "object") { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
                 else event.files = req.body.files;
 
-                if (req.body.image && !validationImage(req.body.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                if (req.body.image && typeof req.body.image != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                 else event.image = req.body.image;
 
                 event.IdCreator = req.loggedUser.id;
@@ -76,6 +82,7 @@ exports.create = async (req, res) => {
                 res.status(201).json(messages.successCreated("Event", newEvent.id));
         };
     } catch (err) {
+        console.log(err)
         res.status(500).json(messages.errorInternalServerError());
     };
 };

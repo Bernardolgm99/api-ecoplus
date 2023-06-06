@@ -157,7 +157,7 @@ describe('Occurrences Model', () => {
         //         });
         //     });
 
-        //     const res = await (await request(app).get('/occurrences')).set('Authorization', token).send({});
+        //     const res = await await request(app).get('/occurrences').set('Authorization', token).send({});
 
         //     expect(res.status).toEqual(200)
         // })
@@ -192,26 +192,26 @@ describe('Occurrences Model', () => {
                 });
             });
             
-            const res = await request(app).post('/occurrences/12').set('Authorization', token).send({});
+            const res = await request(app).delete('/occurrences/12').set('Authorization', token).send({});
 
             expect(res.status).not.toEqual(200)
         })
 
-        // test('Delete Occurrence, status -> 200', async () => {
-        //     const token = await User.findOne({ where: { id: 12 } })
-        //     .then(user => {
-        //         return jwt.sign({ id: user.id, role: user.role },
-        //             config.SECRET, {
-        //             expiresIn: '24h' // 24 hours
-        //         });
-        //     });
+        test('Delete Occurrence, status -> 200', async () => {
+            const token = await User.findOne({ where: { id: 12 } })
+            .then(user => {
+                return jwt.sign({ id: user.id, role: user.role },
+                    config.SECRET, {
+                    expiresIn: '24h' // 24 hours
+                });
+            });
 
-        //     const occurrence = await Occurrence.findOne({ where: { name: "Quadro sujo mesmo muito sujo, bue mesmo"}})
+            const occurrence = await Occurrence.findOne({ where: { name: "Quadro sujo mesmo muito sujo, bue mesmo"}})
 
-        //     const res = await request(app).post(`/occurrences/${occurrence.id}`).set('Authorization', token).send({});
+            const res = await request(app).delete(`/occurrences/${occurrence.id}`).set('Authorization', token).send({});
 
-        //     expect(res.status).toEqual(200)
-        // })
+            expect(res.status).toEqual(200)
+        })
 
     })
 

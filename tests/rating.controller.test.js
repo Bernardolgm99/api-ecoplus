@@ -20,7 +20,7 @@ describe('Rating Model', () => {
                         });
                   });
             
-            const res = await request(app).put('/occurrences/11/comments/146/rating').set('Authorization', token).send({
+            const res = await request(app).put('/occurrences/11/comments/175/rating').set('Authorization', token).send({
             "rating": true
             });
 
@@ -41,7 +41,7 @@ describe('Rating Model', () => {
                         });
                   });
             
-            const res = await request(app).put('/occurrences/11/comments/146/rating').set('Authorization', token).send({
+            const res = await request(app).put('/occurrences/11/comments/175/rating').set('Authorization', token).send({
             "rating": true
             });
 
@@ -51,23 +51,23 @@ describe('Rating Model', () => {
         
     })
 
-    // describe('Delete Rating', () => {
+    describe('Delete Rating', () => {
         
-    //     test('Delete Rating, status -> 200', async () => {
+        test('Delete Rating, status -> 200', async () => {
             
-    //         const token = await User.findOne({ where: { id: 12 } })
-    //             .then(user => {
-    //                 return jwt.sign({ id: user.id, role: user.role },
-    //                         config.SECRET, {
-    //                         expiresIn: '24h' // 24 hours
-    //                 });
-    //             });
+            const token = await User.findOne({ where: { id: 12 } })
+                .then(user => {
+                    return jwt.sign({ id: user.id, role: user.role },
+                            config.SECRET, {
+                            expiresIn: '24h' // 24 hours
+                    });
+                });
             
-    //         const res = await request(app).patch('/occurrences/11/comments/175/rating').set('Authorization', token).send({});
+            const res = await request(app).patch('/occurrences/11/comments/175/rating').set('Authorization', token).send({});
         
-    //         expect(res.status).toEqual(200)
-    //     })
-    // })
+            expect(res.status).toEqual(200)
+        })
+    })
 
     describe('Get All Ratings', () => {
 

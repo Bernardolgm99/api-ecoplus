@@ -13,7 +13,7 @@ describe('Comment Model', () => {
             
             test('Create Comment, status -> 401', async () => {
                   
-            const token = ''
+                  const token = ''
 
                   const res = await request(app).post('/occurrences/11/comments').set('Authorization', token).send({
                   "description": "Filme muito top."
