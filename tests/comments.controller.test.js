@@ -1,4 +1,11 @@
-
+require('dotenv').config();
+const request = require('supertest')
+const app = require('../index');
+const db = require("../models/index.js");
+const Comment = db.comment
+const User = db.user
+const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
+const config = require("../config/config");
 
 describe('Comment Model', () => {
 
