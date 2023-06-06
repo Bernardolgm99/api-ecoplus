@@ -16,7 +16,7 @@ exports.create = async (req, res, next) => {
             comment.activityId = req.params.activityId
         } else {
             comment.occurrenceId = req.params.occurrenceId
-        }
+        } 
 
         comment.userId = req.loggedUser.id
 
@@ -36,7 +36,7 @@ exports.create = async (req, res, next) => {
 exports.edit = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
-        console.log(req.loggedUser.id)
+       
         if (req.loggedUser.id == comment.userId) {
 
             if (req.body.description != comment.description) {
@@ -128,7 +128,7 @@ exports.findOne = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
-
+        const c = await Comment.findAll({ where: {occurrenceId: 11}})
         if (req.loggedUser.id == comment.userId || req.loggedUser.role == 'admin') {
             await Comment.destroy({ where: { id: req.params.commentId } })
             res.status(200).json({

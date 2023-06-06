@@ -13,7 +13,7 @@ exports.create = async (req, res) => {
       let activity = await Activity.create(req.body);
       return res.status(201).json(messages.successCreated('Activity', activity.id));
     }
-    res.status(400).json(messages.errorBadRequest(1, 'token', 'valid credential'));
+    res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     if (err instanceof ValidationError)
       res.status(400).json(messages.errorBadRequest(2));
@@ -52,17 +52,17 @@ exports.edit = async (req, res) => {
       if(activity === null){
         return res.status(404).json(messages.errorNotFound('Activity'));
       }
-      if (!req.body.name) res.status(400).json(messages.errorBadRequest(0, "Name", "string")) 
+      if (req.body.name && typeof req.body.name !== "string") res.status(400).json(messages.errorBadRequest(0, "Name", "string")) 
       else activity.name = req.body.name;
-      if (!req.body.description) res.status(400).json(messages.errorBadRequest(0, "Description", "string"))
+      if (req.body.description && typeof req.body.description != "string") res.status(400).json(messages.errorBadRequest(0, "Description", "string"))
       else activity.description = req.body.description;
-      if (!req.body.start) res.status(400).json(messages.errorBadRequest(0, "Start", "date"))
+      if (req.body.start && typeof req.body.start != "string") res.status(400).json(messages.errorBadRequest(0, "Start", "date"))
       else activity.start = req.body.start;
-      if (!req.body.end) res.status(400).json(messages.errorBadRequest(0, "End", "date"))
+      if (req.body.end && typeof req.body.end != "string") res.status(400).json(messages.errorBadRequest(0, "End", "date"))
       else activity.end = req.body.end;
-      if (!req.body.location) res.status(400).json(messages.errorBadRequest(0, "Location", "string"))
+      if (req.body.location &&  typeof req.body.location != "string") res.status(400).json(messages.errorBadRequest(0, "Location", "string"))
       else activity.location = req.body.location;
-      if (!req.body.image) res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
+      if (req.body.image && typeof req.body.image != "object") res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
       else activity.image = req.body.image;
       Activity.update(
         {name: req.body.name,
@@ -77,26 +77,31 @@ exports.edit = async (req, res) => {
         )
       return res.status(202).json(messages.successAccepted);
     }
-    res.status(400).json(messages.errorBadRequest(1, 'token', 'valid credential'));
+    res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError);
   }
 }
 exports.delete = async (req, res) => {
   try {
-    if(req.loggedUser.role == 'admin'){
-      let result = await Activity.destroy({
-          where: {id: req.params.activityId}
-      })
-      if(result == 0) {
-        return res.status(404).json(messages.errorNotFound('Activity'));
-      }
-      res.status(200).json({
-          success: true,
-          msg: `Deleted Activity ${req.params.activityId} successfully`
-      });
-    }
-    res.status(400).json(messages.errorNotFound('Activity'));
+    
+    const activity = await Activity.findOne({where: {id: req.params.activityId}})
+
+    if(activity){
+      if(req.loggedUser.role == 'admin'){
+        let result = await Activity.destroy({
+            where: {id: req.params.activityId}
+        })
+        if(result == 0) {
+          return res.status(404).json(messages.errorNotFound('Activity'));
+        }
+        res.status(200).json({
+            success: true,
+            msg: `Deleted Activity ${req.params.activityId} successfully`
+        });
+      } else res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'))
+    } else res.status(400).json(messages.errorNotFound('Activity'));
+
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError);
   }

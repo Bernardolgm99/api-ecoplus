@@ -33,6 +33,7 @@ exports.like = async (req, res) => {
       res.status(200).send({ msg: `Like Updated`, rating: rating.like });
     }
   } catch (err) {
+    console.log(err)
     res.status(500).json(messages.errorInternalServerError());
   }
 };
@@ -45,6 +46,7 @@ exports.delete = async (req, res) => {
     await rating.destroy({ where: { commentId: req.params.commentId, userId: req.loggedUser.id } })
     res.status(200).send({ msg: `Like Deleted`, rating: null });
   } catch (err) {
+    console.log(err)
     res.status(500).json(messages.errorInternalServerError());
   }
 };

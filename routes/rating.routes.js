@@ -8,7 +8,7 @@ const auth = require('../controllers/auth.controller.js')
 router.route('/')
     .get(ratingController.getAll)
     .put(auth.verifyToken, ratingController.like)
-    .delete(auth.verifyToken, ratingController.delete)
+    .patch(auth.verifyToken, ratingController.delete)
 
 
 //export this router
