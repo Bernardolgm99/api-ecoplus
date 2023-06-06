@@ -11,7 +11,6 @@ exports.getAll = async (req, res) => {
       res.json(result[0][0])
     })
   } catch (err) {
-    console.log(err)
     res.status(500).json(messages.errorInternalServerError());
   };
 };

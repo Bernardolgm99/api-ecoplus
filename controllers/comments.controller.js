@@ -42,12 +42,15 @@ exports.edit = async (req, res) => {
             if (req.body.description != comment.description) {
                 comment.description = req.body.description
                 comment.edited = true
-
+                comment.save()
                 res.status(200).json({
                     sucess: true,
                     msg: `Comment updated successfully`
                 })
             }
+
+        } else {
+            res.status(403).json(messages.errorForbidden())
         }
 
 
@@ -88,7 +91,7 @@ exports.findAll = async (req, res) => {
                     trueCount += 1;
                 else
                     falseCount += 1;
-                if (rating.userId) {
+                if (req.loggedUser && rating.userId == req.loggedUser.id) {
                     userRated = {
                         rated: true,
                         value: rating.rating
@@ -101,6 +104,9 @@ exports.findAll = async (req, res) => {
                 like: trueCount,
                 dislike: falseCount
             };
+            if (comment.userId == req.loggedUser.id) {
+                comment.dataValues.creator = true;
+            }
 
         });
 
