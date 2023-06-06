@@ -33,6 +33,7 @@ exports.like = async (req, res) => {
       res.status(200).send({ msg: `Like Updated`, rating: rating.like });
     }
   } catch (err) {
+    console.log(err)
     res.status(500).json(messages.errorInternalServerError());
   }
 };
@@ -42,9 +43,10 @@ exports.delete = async (req, res) => {
     let rating = await Rating.findOne({
       where: { commentId: req.params.commentId, userId: req.loggedUser.id },
     });
-    await rating.delete({ where: { commentId: req.params.commentId, userId: req.loggedUser.id } })
+    await rating.destroy({ where: { commentId: req.params.commentId, userId: req.loggedUser.id } })
     res.status(200).send({ msg: `Like Deleted`, rating: null });
   } catch (err) {
+    console.log(err)
     res.status(500).json(messages.errorInternalServerError());
   }
 };

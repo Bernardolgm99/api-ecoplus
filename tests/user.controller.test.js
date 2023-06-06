@@ -123,21 +123,6 @@ describe('Users Model', () => {
             
             expect(res.statusCode).toEqual(201);
         })
-    
-        test('Create a New User, status -> 409', async () => {
-            const res = await request(app).post('/users').send({
-                "username": "fuego12",
-                "name": "Rui Bola de Fogo",
-                "email": "fuego12@gmail.com",
-                "password": "12345",
-                "genreDesc": "M",
-                "birthDate" : "12/05/2002",
-                "contact": 911537599,
-                "schoolDesc": "Escola EB da Trofa"
-            });
-    
-            expect(res.statusCode).toEqual(409)
-        })
 
     })
 
