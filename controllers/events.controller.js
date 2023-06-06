@@ -95,7 +95,7 @@ exports.edit = async (req, res) => {
     try {
         let event = await Event.findByPk(req.params.eventId);
 
-        if (event.idCreator != req.loggedUser.id || req.loggedUser.role == "admin") res.status(403).json(messages.errorForbidden());
+        if (req.loggedUser.role != "admin" && event.idCreator != req.loggedUser.id) res.status(403).json(messages.errorForbidden());
 
         else {
             switch ("validationBodyData") {
