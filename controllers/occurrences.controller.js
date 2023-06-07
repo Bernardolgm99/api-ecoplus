@@ -18,7 +18,7 @@ exports.findAll = async (req, res) => {
         if (typeof (limit) !== 'number')
             res.status(400).json(messages.errorBadRequest(0, "Limit", "number"));
 
-        if(req.loggedUser.role === 'admin') 
+        if(req.loggedUser && req.loggedUser.role === 'admin') 
             occurrences = await Occurrence.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });
         else 
             occurrences = await Occurrence.findAll({where: { status: 1 }, order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });

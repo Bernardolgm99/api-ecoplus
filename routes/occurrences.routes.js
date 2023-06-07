@@ -10,7 +10,7 @@ const commentsRouter = require('../routes/comments.routes.js');
 router.use('/:occurrenceId/comments', commentsRouter)
 
 router.route('/')
-    .get(auth.verifyToken, occurrencesController.findAll)
+    .get(auth.autheticationNotNeeded, occurrencesController.findAll)
     .post(auth.verifyToken, occurrencesController.create, badgesController.verifyOccurrence);
 
 router.route('/:occurrenceId')

@@ -104,7 +104,7 @@ exports.findAll = async (req, res) => {
                 like: trueCount,
                 dislike: falseCount
             };
-            if (comment.userId == req.loggedUser.id) {
+            if (req.loggedUser && comment.userId == req.loggedUser.id) {
                 comment.dataValues.creator = true;
             }
 
