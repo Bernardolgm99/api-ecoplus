@@ -73,7 +73,7 @@ exports.create = async (req, res, next) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: {model: db.comment, through: {attributes: []}, include: {model: db.user, through: {attributes: []}}}});
+        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: {model: db.comment}});
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.occurrenceId} not founded` });
         } else res.status(200).json(occurrence);
