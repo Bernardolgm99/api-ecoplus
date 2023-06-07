@@ -117,7 +117,7 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    if (req.loggedUser == undefined) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id']}]})
+    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id']}]})
     else findUser = await User.findOne({ where: { id: req.loggedUser.id },include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id']}] }, {})
     if (findUser != null) {
       res.status(200).json({
@@ -144,7 +144,6 @@ exports.delete = async (req, res) => {
     let user = await User.findByPk(req.params.userId)
 
     if (user == undefined || user == null) {
-      console.log('yau')
       res.status(404).json({
         sucess: false,
         msg: `User not found`
