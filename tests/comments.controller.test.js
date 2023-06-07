@@ -98,7 +98,7 @@ describe('Comment Model', () => {
       describe('Get All Comments', () => {
 
             test('Get All Comments, status -> 200', async () => {
-                  const res = await request(app).get(`occurrences/11/comments`).send({})
+                  const res = await request(app).get(`/occurrences/11/comments`).send({})
 
                   expect(res.status).toEqual(200) 
             })

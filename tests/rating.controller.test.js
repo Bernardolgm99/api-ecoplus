@@ -1,11 +1,12 @@
 require('dotenv').config();
 const request = require('supertest')
+const app = require('../index');
 const db = require('../models/index');
 const Rating = db.rating
 const User = db.user
 const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
 const config = require("../config/config");
-const app = require('../index');
+
 
 describe('Rating Model', () => {
 

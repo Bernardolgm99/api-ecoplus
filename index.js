@@ -30,6 +30,7 @@ app.get('*', function (req, res) {
     res.status(404).json({ message: 'The path especified could not be found' });
 })
 
-app.listen(port, host, () => console.log(`App listening at http://${host}:${port}/`));
+const server = app.listen(port, host, () => console.log(`App listening at http://${host}:${port}/`));
 
 module.exports = app
+module.exports = server

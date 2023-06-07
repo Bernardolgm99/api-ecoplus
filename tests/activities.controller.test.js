@@ -1,6 +1,7 @@
 require('dotenv').config();
 const request = require('supertest')
 const app = require('../index');
+const server = require('../index').server;
 const db = require("../models/index.js");
 const Activity = db.activity
 const User = db.user
