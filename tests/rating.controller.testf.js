@@ -63,7 +63,7 @@ describe('Rating Model', () => {
                     });
                 });
             
-            const res = await request(app).patch('/occurrences/11/comments/175/rating').set('Authorization', token).send({});
+            const res = await request(app).delete('/occurrences/11/comments/175/rating').set('Authorization', token).send({});
         
             expect(res.status).toEqual(200)
         })

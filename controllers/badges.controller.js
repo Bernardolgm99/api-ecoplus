@@ -6,8 +6,9 @@ const messages = require('../utilities/messages');
 exports.findAll = async (req, res) => {
     try {
         let badge = await Badge.findAll();
-
-        res.status(200).json(badge);
+        if(badge) {
+            res.status(200).json(badge);
+        } else res.status(404).json(messages.errorNotFound('Badges'));
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
@@ -40,6 +41,7 @@ exports.create = async (req, res) => {
                 if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
                 if (!req.body.conditionType) { res.status(400).json(messages.errorBadRequest(1, "conditionType")); break; };
                 if (!req.body.value) { res.status(400).json(messages.errorBadRequest(1, "value")); break; };
+                if (!req.body.logo) { res.status(400).json(messages.errorBadRequest(1, "logo")); break; };
 
 
                 // Validation if body values are passed parameters with the correct type
@@ -54,6 +56,9 @@ exports.create = async (req, res) => {
 
                 if (typeof req.body.value !== "number") { res.status(400).json(messages.errorBadRequest(0, "value", "number")); break; }
                 else badge.value = req.body.value;
+
+                if (typeof req.body.logo !== "object") { res.status(400).json(messages.errorBadRequest(0, "logo", "image")); break; }
+                else badge.logo = req.body.logo;
 
             case "create":
                 let newBadge = await Badge.create(badge);

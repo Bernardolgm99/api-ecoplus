@@ -12,10 +12,8 @@ describe('Comment Model', () => {
       describe('Create Comment', () => {
             
             test('Create Comment, status -> 401', async () => {
-                  
-                  const token = ''
 
-                  const res = await request(app).post('/occurrences/11/comments').set('Authorization', token).send({
+                  const res = await request(app).post('/occurrences/11/comments').send({
                   "description": "Filme muito top."
                   });
 

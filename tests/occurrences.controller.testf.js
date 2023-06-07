@@ -12,10 +12,8 @@ describe('Occurrences Model', () => {
     describe('Create a New Occurrence', () => {
 
         test('Create a New Occurence, status -> 401 (No Token Found)', async () => {
-            
-            const token = ''
 
-            const res = await request(app).post('/occurrences').set('Authorization', token).send({
+            const res = await request(app).post('/occurrences').send({
                 "name": "Quadro sujo mesmo muito sujo, bue mesmo",
                 "description": "Quadro sujo na sala B208",
                 "location": "Vila do Conde", 
@@ -101,29 +99,7 @@ describe('Occurrences Model', () => {
             expect(res.status).toEqual(400)
         })
 
-        //415 Não funciona
-
-        // test('Create a New Occurrence, status -> 415', async () => {
-            
-        //     const token = await User.findOne({ where: { id: 11 } })
-        //     .then(user => {
-        //         return jwt.sign({ id: user.id, role: user.role },
-        //             config.SECRET, {
-        //             expiresIn: '24h' // 24 hours
-        //         });
-        //     });
-            
-        //     const res = await request(app).post('/occurrences').set('Authorization', token).send({
-        //         "name": "Quadro sujo",
-        //         "description": "Quadro sujo na sala B208",
-        //         "location": "Vila do Conde", 
-        //         "image": 156169516519646
-        //     });
-
-        //     expect(res.status).toEqual(415)
-        // })
-
-        test('Create a New Occurrence, status -> 201', async () => {
+        test('Create a New Occurrence, status -> 415', async () => {
             
             const token = await User.findOne({ where: { id: 11 } })
             .then(user => {
@@ -137,6 +113,26 @@ describe('Occurrences Model', () => {
                 "name": "Quadro sujo",
                 "description": "Quadro sujo na sala B208",
                 "location": "Vila do Conde", 
+                "image": 156169516519646
+            });
+
+            expect(res.status).toEqual(415)
+        })
+
+        test('Create a New Occurrence, status -> 201', async () => {
+            
+            const token = await User.findOne({ where: { id: 17 } })
+            .then(user => {
+                return jwt.sign({ id: user.id, role: user.role },
+                    config.SECRET, {
+                    expiresIn: '24h' // 24 hours
+                });
+            });
+            
+            const res = await request(app).post('/occurrences').set('Authorization', token).send({
+                "name": "Quadro sujo mesmo muito sujo, bue mesmo",
+                "description": "Quadro sujo na sala B208",
+                "location": "Vila do Conde", 
                 "image": {}
             });
 
@@ -147,20 +143,20 @@ describe('Occurrences Model', () => {
 
     describe('Get All Users', () => {
 
-        // test('Get Five Users, status -> 200', async () => {
+        test('Get Five Users, status -> 200', async () => {
 
-        //     const token = await User.findOne({ where: { id: 12 } })
-        //     .then(user => {
-        //         return jwt.sign({ id: user.id, role: user.role },
-        //             config.SECRET, {
-        //             expiresIn: '24h' // 24 hours
-        //         });
-        //     });
+            const token = await User.findOne({ where: { id: 12 } })
+            .then(user => {
+                return jwt.sign({ id: user.id, role: user.role },
+                    config.SECRET, {
+                    expiresIn: '24h' // 24 hours
+                });
+            });
 
-        //     const res = await await request(app).get('/occurrences').set('Authorization', token).send({});
+            const res = await await request(app).get('/occurrences').set('Authorization', token).send({});
 
-        //     expect(res.status).toEqual(200)
-        // })
+            expect(res.status).toEqual(200)
+        })
 
     })
 
@@ -192,9 +188,11 @@ describe('Occurrences Model', () => {
                 });
             });
             
-            const res = await request(app).delete('/occurrences/12').set('Authorization', token).send({});
+            const occurrence = await Occurrence.findOne({ where: { name: "Quadro sujo mesmo muito sujo, bue mesmo"}})
+            
+            const res = await request(app).delete(`/occurrences/${occurrence.id}`).set('Authorization', token).send({});
 
-            expect(res.status).not.toEqual(200)
+            expect(res.status).toEqual(403)
         })
 
         test('Delete Occurrence, status -> 200', async () => {
@@ -389,9 +387,7 @@ describe('Occurrences Model', () => {
 
         test('Create Comment, status -> 401', async () => {
 
-            const token = ''
-
-            const res = await request(app).post('/occurrences/11/comments').set('Authorization', token).send({
+            const res = await request(app).post('/occurrences/11/comments').send({
                 "description": "Filme muito top."
             });
 

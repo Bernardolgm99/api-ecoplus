@@ -13,9 +13,7 @@ describe('Activity Model', () => {
 
         test('Create Activity, status -> 401', async () => {
 
-            const token = ''
-
-            const res = await request(app).post('/activities').set('Authorization', token).send({    
+            const res = await request(app).post('/activities').send({    
                 "name": "Teste-TESTE-ATIVIDADE",
                 "description": "oh no",
                 "start": "2023-09-15",

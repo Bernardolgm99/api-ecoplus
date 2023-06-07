@@ -54,7 +54,7 @@ exports.create = async (req, res, next) => {
                 if (typeof (req.body.location) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                 else occurrence.location = req.body.location;
 
-                if (validationImage(req.body.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                if (typeof (req.body.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                 else occurrence.image = req.body.image;
 
 
@@ -142,13 +142,16 @@ exports.editStatus = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        if (req.loggedUser.id || req.loggedUser.role == "admin") {
+        const occurrence = await Occurrence.findOne({where: {id: req.params.occurrenceId}})
+
+        if (req.loggedUser.id == occurrence.userId || req.loggedUser.role == "admin") {
             await Occurrence.destroy({ where: { id: req.params.occurrenceId } });
             res.status(200).json({ msg: `Occcurrence ${req.params.occurrenceId} was successfully deleted!` });
         } else {
             res.status(403).json(messages.errorForbidden());
         }
     } catch (err) {
+        console.log(err)
         res.status(500).json(messages.errorInternalServerError());
     };
 };
