@@ -86,13 +86,15 @@ exports.login = async (req, res) => {
 exports.findAll = async (req, res) => {
   try {
     let users = await User.findAll({
+      attributes: ['id', 'username', 'role', 'icone', 'block'],
       include: [
-        { model: db.badge, through: { attributes: [] } },
-        { model: db.event, through: { attributes: [] } },
-        { model: db.activity, through: { attributes: [] } },
-        { model: db.occurrence }
+        { model: db.badge, attributes: ['id'], through: { attributes: [] } },
+        { model: db.event, attributes: ['id'], through: { attributes: [] } },
+        { model: db.activity, attributes: ['id'], through: { attributes: [] } },
+        { model: db.occurrence, attributes: ['id'] }
       ]
-    })
+    }
+    )
     if (users != null) {
       res.status(200).json({
         success: true,
@@ -115,8 +117,8 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    if (req.loggedUser == undefined) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge }, { model: db.event }] }, {})
-    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge }, { model: db.event }] }, {})
+    if (req.loggedUser == undefined) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }] }, {})
+    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }] }, {})
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
