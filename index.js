@@ -1,10 +1,12 @@
 console.clear()
 const express = require('express');
 const cors = require('cors');
+// const multer = require('multer');
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT;
 const host = process.env.HOST;
+
 app.use(express.json()); //enable parsing JSON body data
 app.use (cors({ origin: '*'}))
 
@@ -19,7 +21,7 @@ app.get('/', function (req, res) {
 app.use('/activities', require('./routes/activities.routes.js'))
 app.use('/events', require('./routes/events.routes.js'))
 app.use('/occurrences', require('./routes/occurrences.routes.js'))
-/* app.use('/eventsOccurrences', require('./routes/eventsOccurrences.routes.js')) */
+app.use('/eventsOccurrences', require('./routes/eventsOccurrences.routes.js'))
 app.use('/users', require('./routes/users.routes.js'))
 app.use('/comments', require('./routes/comments.routes.js'))
 app.use('/rating', require('./routes/rating.routes.js'));
