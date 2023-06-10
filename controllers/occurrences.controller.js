@@ -82,7 +82,7 @@ exports.findByID = async (req, res) => {
     };
 };
 
-exports.edit = async (req, res) => {
+exports.edit = async (req, res, next) => {
     try {
         let occurrence = await Occurrence.findByPk(req.params.occurrenceId);
 
@@ -108,6 +108,7 @@ exports.edit = async (req, res) => {
                 case "update":
                     await Occurrence.update({ name: occurrence.name, description: occurrence.description, location: occurrence.location, image: occurrence.image, status: 0 }, { where: { id: occurrence.id } });
                     res.status(200).json({ msg: `Occurrence ${occurrence.id} was successfully changed!` });
+                    next();
             };
         };
     } catch (err) {
@@ -115,7 +116,7 @@ exports.edit = async (req, res) => {
     };
 };
 
-exports.editStatus = async (req, res) => {
+exports.editStatus = async (req, res, next) => {
     try {
 
         if (req.loggedUser.role == "admin") {
@@ -129,6 +130,7 @@ exports.editStatus = async (req, res) => {
                 case "update":
                     await Occurrence.update({ status: req.body.status }, { where: { id: req.params.occurrenceId } });
                     res.status(200).json({ msg: `Occurrence ${req.params.occurrenceId} status was successfully changed!` });
+                    next()
             };
 
         } else {
@@ -140,18 +142,18 @@ exports.editStatus = async (req, res) => {
     };
 };
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
         const occurrence = await Occurrence.findOne({where: {id: req.params.occurrenceId}})
 
         if (req.loggedUser.id == occurrence.userId || req.loggedUser.role == "admin") {
             await Occurrence.destroy({ where: { id: req.params.occurrenceId } });
             res.status(200).json({ msg: `Occcurrence ${req.params.occurrenceId} was successfully deleted!` });
+            next();
         } else {
             res.status(403).json(messages.errorForbidden());
         }
     } catch (err) {
-        console.log(err)
         res.status(500).json(messages.errorInternalServerError());
     };
 };

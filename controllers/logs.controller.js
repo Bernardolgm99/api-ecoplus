@@ -52,24 +52,26 @@ exports.createLog = async (req, res) => {
         
                     // variables for log messages
                     let domain
-                    let grammar 
+                    let grammar
+                    let idDomain 
         
                     const splittedURL = req.originalUrl.split('/')
 
                     // switch to check the domain acessed and creating of log messages
                     switch (splittedURL[1]) {
                         case 'users':
-                            console.log(splittedURL[2])
+
                             if(splittedURL[2] == 'login') {
 
                                 action = 'logged'
-                                grammar = 'in.'
+                                grammar = 'in'
                                 domain = ''
 
                             } else {
 
-                                domain = 'user.'
+                                domain = 'user'
                                 grammar = 'an'
+                                idDomain = splittedURL[2]
 
                             }
 
@@ -78,18 +80,21 @@ exports.createLog = async (req, res) => {
         
                             if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
         
-                                domain = 'comment in the occurrences section.'
+                                domain = 'comment in the occurrences section'
                                 grammar = 'a'
+                                idDomain = splittedURL[4]
         
                             } else if(splittedURL[5] == 'rating') {
 
                                 action = 'rated'
                                 grammar = 'an'
-                                domain = 'occurrence.'
+                                domain = 'occurrence'
+                                idDomain = splittedURL[4]
 
                             } else {
-                                domain = 'occurrence.'
+                                domain = 'occurrence'
                                 grammar = 'an'
+                                idDomain = splittedURL[2]
                             } 
         
                             break;
@@ -97,19 +102,22 @@ exports.createLog = async (req, res) => {
         
                             if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
                                 
-                                domain = 'comment in the events section.'
+                                domain = 'comment in the events section'
                                 grammar = 'a'
+                                idDomain = splittedURL[4]
         
                             } else if(splittedURL[5] == 'rating') {
 
                                 action = 'rated'
                                 grammar = 'an'
-                                domain = 'event.'
+                                domain = 'event'
+                                idDomain = splittedURL[4]
 
                             } else {
                                 
-                                domain = 'event.'
+                                domain = 'event'
                                 grammar = 'an'
+                                idDomain = splittedURL[2]
                             
                             }
                             
@@ -118,40 +126,37 @@ exports.createLog = async (req, res) => {
         
                             if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
         
-                                domain = 'comment in the activities section.'
+                                domain = 'comment in the activities section'
                                 grammar = 'a'
         
                             } else if(splittedURL[5] == 'rating') {
 
                                 action = 'rated'
                                 grammar = 'an'
-                                domain = 'activity.'
+                                domain = 'activity'
 
                             } else {
 
-                                domain = 'activity.'
+                                domain = 'activity'
                                 grammar = 'an'
+                                idDomain = splittedURL[2]
                             
                             }   
                             
                             break;
-                        case 'rating':
-        
-                            domain = 'rating.'
-                            grammar = 'a'
-        
-                            break;
         
                         case 'badges':
         
-                            domain = 'badge.'
+                            domain = 'badge'
                             grammar = 'a'
+                            idDomain = splittedURL[2]
                         
                             break;
                         case 'missions':
         
-                            domain = 'mission.'
+                            domain = 'mission'
                             grammar = 'a'
+                            idDomain = splittedURL[2]
         
                             break;
         
@@ -162,7 +167,7 @@ exports.createLog = async (req, res) => {
                     }
 
                     let log = Logs.create({
-                        description: `User ${user.username} ${action} ${grammar} ${domain} `
+                        description: `User ${user.username} ${action} ${grammar} ${domain} (id: ${idDomain})`
                     }) 
 
                 } else {

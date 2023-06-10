@@ -118,7 +118,7 @@ exports.verifyActivity = async (req, res) => {
         console.log(err);
     };
 };
-exports.verifyOccurrence = async (req, res) => {
+exports.verifyOccurrence = async (req, res, next) => {
     try {
         const badges = await Badge.findAll({ where: { conditionType: 'occurrence' } });
         await req.user.countOccurrences()
