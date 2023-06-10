@@ -35,5 +35,13 @@ router.route('/:userId')
         .put(authController.verifyToken, userController.edit)
         .patch(authController.verifyToken, userController.block)
 
+router.route('/:userId/eventsOccurrences')
+        .get(userController.findAllEventsOccurrences)
+
+router.route('/:userId/events')
+        .get(userController.findAllEvents)
+
+router.route('/:userId/occurrences')
+        .get(userController.findAllOccurrences)
 //export this router
 module.exports = router;

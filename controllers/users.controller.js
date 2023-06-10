@@ -3,8 +3,11 @@ const bcrypt = require("bcryptjs"); //password encryption
 const config = require("../config/config");
 const db = require("../models/index.js");
 const User = db.user;
+const Event = db.event;
+const Occurrence = db.occurrence;
 const Badge = db.badge;
 const School = db.school;
+const { Op } = require('sequelize');
 const { ValidationError } = require("sequelize");
 const validation = require('../utilities/validation.js')
 const messages = require('../utilities/messages');
@@ -80,8 +83,8 @@ exports.login = async (req, res, next) => {
     if (err instanceof ValidationError)
       res.status(400).json({ success: false, msg: err.errors.map(e => e.message) });
     else
-    console.log(err)
-      // res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
+      console.log(err)
+    // res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
   };
 }
 
@@ -119,8 +122,8 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id'] }] })
-    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id'] }] }, {})
+    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }] })
+    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }] })
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
@@ -263,7 +266,6 @@ exports.edit = async (req, res, next) => {
   }
 }
 
-
 exports.block = async (req, res) => {
   try {
 
@@ -306,4 +308,142 @@ exports.block = async (req, res) => {
       msg: err.message || 'Some error occurred while creating a new user.'
     })
   }
+}
+
+exports.findAllEventsOccurrences = async (req, res) => {
+  try {
+    let page = 0, limit = 5, createdAt = new Date();
+    if (req.query.page)
+      page = +req.query.page;
+
+    if (req.query.limit)
+      limit = +req.query.limit;
+
+    if (req.query.createdAt)
+      createdAt = req.query.createdAt;
+
+    console.log(page, limit, createdAt)
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
+
+    let events = await Event.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId },
+        through: { attributes: [] }
+      }]
+    })
+
+    let occurrences = await Occurrence.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId }
+      }],
+    })
+
+    let eventsOccurrences = events.concat(occurrences);
+
+    eventsOccurrences = eventsOccurrences.sort((a, b) => b.createdAt - a.createdAt)
+    eventsOccurrences = eventsOccurrences.slice(0, limit)
+
+    res.status(200).json(eventsOccurrences);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(messages.errorInternalServerError());
+  };
+};
+
+exports.findAllEvents = async (req, res) => {
+  try {
+    let page = 0, limit = 5, createdAt = new Date();
+    if (req.query.page)
+      page = +req.query.page;
+
+    if (req.query.limit)
+      limit = +req.query.limit;
+
+    if (req.query.createdAt)
+      createdAt = req.query.createdAt;
+
+    console.log(page, limit, createdAt)
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
+
+    let events = await Event.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId },
+        through: { attributes: [] }
+      }]
+    })
+
+    res.status(200).json(events);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(messages.errorInternalServerError());
+  };
+
+}
+
+exports.findAllOccurrences = async (req, res) => {
+  try {
+    let page = 0, limit = 5, createdAt = new Date();
+    if (req.query.page)
+      page = +req.query.page;
+
+    if (req.query.limit)
+      limit = +req.query.limit;
+
+    if (req.query.createdAt)
+      createdAt = req.query.createdAt;
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
+
+    let occurrences = await Occurrence.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId }
+      }]
+    })
+
+    res.status(200).json(occurrences);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(messages.errorInternalServerError());
+  };
 }
