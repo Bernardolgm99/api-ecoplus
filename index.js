@@ -24,6 +24,7 @@ app.use('/users', require('./routes/users.routes.js'))
 app.use('/comments', require('./routes/comments.routes.js'))
 app.use('/rating', require('./routes/rating.routes.js'));
 app.use('/badges', require('./routes/badges.routes.js'));
+app.use('/logs', require('./routes/logs.routes.js'));
 
 // handle invalid routes
 app.get('*', function (req, res) {

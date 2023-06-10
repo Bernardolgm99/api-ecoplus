@@ -56,7 +56,7 @@ exports.create = async (req, res) => {
   }
 }
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
     if (!req.body || !req.body.username || !req.body.password)
       return res.status(400).json({ success: false, msg: "Must provide username and password." });
@@ -74,12 +74,14 @@ exports.login = async (req, res) => {
 
     if (!token) return res.status(401).json({ success: false, accessToken: null, msg: "Invalid credentials!" });
     // sign the given payload (user ID and role) into a JWT payload – builds JWT token, using secret key
-    return res.status(200).json({ success: true, accessToken: token });
+    res.status(200).json({ success: true, accessToken: token })
+    next();
   } catch (err) {
     if (err instanceof ValidationError)
       res.status(400).json({ success: false, msg: err.errors.map(e => e.message) });
     else
-      res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
+    console.log(err)
+      // res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
   };
 }
 

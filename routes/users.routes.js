@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/users.controller.js')
 const authController = require('../controllers/auth.controller.js')
+const logsController = require('../controllers/logs.controller.js');
+
 
 // middleware for all routes related with tutorials
 // can be cleared, being used just for testing purposes
@@ -22,7 +24,7 @@ router.route('/')
         .post(userController.create)
 
 router.route('/login')
-        .post(userController.login)
+        .post(userController.login, authController.verifyToken, logsController.createLog)
 
 router.route('/loggedUser')
         .get(authController.verifyToken, userController.findOne)
