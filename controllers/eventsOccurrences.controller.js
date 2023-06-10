@@ -59,7 +59,7 @@ exports.findAll = async (req, res) => {
         let eventsOccurrences = events.concat(occurrences);
 
         eventsOccurrences = eventsOccurrences.sort((a, b) => b.createdAt - a.createdAt)
-        eventsOccurrences = eventsOccurrences.slice(0, 5)
+        eventsOccurrences = eventsOccurrences.slice(0, limit)
 
         res.status(200).json(eventsOccurrences);
 
