@@ -2,6 +2,8 @@ const db = require('../models/index');
 const Occurrence = db.occurrence
 const { validationImage } = require('../utilities/validation');
 const messages = require('../utilities/messages');
+const multer = require('multer')
+const upload = multer({storage: multer.memoryStorage()})
 
 exports.findAll = async (req, res) => {
     try {
@@ -57,17 +59,22 @@ exports.create = async (req, res, next) => {
                 if (typeof (req.body.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                 else occurrence.image = req.body.image;
 
+                // console.log(req.files.image)
+                // const imgData = req.files.image.buffer.toString('base64')
+                // occurrence.image = imgData
 
                 occurrence.userId = req.loggedUser.id;
 
             case "create":
                 let newOccurrence = await Occurrence.create(occurrence);
-                res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
+                // res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id, ));
+                res.status(201).json({image: imgData})
                 next();
         };
 
     } catch (err) {
-        res.status(500).json(messages.errorInternalServerError());
+        console.log(err)
+        // res.status(500).json(messages.errorInternalServerError());
     };
 };
 
@@ -77,6 +84,7 @@ exports.findByID = async (req, res) => {
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.occurrenceId} not founded` });
         } else res.status(200).json(occurrence);
+        console.log(occurrence.image)
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     };

@@ -141,7 +141,7 @@ exports.findOne = async (req, res) => {
   }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
 
@@ -162,6 +162,7 @@ exports.delete = async (req, res) => {
           sucess: true,
           msg: `User ${user.username} deleted successfully`
         })
+        next()
 
       } else {
         res.status(403).json({
@@ -244,6 +245,7 @@ exports.edit = async (req, res, next) => {
           succes: true,
           msg: `User ${user.username} updated successfully`
         })
+        next()
 
       } else {
         res.status(401).json({
@@ -264,7 +266,7 @@ exports.edit = async (req, res, next) => {
 }
 
 
-exports.block = async (req, res) => {
+exports.block = async (req, res, next) => {
   try {
 
     if (req.loggedUser.role == 'admin') {
@@ -295,6 +297,7 @@ exports.block = async (req, res) => {
           succes: true,
           msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
         })
+        next()
       }
     } else {
       res.status(403).json({ message: `You are not allowed to block this user.` })

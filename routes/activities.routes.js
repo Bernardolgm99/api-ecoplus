@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const activityController = require('../controllers/activities.controller')
+const logsController = require('../controllers/logs.controller.js');
 const commentsRouter = require('../routes/comments.routes.js')
 const badgesController = require('../controllers/badges.controller.js')
 const auth = require('../controllers/auth.controller')
@@ -22,12 +23,12 @@ router.use((req, res, next) => {
 router.use('/:activityId/comments', commentsRouter)
 
 router.route('/')
-  .post(auth.verifyToken, activityController.create)
+  .post(auth.verifyToken, activityController.create, logsController.createLog)
   .get(activityController.findAll)
 router.route('/:activityId')
   .get(activityController.findOne)
-  .put(auth.verifyToken, activityController.edit)
-  .delete(auth.verifyToken, activityController.delete)
+  .put(auth.verifyToken, activityController.edit, logsController.createLog)
+  .delete(auth.verifyToken, activityController.delete, logsController.createLog)
 router.route('/:activityId/users')
   .post(auth.verifyToken, activityController.subscribe, badgesController.verifyActivity)
   .delete(auth.verifyToken, activityController.unsubscribe)

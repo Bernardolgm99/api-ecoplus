@@ -1,7 +1,8 @@
 console.clear()
 const express = require('express');
 const cors = require('cors');
-// const multer = require('multer');
+const fileUpload = require('express-fileupload')
+const multer = require('multer');
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT;
@@ -18,6 +19,7 @@ app.get('/', function (req, res) {
 });
 
 // routing middleware for resource MOVIES
+app.use(fileUpload());
 app.use('/activities', require('./routes/activities.routes.js'))
 app.use('/events', require('./routes/events.routes.js'))
 app.use('/occurrences', require('./routes/occurrences.routes.js'))

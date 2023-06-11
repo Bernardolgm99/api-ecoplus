@@ -5,15 +5,15 @@ const { ValidationError } = require('sequelize'); //necessary for model validati
 const {validationDates} = require('../utilities/validation');
 const messages = require('../utilities/messages');
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
   try {
     if(req.loggedUser.role == 'admin') {
       if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(1,'date interval', 'valid one'));
       req.body.IdCreator = req.loggedUser.id;
       let activity = await Activity.create(req.body);
-      return res.status(201).json(messages.successCreated('Activity', activity.id));
-    }
-    res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
+      res.status(201).json(messages.successCreated('Activity', activity.id));
+      next();
+    } else res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     if (err instanceof ValidationError)
       res.status(400).json(messages.errorBadRequest(2));
@@ -45,7 +45,7 @@ exports.findOne = async (req, res) => {
         res.status(500).json(messages.errorInternalServerError())
   }
 }
-exports.edit = async (req, res) => {
+exports.edit = async (req, res, next) => {
   try {
     if(req.loggedUser.role == 'admin'){
       let activity = await Activity.findByPk(req.params.activityId)
@@ -64,6 +64,7 @@ exports.edit = async (req, res) => {
       else activity.location = req.body.location;
       if (req.body.image && typeof req.body.image != "object") res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
       else activity.image = req.body.image;
+      // FECHAR POR CAUSA DOS LOGS
       Activity.update(
         {name: req.body.name,
         description: req.body.description,
@@ -75,14 +76,15 @@ exports.edit = async (req, res) => {
           where: {id: req.params.activityId}
         }
         )
-      return res.status(202).json(messages.successAccepted);
+      res.status(202).json(messages.successAccepted);
+      next()
     }
     res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError);
   }
 }
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
   try {
     
     const activity = await Activity.findOne({where: {id: req.params.activityId}})
@@ -99,6 +101,7 @@ exports.delete = async (req, res) => {
             success: true,
             msg: `Deleted Activity ${req.params.activityId} successfully`
         });
+        next()
       } else res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'))
     } else res.status(400).json(messages.errorNotFound('Activity'));
 
