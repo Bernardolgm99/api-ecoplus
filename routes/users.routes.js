@@ -24,7 +24,7 @@ router.route('/')
         .post(userController.create, logsController.createLog)
 
 router.route('/login')
-        .post(userController.login, authController.verifyToken, logsController.createLog)
+        .post(userController.login, logsController.createLog)
 
 router.route('/loggedUser')
         .get(authController.verifyToken, userController.findOne)
