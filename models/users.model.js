@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
             genreDesc: {
                 type: DataTypes.STRING,
                 validate: {
-                    isIn: [['M'], ['F'], ['OTHER']]
+                    isIn: [['M', 'F', 'OTHER']]
                 }
             },
             birthDate: {

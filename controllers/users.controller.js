@@ -57,7 +57,7 @@ exports.create = async (req, res) => {
       })
     }
   }
-}
+} 
 
 exports.login = async (req, res, next) => {
   try {
@@ -195,31 +195,29 @@ exports.edit = async (req, res, next) => {
     } else {
 
       if (req.loggedUser.id == req.params.userId) {
-
-        if (req.body.username && req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
+        console.log(req.body)
+        if (req.body.username && typeof req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
         else if (req.body.username) {
           if (await User.findOne({ where: { username: req.body.username } })) {
             res.status(400).json({ success: false, message: `Username already in use.` });
-            return
           } else user.username = req.body.username
         } else user.username = user.username
 
-        if (req.body.email && req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
+        if (req.body.email && typeof req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
         else if (req.body.email) {
           if (await User.findOne({ where: { email: req.body.email } })) {
             res.status(400).json({ success: false, message: `Email already in use.` });
-            return
           } else user.email = req.body.email
         } else user.email = user.email
 
-        if (req.body.password && req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
+        if (req.body.password && typeof req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
         else if (req.body.password) { user.password = bcrypt.hashSync(req.body.password, 10) }
         else user.password = user.password
 
-        if (req.body.schoolDesc && !School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
-        else if (req.body.schoolDesc) {
-          user.schoolDesc = req.body.schoolDesc
-        } else { user.schoolDesc = user.schoolDesc }
+        if (req.body.schoolId && !School.findOne({ where: { id: req.body.schoolId } })) { res.status(400).json(messages.errorBadRequest(2, "schoolId")); return }
+        else if (req.body.schoolId) {
+          user.schoolId = req.body.schoolId
+        } else { user.schoolId = user.schoolId }
 
         if ((req.body.contact && typeof req.body.contact != "number")) { res.status(400).json(messages.errorBadRequest(0, "contact", "number")); return }
         if (req.body.contact) {
@@ -228,16 +226,26 @@ exports.edit = async (req, res, next) => {
           } else user.contact = req.body.contact
         } else user.contact = user.contact
 
+        if ((req.body.genreDesc && typeof req.body.genreDesc != "string")) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", "string")); return }
+        if (req.body.genreDesc) {
+          if (req.body.genreDesc != "M" && req.body.genreDesc != "F" && req.body.genreDesc != "OTHER") res.status(400).json(messages.errorBadRequest(0, "genreDesc", "M, F or Other"))
+          else user.genreDesc = req.body.genreDesc;
+        } else user.genreDesc = user.genreDesc
+        
+        if ((req.body.birthDate && typeof req.body.birthDate != "string")) { res.status(400).json(messages.errorBadRequest(0, "birthDate", "string")); return }
+        if (req.body.birthDate) {
+          if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(0, "birthday", "instace of Date")); return }
+        } else user.birthDate = user.birthDate
 
         await User.update(
           {
-            name: user.name,
+            username: user.username,
             email: user.email,
             password: user.password,
-            genreDesc: user.genreDesc,
-            birthDate: user.birthDate,
+            schoolId: user.schoolId,
             contact: user.contact,
-            schoolDesc: user.schoolDesc
+            genreDesc: user.genreDesc,
+            birthDate: user.birthDate
           },
           {
             where: { id: req.params.userId }
@@ -277,7 +285,6 @@ exports.block = async (req, res, next) => {
       let user = await User.findByPk(req.params.userId)
 
       if (user == undefined || user == null) {
-        console.log('yau')
         res.status(404).json({
           sucess: false,
           msg: `User not found`
@@ -325,8 +332,6 @@ exports.findAllEventsOccurrences = async (req, res) => {
 
     if (req.query.createdAt)
       createdAt = req.query.createdAt;
-
-    console.log(page, limit, createdAt)
 
     if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
 
@@ -385,8 +390,6 @@ exports.findAllEvents = async (req, res) => {
 
     if (req.query.createdAt)
       createdAt = req.query.createdAt;
-
-    console.log(page, limit, createdAt)
 
     if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
 
