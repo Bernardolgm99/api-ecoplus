@@ -6,11 +6,11 @@ const messages = require('../utilities/messages');
 exports.findAll = async (req, res) => {
     try {
         let page = 0, limit = 5, occurrences;
-        if (req.body.page)
-            page = +req.body.page;
+        if (req.query.page)
+            page = +req.query.page;
 
-        if (req.body.limit)
-            limit = +req.body.limit;
+        if (req.query.limit)
+            limit = +req.query.limit;
 
         if (typeof (page) !== 'number')
             res.status(400).json(messages.errorBadRequest(0, "Page", "number"));
@@ -73,7 +73,7 @@ exports.create = async (req, res, next) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: {model: db.comment}});
+        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: [{model: db.comment}, {model: User}]});
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.occurrenceId} not founded` });
         } else res.status(200).json(occurrence);
