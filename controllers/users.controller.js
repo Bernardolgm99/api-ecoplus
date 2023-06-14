@@ -91,7 +91,7 @@ exports.login = async (req, res, next) => {
 exports.findAll = async (req, res) => {
   try {
     let users = await User.findAll({
-      attributes: ['id', 'username', 'role', 'icone', 'block'],
+      attributes: ['id', 'username', 'role', 'icone', 'block', 'schoolId'],
       include: [
         { model: db.badge, attributes: ['id'], through: { attributes: [] } },
         { model: db.event, attributes: ['id'], through: { attributes: [] } },

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const missionsRouter = require('../routes/missions.routes.js');
 const userController = require('../controllers/users.controller.js')
 const authController = require('../controllers/auth.controller.js')
 const logsController = require('../controllers/logs.controller.js');
@@ -18,6 +19,8 @@ router.use((req, res, next) => {
     });
     next();
   });
+
+router.use('/:userId/missions', missionsRouter)
 
 router.route('/')
         .get(userController.findAll)
