@@ -1,3 +1,4 @@
+
 const db = require('../models/index');
 const Badge = db.badge
 const User = db.user
@@ -85,6 +86,7 @@ exports.delete = async (req, res) => {
 
 exports.verifyEvent = async (req, res) => {
     try {
+        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'event' } });
         await req.user.countEvents()
             .then(count => {
@@ -102,9 +104,7 @@ exports.verifyEvent = async (req, res) => {
 exports.verifyActivity = async (req, res) => {
     try {
         if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
-        console.log("bom dia", 1)
         const badges = await Badge.findAll({ where: { conditionType: 'activity' } });
-        console.log(req.user)
         await req.user.countActivities()
             .then(count => {
                 console.log("bom dia", 2)
@@ -120,6 +120,7 @@ exports.verifyActivity = async (req, res) => {
 };
 exports.verifyOccurrence = async (req, res, next) => {
     try {
+        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'occurrence' } });
         await req.user.countOccurrences()
             .then(count => {
@@ -136,6 +137,7 @@ exports.verifyOccurrence = async (req, res, next) => {
 };
 exports.verifyComment = async (req, res) => {
     try {
+        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'comment' } });
         await req.user.countComments()
             .then(count => {

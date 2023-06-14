@@ -8,11 +8,11 @@ const upload = multer({storage: multer.memoryStorage()})
 exports.findAll = async (req, res) => {
     try {
         let page = 0, limit = 5, occurrences;
-        if (req.body.page)
-            page = +req.body.page;
+        if (req.query.page)
+            page = +req.query.page;
 
-        if (req.body.limit)
-            limit = +req.body.limit;
+        if (req.query.limit)
+            limit = +req.query.limit;
 
         if (typeof (page) !== 'number')
             res.status(400).json(messages.errorBadRequest(0, "Page", "number"));
@@ -43,7 +43,7 @@ exports.create = async (req, res, next) => {
                 if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
                 if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
                 if (!req.body.location) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
-                if (!req.body.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
+                if (!req.files.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
 
 
                 // Validation if body values are passed parameters with the correct type
@@ -56,19 +56,20 @@ exports.create = async (req, res, next) => {
                 if (typeof (req.body.location) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                 else occurrence.location = req.body.location;
 
-                if (typeof (req.body.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
-                else occurrence.image = req.body.image;
+                if(req.locationDescription && typeof (req.locationDescription) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location Description", "string")); break; }
+                else locationDescription = req.locationDescription;
 
-                // console.log(req.files.image)
-                // const imgData = req.files.image.buffer.toString('base64')
-                // occurrence.image = imgData
+                if (typeof (req.files.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                else occurrence.image = req.files.image.data;
+
+                const imgData = req.files.image.data;
+                occurrence.image = imgData
 
                 occurrence.userId = req.loggedUser.id;
 
             case "create":
                 let newOccurrence = await Occurrence.create(occurrence);
-                // res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id, ));
-                res.status(201).json({image: imgData})
+                res.status(201).json(messages.successCreated("Occurrence", newOccurrence.id));
                 next();
         };
 
@@ -80,12 +81,16 @@ exports.create = async (req, res, next) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: {model: db.comment}});
+        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: [{model: db.comment}, {model: db.user, attributes: ['id','username','role']}]});
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.occurrenceId} not founded` });
-        } else res.status(200).json(occurrence);
-        console.log(occurrence.image)
+        } else {
+            occurrence.image = occurrence.image.toString('base64');
+            console.log(occurrence.image)
+            res.status(200).json({occurrence});
+        }
     } catch (err) {
+        console.log(err);
         res.status(500).json(messages.errorInternalServerError());
     };
 };
@@ -154,13 +159,16 @@ exports.delete = async (req, res, next) => {
     try {
         const occurrence = await Occurrence.findOne({where: {id: req.params.occurrenceId}})
 
-        if (req.loggedUser.id == occurrence.userId || req.loggedUser.role == "admin") {
-            await Occurrence.destroy({ where: { id: req.params.occurrenceId } });
-            res.status(200).json({ msg: `Occcurrence ${req.params.occurrenceId} was successfully deleted!` });
-            next();
-        } else {
-            res.status(403).json(messages.errorForbidden());
-        }
+        if(occurrence){
+            if (req.loggedUser.id == occurrence.userId || req.loggedUser.role == "admin") {
+                await Occurrence.destroy({ where: { id: req.params.occurrenceId } });
+                res.status(200).json({ msg: `Occcurrence ${req.params.occurrenceId} was successfully deleted!` });
+                next();
+            } else {
+                res.status(403).json(messages.errorForbidden());
+            }
+        } else res.status(404).json(messages.errorNotFound());
+        
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     };
