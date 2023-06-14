@@ -30,7 +30,7 @@ exports.findAll = async (req, res) => {
             })
 
 
-            res.status(200).json(occurrences[0]);
+            res.status(200).json(occurrences);
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
