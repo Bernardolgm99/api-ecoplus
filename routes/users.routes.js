@@ -21,19 +21,27 @@ router.use((req, res, next) => {
 
 router.route('/')
         .get(userController.findAll)
-        .post(userController.create)
+        .post(userController.create, logsController.createLog)
 
 router.route('/login')
-        .post(userController.login, authController.verifyToken, logsController.createLog)
+        .post(userController.login, logsController.createLog)
 
 router.route('/loggedUser')
         .get(authController.verifyToken, userController.findOne)
         
 router.route('/:userId')
         .get(userController.findOne)
-        .delete(authController.verifyToken, userController.delete)
-        .put(authController.verifyToken, userController.edit)
-        .patch(authController.verifyToken, userController.block)
+        .delete(authController.verifyToken, userController.delete, logsController.createLog)
+        .put(authController.verifyToken, userController.edit, logsController.createLog)
+        .patch(authController.verifyToken, userController.block, logsController.createLog)
 
+router.route('/:userId/eventsOccurrences')
+        .get(userController.findAllEventsOccurrences)
+
+router.route('/:userId/events')
+        .get(userController.findAllEvents)
+
+router.route('/:userId/occurrences')
+        .get(userController.findAllOccurrences)
 //export this router
 module.exports = router;

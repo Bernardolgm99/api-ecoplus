@@ -9,190 +9,183 @@ exports.createLog = async (req, res) => {
     try {
 
         // check for a user logged in
-        if (req.loggedUser) {
+        // check if there's any method being requested
+        // check if there's any route being requested
+        if (req.method && req.originalUrl != '/') {return messages.errorBadRequest('Bad request')}
 
-            // check if there's any method being requested
-            if(req.method){
+            const user = await User.findOne({where: {id: req.loggedUser.id}})
+            
+            let action
 
-                // check if there's any route being requested
-                if(req.originalUrl != '/'){
+            // switch to check the method requested
+            switch (req.method) {
+                case 'POST':
 
-                    const user = await User.findOne({where: {id: req.loggedUser.id}})
+                    action = 'created'
+
+                    break;
+                case 'PUT':
                     
-                    let action
-        
-                    // switch to check the method requested
-                    switch (req.method) {
-                        case 'POST':
-        
-                            action = 'created'
-        
-                            break;
-                        case 'PUT':
-                            
-                            action = 'edited'
-        
-                            break;
-                        case 'DELETE':
-                            
-                            action = 'deleted'
-        
-                            break;
-                        case 'PATCH':
-                            
-                            action = 'modified'
-        
-                            break;
+                    action = 'edited'
+
+                    break;
+                case 'DELETE':
                     
-                        default:
-                            throw Error(
-                                res.status(500).json(messages.errorInternalServerError())
-                            )
-                    }
-        
-                    // variables for log messages
-                    let domain
-                    let grammar 
-        
-                    const splittedURL = req.originalUrl.split('/')
+                    action = 'deleted'
 
-                    // switch to check the domain acessed and creating of log messages
-                    switch (splittedURL[1]) {
-                        case 'users':
-                            console.log(splittedURL[2])
-                            if(splittedURL[2] == 'login') {
+                    break;
+                case 'PATCH':
+                    
+                    action = 'modified'
 
-                                action = 'logged'
-                                grammar = 'in.'
-                                domain = ''
-
-                            } else {
-
-                                domain = 'user.'
-                                grammar = 'an'
-
-                            }
-
-                            break;
-                        case 'occurrences':
-        
-                            if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
-        
-                                domain = 'comment in the occurrences section.'
-                                grammar = 'a'
-        
-                            } else if(splittedURL[5] == 'rating') {
-
-                                action = 'rated'
-                                grammar = 'an'
-                                domain = 'occurrence.'
-
-                            } else {
-                                domain = 'occurrence.'
-                                grammar = 'an'
-                            } 
-        
-                            break;
-                        case 'events':
-        
-                            if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
-                                
-                                domain = 'comment in the events section.'
-                                grammar = 'a'
-        
-                            } else if(splittedURL[5] == 'rating') {
-
-                                action = 'rated'
-                                grammar = 'an'
-                                domain = 'event.'
-
-                            } else {
-                                
-                                domain = 'event.'
-                                grammar = 'an'
-                            
-                            }
-                            
-                            break;
-                        case 'activities':
-        
-                            if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
-        
-                                domain = 'comment in the activities section.'
-                                grammar = 'a'
-        
-                            } else if(splittedURL[5] == 'rating') {
-
-                                action = 'rated'
-                                grammar = 'an'
-                                domain = 'activity.'
-
-                            } else {
-
-                                domain = 'activity.'
-                                grammar = 'an'
-                            
-                            }   
-                            
-                            break;
-                        case 'rating':
-        
-                            domain = 'rating.'
-                            grammar = 'a'
-        
-                            break;
-        
-                        case 'badges':
-        
-                            domain = 'badge.'
-                            grammar = 'a'
-                        
-                            break;
-                        case 'missions':
-        
-                            domain = 'mission.'
-                            grammar = 'a'
-        
-                            break;
-        
-                        default:
-                            throw Error(
-                                res.status(500).json(messages.errorInternalServerError())
-                            )
-                    }
-
-                    let log = Logs.create({
-                        description: `User ${user.username} ${action} ${grammar} ${domain} `
-                    }) 
-
-                } else {
-                    return messages.errorBadRequest('Bad request') 
-                }
-
-            } else {
-                return messages.errorBadRequest('Bad request') 
+                    break;
+            
+                default:
+                    throw Error(
+                        console.log('erro')
+                    )
             }
 
-        } else {
-            return messages.errorBadRequest('Bad request')
-        }
+            // variables for log messages
+            let domain
+            let grammar
+            let idDomain 
+
+            const splittedURL = req.originalUrl.split('/')
+
+            // switch to check the domain acessed and creating of log messages
+            switch (splittedURL[1]) {
+                case 'users':
+
+                    if(splittedURL[2] == 'login') {
+
+                        action = 'logged'
+                        grammar = 'in'
+                        domain = ''
+
+                    } else {
+
+                        domain = 'user'
+                        grammar = 'an'
+                        idDomain = splittedURL[2]
+
+                    }
+
+                    break;
+                case 'occurrences':
+
+                    if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
+
+                        domain = 'comment in the occurrences section'
+                        grammar = 'a'
+                        idDomain = splittedURL[4]
+
+                    } else if(splittedURL[5] == 'rating') {
+
+                        action = 'rated'
+                        grammar = 'an'
+                        domain = 'occurrence'
+                        idDomain = splittedURL[4]
+
+                    } else {
+                        domain = 'occurrence'
+                        grammar = 'an'
+                        idDomain = splittedURL[2]
+                    } 
+
+                    break;
+                case 'events':
+
+                    if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
+                        
+                        domain = 'comment in the events section'
+                        grammar = 'a'
+                        idDomain = splittedURL[4]
+
+                    } else if(splittedURL[5] == 'rating') {
+
+                        action = 'rated'
+                        grammar = 'an'
+                        domain = 'event'
+                        idDomain = splittedURL[4]
+
+                    } else {
+                        
+                        domain = 'event'
+                        grammar = 'an'
+                        idDomain = splittedURL[2]
+                    
+                    }
+                    
+                    break;
+                case 'activities':
+
+                    if(splittedURL[3] == 'comments' && splittedURL[5] != 'rating'){
+
+                        domain = 'comment in the activities section'
+                        grammar = 'a'
+
+                    } else if(splittedURL[5] == 'rating') {
+
+                        action = 'rated'
+                        grammar = 'an'
+                        domain = 'activity'
+
+                    } else {
+
+                        domain = 'activity'
+                        grammar = 'an'
+                        idDomain = splittedURL[2]
+                    
+                    }   
+                    
+                    break;
+
+                case 'badges':
+
+                    domain = 'badge'
+                    grammar = 'a'
+                    idDomain = splittedURL[2]
+                
+                    break;
+                case 'missions':
+
+                    domain = 'mission'
+                    grammar = 'a'
+                    idDomain = splittedURL[2]
+
+                    break;
+
+                default:
+                    throw Error(
+                        console.log('erro')
+                    )
+            }
+
+            let log = Logs.create({
+                description: `User ${user.username} ${action} ${grammar} ${domain} (id: ${idDomain})`
+            }) 
 
     } catch (err) {
-        return res.status(500).json(errorInternalServerError());
+        console.log('erro')
     }
 
 }
 
 exports.findAll = async (req, res) => {
     try {
-
-        const logs = await Logs.findAll()
         
-        if(logs){
-
-            res.status(200).json(logs)
-
-        } else messages.errorNotFound('Logs')
+        if(req.loggedUser.role == 'admin') {
+            
+            const logs = await Logs.findAll()
+            
+            if(logs){
+    
+                res.status(200).json(logs)
+    
+            } else messages.errorNotFound('Logs')
+        
+        } else messages.errorForbidden()
     
     } catch (err) {
         return res.status(500).json(errorInternalServerError()); 

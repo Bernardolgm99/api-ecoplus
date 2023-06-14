@@ -3,8 +3,11 @@ const bcrypt = require("bcryptjs"); //password encryption
 const config = require("../config/config");
 const db = require("../models/index.js");
 const User = db.user;
+const Event = db.event;
+const Occurrence = db.occurrence;
 const Badge = db.badge;
 const School = db.school;
+const { Op } = require('sequelize');
 const { ValidationError } = require("sequelize");
 const validation = require('../utilities/validation.js')
 const messages = require('../utilities/messages');
@@ -54,7 +57,7 @@ exports.create = async (req, res) => {
       })
     }
   }
-}
+} 
 
 exports.login = async (req, res, next) => {
   try {
@@ -80,8 +83,8 @@ exports.login = async (req, res, next) => {
     if (err instanceof ValidationError)
       res.status(400).json({ success: false, msg: err.errors.map(e => e.message) });
     else
-    console.log(err)
-      // res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
+      console.log(err)
+    // res.status(500).json({ success: false, msg: err.message || "Some error occurred at login." });
   };
 }
 
@@ -119,8 +122,8 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id'] }] })
-    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }, { model: db.event, attributes: ['id'], through: { attributes: [] } }, { model: db.activity, attributes: ['id'], through: { attributes: [] } }, { model: db.occurrence, attributes: ['id'] }] }, {})
+    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }] })
+    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }] })
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
@@ -141,7 +144,7 @@ exports.findOne = async (req, res) => {
   }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
   try {
     let user = await User.findByPk(req.params.userId)
 
@@ -162,6 +165,7 @@ exports.delete = async (req, res) => {
           sucess: true,
           msg: `User ${user.username} deleted successfully`
         })
+        next()
 
       } else {
         res.status(403).json({
@@ -191,31 +195,29 @@ exports.edit = async (req, res, next) => {
     } else {
 
       if (req.loggedUser.id == req.params.userId) {
-
-        if (req.body.username && req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
+        console.log(req.body)
+        if (req.body.username && typeof req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
         else if (req.body.username) {
           if (await User.findOne({ where: { username: req.body.username } })) {
             res.status(400).json({ success: false, message: `Username already in use.` });
-            return
           } else user.username = req.body.username
         } else user.username = user.username
 
-        if (req.body.email && req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
+        if (req.body.email && typeof req.body.email != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return }
         else if (req.body.email) {
           if (await User.findOne({ where: { email: req.body.email } })) {
             res.status(400).json({ success: false, message: `Email already in use.` });
-            return
           } else user.email = req.body.email
         } else user.email = user.email
 
-        if (req.body.password && req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
+        if (req.body.password && typeof req.body.password != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return }
         else if (req.body.password) { user.password = bcrypt.hashSync(req.body.password, 10) }
         else user.password = user.password
 
-        if (req.body.schoolDesc && !School.findOne({ where: { school: req.body.schoolDesc } })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return }
-        else if (req.body.schoolDesc) {
-          user.schoolDesc = req.body.schoolDesc
-        } else { user.schoolDesc = user.schoolDesc }
+        if (req.body.schoolId && !School.findOne({ where: { id: req.body.schoolId } })) { res.status(400).json(messages.errorBadRequest(2, "schoolId")); return }
+        else if (req.body.schoolId) {
+          user.schoolId = req.body.schoolId
+        } else { user.schoolId = user.schoolId }
 
         if ((req.body.contact && typeof req.body.contact != "number")) { res.status(400).json(messages.errorBadRequest(0, "contact", "number")); return }
         if (req.body.contact) {
@@ -224,16 +226,26 @@ exports.edit = async (req, res, next) => {
           } else user.contact = req.body.contact
         } else user.contact = user.contact
 
+        if ((req.body.genreDesc && typeof req.body.genreDesc != "string")) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", "string")); return }
+        if (req.body.genreDesc) {
+          if (req.body.genreDesc != "M" && req.body.genreDesc != "F" && req.body.genreDesc != "OTHER") res.status(400).json(messages.errorBadRequest(0, "genreDesc", "M, F or Other"))
+          else user.genreDesc = req.body.genreDesc;
+        } else user.genreDesc = user.genreDesc
+        
+        if ((req.body.birthDate && typeof req.body.birthDate != "string")) { res.status(400).json(messages.errorBadRequest(0, "birthDate", "string")); return }
+        if (req.body.birthDate) {
+          if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(0, "birthday", "instace of Date")); return }
+        } else user.birthDate = user.birthDate
 
         await User.update(
           {
-            name: user.name,
+            username: user.username,
             email: user.email,
             password: user.password,
-            genreDesc: user.genreDesc,
-            birthDate: user.birthDate,
+            schoolId: user.schoolId,
             contact: user.contact,
-            schoolDesc: user.schoolDesc
+            genreDesc: user.genreDesc,
+            birthDate: user.birthDate
           },
           {
             where: { id: req.params.userId }
@@ -244,6 +256,7 @@ exports.edit = async (req, res, next) => {
           succes: true,
           msg: `User ${user.username} updated successfully`
         })
+        next()
 
       } else {
         res.status(401).json({
@@ -264,7 +277,7 @@ exports.edit = async (req, res, next) => {
 }
 
 
-exports.block = async (req, res) => {
+exports.block = async (req, res, next) => {
   try {
 
     if (req.loggedUser.role == 'admin') {
@@ -272,7 +285,6 @@ exports.block = async (req, res) => {
       let user = await User.findByPk(req.params.userId)
 
       if (user == undefined || user == null) {
-        console.log('yau')
         res.status(404).json({
           sucess: false,
           msg: `User not found`
@@ -295,6 +307,7 @@ exports.block = async (req, res) => {
           succes: true,
           msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
         })
+        next()
       }
     } else {
       res.status(403).json({ message: `You are not allowed to block this user.` })
@@ -306,4 +319,138 @@ exports.block = async (req, res) => {
       msg: err.message || 'Some error occurred while creating a new user.'
     })
   }
+}
+
+exports.findAllEventsOccurrences = async (req, res) => {
+  try {
+    let page = 0, limit = 5, createdAt = new Date();
+    if (req.query.page)
+      page = +req.query.page;
+
+    if (req.query.limit)
+      limit = +req.query.limit;
+
+    if (req.query.createdAt)
+      createdAt = req.query.createdAt;
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
+
+    let events = await Event.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId },
+        through: { attributes: [] }
+      }]
+    })
+
+    let occurrences = await Occurrence.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId }
+      }],
+    })
+
+    let eventsOccurrences = events.concat(occurrences);
+
+    eventsOccurrences = eventsOccurrences.sort((a, b) => b.createdAt - a.createdAt)
+    eventsOccurrences = eventsOccurrences.slice(0, limit)
+
+    res.status(200).json(eventsOccurrences);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(messages.errorInternalServerError());
+  };
+};
+
+exports.findAllEvents = async (req, res) => {
+  try {
+    let page = 0, limit = 5, createdAt = new Date();
+    if (req.query.page)
+      page = +req.query.page;
+
+    if (req.query.limit)
+      limit = +req.query.limit;
+
+    if (req.query.createdAt)
+      createdAt = req.query.createdAt;
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
+
+    let events = await Event.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId },
+        through: { attributes: [] }
+      }]
+    })
+
+    res.status(200).json(events);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(messages.errorInternalServerError());
+  };
+
+}
+
+exports.findAllOccurrences = async (req, res) => {
+  try {
+    let page = 0, limit = 5, createdAt = new Date();
+    if (req.query.page)
+      page = +req.query.page;
+
+    if (req.query.limit)
+      limit = +req.query.limit;
+
+    if (req.query.createdAt)
+      createdAt = req.query.createdAt;
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
+
+    let occurrences = await Occurrence.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: createdAt
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      offset: page, limit: limit,
+      include: [{
+        model: User,
+        where: { id: req.params.userId }
+      }]
+    })
+
+    res.status(200).json(occurrences);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(messages.errorInternalServerError());
+  };
 }

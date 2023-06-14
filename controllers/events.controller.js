@@ -25,7 +25,7 @@ exports.findAll = async (req, res) => {
     };
 };
 
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         let event = {};
         switch ("validationBodyData") {
@@ -79,7 +79,8 @@ exports.create = async (req, res) => {
 
             case "create":
                 let newEvent = await Event.create(event);
-                res.status(201).json(messages.successCreated("Event", newEvent.id));
+                res.status(201).json(messages.successCreated("Event", newEvent.id))
+                next()
         };
     } catch (err) {
         console.log(err)
@@ -98,7 +99,7 @@ exports.findByID = async (req, res) => {
     };
 };
 
-exports.edit = async (req, res) => {
+exports.edit = async (req, res, next) => {
     try {
         let event = await Event.findByPk(req.params.eventId);
 
@@ -135,7 +136,8 @@ exports.edit = async (req, res) => {
 
                 case "update":
                     await Event.update({ name: event.name, description: event.description, location: event.location, subtitle: event.subtitle, start: event.start, end: event.end, files: event.files, image: event.image }, { where: { id: event.id } });
-                    res.status(200).json({ msg: `Event ${event.id} was successfully changed!` });
+                    res.status(200).json({ msg: `Event ${event.id} was successfully changed!` })
+                    next()
             };
         };
     } catch (err) {
@@ -143,11 +145,12 @@ exports.edit = async (req, res) => {
     };
 };
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
         if (req.loggedUser.id || req.loggedUser.role == "admin") {
             await Event.destroy({ where: { id: req.params.eventId } });
-            res.status(200).json({ msg: `Event ${req.params.eventId} was successfully deleted!` });
+            res.status(200).json({ msg: `Event ${req.params.eventId} was successfully deleted!` })
+            next()
         } else {
             res.status(403).json(messages.errorForbidden());
         }

@@ -33,7 +33,7 @@ exports.create = async (req, res, next) => {
     }
 }
 
-exports.edit = async (req, res) => {
+exports.edit = async (req, res, next) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
        
@@ -47,6 +47,7 @@ exports.edit = async (req, res) => {
                     sucess: true,
                     msg: `Comment updated successfully`
                 })
+                next()
             }
 
         } else {
@@ -131,7 +132,7 @@ exports.findOne = async (req, res) => {
     }
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     try {
         let comment = await Comment.findByPk(req.params.commentId)
         const c = await Comment.findAll({ where: {occurrenceId: 11}})
@@ -141,6 +142,7 @@ exports.delete = async (req, res) => {
                 sucess: true,
                 msg: `Comment deleted successfully`,
             })
+            next()
         } else {
             res.status(403).json(messages.errorForbidden())
         }

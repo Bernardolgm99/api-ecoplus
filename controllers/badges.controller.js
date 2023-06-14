@@ -1,3 +1,4 @@
+
 const db = require('../models/index');
 const Badge = db.badge
 const User = db.user
@@ -117,7 +118,7 @@ exports.verifyActivity = async (req, res) => {
         console.log(err);
     };
 };
-exports.verifyOccurrence = async (req, res) => {
+exports.verifyOccurrence = async (req, res, next) => {
     try {
         if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'occurrence' } });

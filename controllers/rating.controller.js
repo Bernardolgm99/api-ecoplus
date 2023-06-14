@@ -15,7 +15,7 @@ exports.getAll = async (req, res) => {
   };
 };
 
-exports.like = async (req, res) => {
+exports.like = async (req, res, next) => {
   try {
     let rating = await Rating.findOne({
       where: { commentId: req.params.commentId, userId: req.loggedUser.id },
@@ -27,9 +27,11 @@ exports.like = async (req, res) => {
       rating.rating = req.body.rating;
       await Rating.create(rating);
       res.status(200).send({ msg: `Like Created`, rating: rating.rating });
+      next()
     } else {
       await rating.update({ rating: req.body.rating });
       res.status(200).send({ msg: `Like Updated`, rating: rating.like });
+      next()
     }
   } catch (err) {
     console.log(err)
@@ -37,13 +39,14 @@ exports.like = async (req, res) => {
   }
 };
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
   try {
     let rating = await Rating.findOne({
       where: { commentId: req.params.commentId, userId: req.loggedUser.id },
     });
     await rating.destroy({ where: { commentId: req.params.commentId, userId: req.loggedUser.id } })
     res.status(200).send({ msg: `Like Deleted`, rating: null });
+    next()
   } catch (err) {
     console.log(err)
     res.status(500).json(messages.errorInternalServerError());
