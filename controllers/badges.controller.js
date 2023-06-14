@@ -1,3 +1,4 @@
+
 const db = require('../models/index');
 const Badge = db.badge
 const User = db.user
@@ -102,9 +103,7 @@ exports.verifyEvent = async (req, res) => {
 exports.verifyActivity = async (req, res) => {
     try {
         if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
-        console.log("bom dia", 1)
         const badges = await Badge.findAll({ where: { conditionType: 'activity' } });
-        console.log(req.user)
         await req.user.countActivities()
             .then(count => {
                 console.log("bom dia", 2)

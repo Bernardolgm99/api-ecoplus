@@ -16,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
             },
             allowNull: false
         },
+        locationDescription: {
+            type: DataTypes.STRING,
+        },
         location: {
             type: DataTypes.STRING,
             validate: {

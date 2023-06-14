@@ -44,9 +44,6 @@ db.occurrence.belongsTo(db.user);
 db.school.hasMany(db.user)
 db.user.belongsTo(db.school);
 
-db.school.hasMany(db.user)
-db.user.belongsTo(db.school);
-
 db.user.hasMany(db.rating)
 db.rating.belongsTo(db.user);
 
