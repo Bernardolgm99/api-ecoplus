@@ -10,6 +10,7 @@ exports.create = async (req, res, next) => {
     if(req.loggedUser.role == 'admin') {
       if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(1,'date interval', 'valid one'));
       req.body.IdCreator = req.loggedUser.id;
+      req.body.image = req.files.image.data
       let activity = await Activity.create(req.body);
       res.status(201).json(messages.successCreated('Activity', activity.id));
       next();
@@ -27,6 +28,10 @@ exports.findAll = async (req, res) => {
     if(activities === null){
       return res.status(404).json(messages.errorNotFound('Activity'));
   }
+    activities.forEach(activity => {
+      activity.image = activity.image.toString('base64');
+    })
+
     res.status(200).json(activities);
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError())
@@ -35,8 +40,9 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   try{
     let activity = await Activity.findByPk(req.params.activityId)
-    if(activity === null)
-      return res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`));
+    if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`));
+    
+    activity.image = activity.image.toString('base64');
     res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published
@@ -62,8 +68,8 @@ exports.edit = async (req, res, next) => {
       else activity.end = req.body.end;
       if (req.body.location &&  typeof req.body.location != "string") res.status(400).json(messages.errorBadRequest(0, "Location", "string"))
       else activity.location = req.body.location;
-      if (req.body.image && typeof req.body.image != "object") res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
-      else activity.image = req.body.image;
+      if (req.files.image && typeof req.files.image != "object") res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
+      else activity.image = req.files.image.data;
       // FECHAR POR CAUSA DOS LOGS
       Activity.update(
         {name: req.body.name,
@@ -71,7 +77,7 @@ exports.edit = async (req, res, next) => {
         start: req.body.start,
         end: req.body.end,
         location: req.body.location,
-        image: req.body.image},
+        image: req.files.image.data},
         {
           where: {id: req.params.activityId}
         }
