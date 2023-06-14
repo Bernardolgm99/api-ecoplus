@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const suggestionsController = require('../controllers/suggestions.controller')
-const logsController = require('../controllers/logs.controller.js');
 const auth = require('../controllers/auth.controller')
 
 router.route('/')
