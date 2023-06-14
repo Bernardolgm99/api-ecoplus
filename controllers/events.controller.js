@@ -19,14 +19,18 @@ exports.findAll = async (req, res) => {
 
         let events = await Event.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']], include: { model: User, attributes: ['username'] } }] });
         
+        console.log(events)
+        
         events.forEach(event => {
-            event.image = event.image.toString('base64');
-            event.files = event.files.toString('base64');
+            if(event.image) event.image = event.image.toString('base64');
+            if(event.files) event.files = event.files.toString('base64');
         })
         
+
         res.status(200).json(events);
 
     } catch (err) {
+        console.log(err)
         res.status(500).json(messages.errorInternalServerError());
     };
 };
@@ -101,11 +105,12 @@ exports.findByID = async (req, res) => {
         if (!event) {
             res.status(404).json({ error: `${req.params.eventId} not founded` });
         } else {
-            event.image = event.image.toString('base64');
-            event.files = event.files.toString('base64');
+            if(event.image) event.image = event.image.toString('base64');
+            if(event.files) event.files = event.files.toString('base64');
             res.status(200).json(event);
         }
     } catch (err) {
+        console.log(err)
         res.status(500).json(messages.errorInternalServerError());
     };
 };
