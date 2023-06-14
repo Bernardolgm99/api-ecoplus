@@ -31,6 +31,7 @@ app.use('/badges', require('./routes/badges.routes.js'));
 app.use('/logs', require('./routes/logs.routes.js'));
 app.use('/schools', require('./routes/schools.routes.js'));
 app.use('/missions', require('./routes/missions.routes.js'));
+app.use('/suggestions', require('./routes/suggestions.routes.js'));
 
 // handle invalid routes
 app.get('*', function (req, res) {
