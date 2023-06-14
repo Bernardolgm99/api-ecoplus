@@ -23,9 +23,13 @@ exports.findAll = async (req, res) => {
         if(req.loggedUser && req.loggedUser.role === 'admin') 
             occurrences = await Occurrence.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });
         else 
-            occurrences = await Occurrence.findAll({where: { status: 1 }, order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });
+            occurrences = await Occurrence.findAll({where: { status: [1, 2] }, order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });
 
-        res.status(200).json(occurrences);
+            occurrences.forEach(occurrence => {
+                occurrence.image = occurrence.image.toString('base64');
+            })
+
+            res.status(200).json(occurrences);
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
@@ -56,8 +60,8 @@ exports.create = async (req, res, next) => {
                 if (typeof (req.body.location) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                 else occurrence.location = req.body.location;
 
-                if(req.locationDescription && typeof (req.locationDescription) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location Description", "string")); break; }
-                else locationDescription = req.locationDescription;
+                if(req.body.locationDescription && typeof (req.body.locationDescription) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location Description", "string")); break; }
+                else occurrence.locationDescription = req.body.locationDescription;
 
                 if (typeof (req.files.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                 else occurrence.image = req.files.image.data;
@@ -86,8 +90,7 @@ exports.findByID = async (req, res) => {
             res.status(404).json({ error: `${req.params.occurrenceId} not founded` });
         } else {
             occurrence.image = occurrence.image.toString('base64');
-            console.log(occurrence.image)
-            res.status(200).json({occurrence});
+            res.status(200).json(occurrence);
         }
     } catch (err) {
         console.log(err);
