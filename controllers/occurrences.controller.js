@@ -115,8 +115,8 @@ exports.edit = async (req, res, next) => {
                     if (req.body.location && typeof (req.body.location) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                     else occurrence.location = req.body.location;
 
-                    if (req.body.image && validationImage(req.body.image)) { res.status(400).json(messages.errorBadRequest(0, "Image", "image")); break; }
-                    else occurrence.image = req.body.image;
+                    if (req.files.image && typeof (req.files.image) != "object") { res.status(400).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                    else occurrence.image = req.files.image.data;
 
                 case "update":
                     await Occurrence.update({ name: occurrence.name, description: occurrence.description, location: occurrence.location, image: occurrence.image, status: 0 }, { where: { id: occurrence.id } });
