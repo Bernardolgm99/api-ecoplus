@@ -18,6 +18,12 @@ exports.findAll = async (req, res) => {
         if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
 
         let events = await Event.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']], include: { model: User, attributes: ['username'] } }] });
+        
+        events.forEach(event => {
+            event.image = event.image.toString('base64');
+            event.files = event.files.toString('base64');
+        })
+        
         res.status(200).json(events);
 
     } catch (err) {
@@ -42,7 +48,8 @@ exports.create = async (req, res, next) => {
 
                 if (!req.body.start) { res.status(400).json(messages.errorBadRequest(1, "start")); break; };
                 if (!req.body.end) { res.status(400).json(messages.errorBadRequest(1, "end")); break; };
-                if (!req.body.image && !req.body.files) { res.status(400).json(messages.errorBadRequest(1, "image or files")); break; };
+                if (!req.files.image) { res.status(400).json(messages.errorBadRequest(1, "image or files")); break; };
+                if(!req.files.files) { res.status(400).json(messages.errorBadRequest(1, "image or files")); break; };
                 if(!validationDates(req.body.start, req.body.end)) return res.status(400).json(messages.errorBadRequest(1,'date interval', 'valid one'));
 
 
@@ -69,11 +76,11 @@ exports.create = async (req, res, next) => {
 
 
 
-                if (req.body.files && typeof req.body.files != "object") { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
-                else event.files = req.body.files;
+                if (req.files.files && typeof req.files.files != "object") { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
+                else event.files = req.files.files.data;
 
-                if (req.body.image && typeof req.body.image != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
-                else event.image = req.body.image;
+                if (req.files.image && typeof req.files.image != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                else event.image = req.files.image.data;
 
                 event.IdCreator = req.loggedUser.id;
 
@@ -93,7 +100,11 @@ exports.findByID = async (req, res) => {
         let event = await Event.findByPk(req.params.eventId, { include: { model: User, attributes: ["username", "image", "role"], through: { attributes: [] } } }).then();
         if (!event) {
             res.status(404).json({ error: `${req.params.eventId} not founded` });
-        } else res.status(200).json(event);
+        } else {
+            event.image = event.image.toString('base64');
+            event.files = event.files.toString('base64');
+            res.status(200).json(event);
+        }
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     };
@@ -128,11 +139,11 @@ exports.edit = async (req, res, next) => {
                     if (req.body.end && !validationDate(req.body.end)) { res.status(400).json(messages.errorBadRequest(0, "End", "instance of Date")); break; }
                     else event.end = req.body.end;
 
-                    if (req.body.files && !validationFiles(req.body.files)) { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
-                    else event.files = req.body.files;
+                    if (req.files.files && !validationFiles(req.files.files)) { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
+                    else event.files = req.files.files.data;
 
-                    if (req.body.image && !validationImage(req.body.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
-                    else event.image = req.body.image;
+                    if (req.files.image && !validationImage(req.files.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                    else event.image = req.files.image.data;
 
                 case "update":
                     await Event.update({ name: event.name, description: event.description, location: event.location, subtitle: event.subtitle, start: event.start, end: event.end, files: event.files, image: event.image }, { where: { id: event.id } });

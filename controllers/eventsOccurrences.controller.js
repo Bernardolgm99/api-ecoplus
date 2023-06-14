@@ -15,8 +15,8 @@ exports.findAll = async (req, res) => {
         if (req.query.limit)
             limit = +req.query.limit;
 
-        if (req.body.createdAt)
-            createdAt = req.body.createdAt;
+        if (req.query.createdAt)
+            createdAt = req.query.createdAt;
 
         if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
 
@@ -57,10 +57,26 @@ exports.findAll = async (req, res) => {
             }],
         })
 
+        events.forEach(event => {
+            event.image = event.image.toString('base64');
+            event.files = event.files.toString('base64');
+        })
+
+        occurrences.forEach(occurrence => {
+            occurrence.image = occurrence.image.toString('base64');
+        })
+
         let eventsOccurrences = events.concat(occurrences);
 
         eventsOccurrences = eventsOccurrences.sort((a, b) => b.createdAt - a.createdAt)
         eventsOccurrences = eventsOccurrences.slice(0, limit)
+
+        eventsOccurrences.forEach(eventOccurrence => {
+            eventOccurrence.image = eventOccurrence.image.toString('base64')
+            if(eventOccurrence.files) {
+                eventOccurrence.files = eventOccurrence.files.toString('base64')
+            }
+        })
 
         res.status(200).json(eventsOccurrences);
 

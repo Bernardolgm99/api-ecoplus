@@ -29,7 +29,8 @@ exports.findAll = async (req, res) => {
                 occurrence.image = occurrence.image.toString('base64');
             })
 
-            res.status(200).json(occurrences);
+
+            res.status(200).json(occurrences[0]);
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
