@@ -41,7 +41,7 @@ exports.create = async (req, res, next) => {
                 if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
                 if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
                 if (!req.body.location) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
-                if (!req.body.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
+                // if (!req.body.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
 
 
                 // Validation if body values are passed parameters with the correct type
@@ -54,8 +54,8 @@ exports.create = async (req, res, next) => {
                 if (typeof (req.body.location) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location", "string")); break; }
                 else occurrence.location = req.body.location;
 
-                if (typeof (req.body.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
-                else occurrence.image = req.body.image;
+                // if (typeof (req.body.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                // else occurrence.image = req.body.image;
 
 
                 occurrence.userId = req.loggedUser.id;
@@ -73,11 +73,12 @@ exports.create = async (req, res, next) => {
 
 exports.findByID = async (req, res) => {
     try {
-        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: [{model: db.comment}, {model: User}]});
+        let occurrence = await Occurrence.findByPk(req.params.occurrenceId, {include: [{model: db.comment}, {model: db.user, attributes: ['id','username','role']}]});
         if (!occurrence) {
             res.status(404).json({ error: `${req.params.occurrenceId} not founded` });
         } else res.status(200).json(occurrence);
     } catch (err) {
+        console.log(err);
         res.status(500).json(messages.errorInternalServerError());
     };
 };
