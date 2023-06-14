@@ -86,6 +86,7 @@ exports.delete = async (req, res) => {
 
 exports.verifyEvent = async (req, res) => {
     try {
+        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'event' } });
         await req.user.countEvents()
             .then(count => {
@@ -119,6 +120,7 @@ exports.verifyActivity = async (req, res) => {
 };
 exports.verifyOccurrence = async (req, res, next) => {
     try {
+        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'occurrence' } });
         await req.user.countOccurrences()
             .then(count => {
@@ -135,6 +137,7 @@ exports.verifyOccurrence = async (req, res, next) => {
 };
 exports.verifyComment = async (req, res) => {
     try {
+        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'comment' } });
         await req.user.countComments()
             .then(count => {

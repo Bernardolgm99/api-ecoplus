@@ -42,6 +42,7 @@ exports.findAll = async (req, res) => {
 
         let occurrences = await Occurrence.findAll({
             where: {
+                status: 1,
                 createdAt: {
                     [Op.lt]: createdAt
                 }
