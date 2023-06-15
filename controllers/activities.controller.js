@@ -50,11 +50,11 @@ exports.findAll = async (req, res) => {
 }
 exports.findOne = async (req, res) => {
   try{
-    let activity = await Activity.findByPk(req.params.activityId)
+    let activity = await Activity.findByPk(req.params.activityId, { include: { model: User, attributes: ["username", "image", "role"], through: { attributes: [] } } })
     if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`));
     
     if (activity.image) activity.image = activity.image.toString('base64');
-    
+
     res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published
