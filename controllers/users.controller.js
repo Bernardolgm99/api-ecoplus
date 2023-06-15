@@ -272,8 +272,9 @@ exports.edit = async (req, res, next) => {
   }
 }
 
-exports.chageRoleOrBlock = async (req, res, next) => {
+exports.changeRoleOrBlock = async (req, res, next) => {
   try {
+    if (req.loggedUser.role === 'admin') {
 
     if(req.body.role && typeof(req.body.role) != 'string') { messages.errorBadRequest(0, 'role', 'string'); return;}
     if(req.body.block && typeof(req.body.block) != 'boolean') { messages.errorBadRequest(0, 'block', 'boolean'); return;}
@@ -287,6 +288,9 @@ exports.chageRoleOrBlock = async (req, res, next) => {
 
     res.status(200).json(messages.successOk);
     next();
+    } else {
+      res.status(401).json(messages.errorUnathorizedErrorMessage());
+    }
   } catch (err) {
     console.error(err)
     res.status(500).json(messages.errorInternalServerError())
