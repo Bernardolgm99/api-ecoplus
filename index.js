@@ -33,10 +33,6 @@ app.use('/schools', require('./routes/schools.routes.js'));
 app.use('/missions', require('./routes/missions.routes.js'));
 app.use('/suggestions', require('./routes/suggestions.routes.js'));
 
-// // increasing headers request space
-// app.use(express.json({ limit: '10mb' }));
-// app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
 // handle invalid routes
 app.get('*', function (req, res) {
     res.status(404).json({ message: 'The path especified could not be found' });
