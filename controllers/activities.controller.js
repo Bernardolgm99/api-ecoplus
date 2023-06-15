@@ -29,7 +29,7 @@ exports.findAll = async (req, res) => {
       return res.status(404).json(messages.errorNotFound('Activity'));
   }
     activities.forEach(activity => {
-      activity.image = activity.image.toString('base64');
+      if (activity.image) activity.image = activity.image.toString('base64');
     })
 
     res.status(200).json(activities);
