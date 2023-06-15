@@ -13,7 +13,7 @@ describe('Rating Model', () => {
     describe('Create Rating', () => {
 
         test('Create Rating, status -> 200', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
                   .then(user => {
                         return jwt.sign({ id: user.id, role: user.role },
                               config.SECRET, {
@@ -34,7 +34,7 @@ describe('Rating Model', () => {
     describe('Update Rating', () => {
 
         test('Create Rating, status -> 200', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
                   .then(user => {
                         return jwt.sign({ id: user.id, role: user.role },
                               config.SECRET, {
@@ -56,7 +56,7 @@ describe('Rating Model', () => {
         
         test('Delete Rating, status -> 200', async () => {
             
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
                 .then(user => {
                     return jwt.sign({ id: user.id, role: user.role },
                             config.SECRET, {

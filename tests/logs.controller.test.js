@@ -26,7 +26,7 @@ describe('Logs Model', () => {
 
         test('Create Log, status -> 201', async () => {
 
-            const token = await User.findOne({ where: { id: 17 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {

@@ -13,7 +13,7 @@ describe('Event Model', () => {
 
         test('Create event, status -> 403', async () => {
             
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -38,7 +38,7 @@ describe('Event Model', () => {
 
         test('Create event, status -> 400 (name)', async () => {
             
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -60,7 +60,7 @@ describe('Event Model', () => {
 
         test('Create event, status -> 400 (description)', async () => {
 
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -82,7 +82,7 @@ describe('Event Model', () => {
 
         test('Create event, status -> 400 (location)', async () => {
             
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -103,7 +103,7 @@ describe('Event Model', () => {
         })
 
         test('Create event, status -> 400 (file/image)', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -124,7 +124,7 @@ describe('Event Model', () => {
         })
 
         test('Create event, status -> 400 (subtitle)', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -146,7 +146,7 @@ describe('Event Model', () => {
         })
 
         test('Create event, status -> 201', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -174,7 +174,7 @@ describe('Event Model', () => {
         
         test('Get Five Events, status -> 200', async () => {
 
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -224,7 +224,7 @@ describe('Event Model', () => {
         })
 
         test('Edit Events, status -> 400 (name)', async () =>{
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -240,7 +240,7 @@ describe('Event Model', () => {
         })
 
         test('Edit Events, status -> 400 (description)', async () =>{
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -256,7 +256,7 @@ describe('Event Model', () => {
         })
 
         test('Edit Events, status -> 400 (location)', async () =>{
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -272,7 +272,7 @@ describe('Event Model', () => {
         })
 
         test('Edit Events, status -> 400 (subtitle)', async () =>{
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -288,7 +288,7 @@ describe('Event Model', () => {
         })
 
         test('Edit Events, status -> 200', async () =>{
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -315,7 +315,7 @@ describe('Event Model', () => {
         })
 
         test('Delete Occurrence, status -> 200', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -344,7 +344,7 @@ describe('Event Model', () => {
 
         test('Subscribe an Event, status -> 404', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -360,7 +360,7 @@ describe('Event Model', () => {
 
         test('Subscribe an Event, status -> 200', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -388,7 +388,7 @@ describe('Event Model', () => {
 
         test('Unsubscribe an Event, status -> 404', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -404,7 +404,7 @@ describe('Event Model', () => {
 
         test('Unsubscribe an Event, status -> 200', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -423,7 +423,7 @@ describe('Event Model', () => {
         
         test('Unsubscribe an Event, status -> 404', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -439,7 +439,7 @@ describe('Event Model', () => {
 
         test('Unsubscribe an Event, status -> 200', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {

@@ -22,7 +22,7 @@ describe('Comment Model', () => {
 
             test('Create Comment, status -> 201', async () => {
                   
-                  const token = await User.findOne({ where: { id: 11 } })
+                  const token = await User.findOne({ where: { id: 1 } })
                   .then(user => {
                         return jwt.sign({ id: user.id, role: user.role },
                               config.SECRET, {
@@ -41,7 +41,7 @@ describe('Comment Model', () => {
       describe('Delete Comment', () => {
 
             test('Delete Comment, status -> 403', async () => {
-                  const token = await User.findOne({ where: { id: 17 } })
+                  const token = await User.findOne({ where: { id: 2 } })
                   .then(user => {
                         return jwt.sign({ id: user.id, role: user.role },
                               config.SECRET, {
@@ -58,7 +58,7 @@ describe('Comment Model', () => {
 
             test('Delete Comment, status -> 200', async () => {
 
-                  const token = await User.findOne({ where: { id: 12 } })
+                  const token = await User.findOne({ where: { id: 2 } })
                   .then(user => {
                         return jwt.sign({ id: user.id, role: user.role },
                               config.SECRET, {

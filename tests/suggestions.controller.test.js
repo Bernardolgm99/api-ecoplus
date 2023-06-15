@@ -3,7 +3,6 @@ const request = require('supertest')
 const app = require('../index');
 const server = require('../index').server;
 const db = require("../models/index.js");
-const Suggestion = db.suggestions
 const User = db.user
 const jwt = require("jsonwebtoken"); //JWT tokens creation (sign())
 const config = require("../config/config");
