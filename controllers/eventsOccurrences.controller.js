@@ -57,22 +57,15 @@ exports.findAll = async (req, res) => {
             }],
         })
 
-        events.forEach(event => {
-            event.image = event.image.toString('base64');
-            event.files = event.files.toString('base64');
-        })
-
-        occurrences.forEach(occurrence => {
-            occurrence.image = occurrence.image.toString('base64');
-        })
-
         let eventsOccurrences = events.concat(occurrences);
 
         eventsOccurrences = eventsOccurrences.sort((a, b) => b.createdAt - a.createdAt)
         eventsOccurrences = eventsOccurrences.slice(0, limit)
 
         eventsOccurrences.forEach(eventOccurrence => {
-            eventOccurrence.image = eventOccurrence.image.toString('base64')
+            if(eventOccurrence.image){
+                eventOccurrence.image = eventOccurrence.image.toString('base64')
+            }
             if(eventOccurrence.files) {
                 eventOccurrence.files = eventOccurrence.files.toString('base64')
             }

@@ -22,7 +22,7 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        if (req.loggedUser.role != 'admin') return res.status(401).json(messages.errorUnathorized())
+        if (req.loggedUser.role != 'admin') return res.status(403).json(messages.errorForbidden())
         let mission = {}
         if (!req.body.name) res.status(400).json(messages.errorBadRequest(1, "name"));
         if (!req.body.description) res.status(400).json(messages.errorBadRequest(1, "description"));
