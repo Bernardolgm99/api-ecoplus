@@ -25,7 +25,7 @@ describe('Occurrences Model', () => {
 
         test('Create a New Occurrence, status -> 400 (name)', async () => {
             
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -44,7 +44,7 @@ describe('Occurrences Model', () => {
 
         test('Create a New Occurrence, status -> 400 (description)', async () => {
             
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -63,7 +63,7 @@ describe('Occurrences Model', () => {
 
         test('Create a New Occurrence, status -> 400 (location)', async () => {
             
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -82,7 +82,7 @@ describe('Occurrences Model', () => {
 
         test('Create a New Occurrence, status -> 400 (image)', async () => {
             
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -101,7 +101,7 @@ describe('Occurrences Model', () => {
 
         test('Create a New Occurrence, status -> 415', async () => {
             
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -145,7 +145,7 @@ describe('Occurrences Model', () => {
 
         test('Get Five Users, status -> 200', async () => {
 
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -180,7 +180,7 @@ describe('Occurrences Model', () => {
     describe('Delete Occurrence', () => {
 
         test('Delete Occurrence, status -> 403', async () => {
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -196,7 +196,7 @@ describe('Occurrences Model', () => {
         })
 
         test('Delete Occurrence, status -> 200', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -216,7 +216,7 @@ describe('Occurrences Model', () => {
     describe('Edit Occurrence Status', () => {
 
         test('Edit Occurrence Status, status -> 403', async () => {
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -232,7 +232,7 @@ describe('Occurrences Model', () => {
         })
 
         test('Edit Occurrence Status, status -> 401', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -247,7 +247,7 @@ describe('Occurrences Model', () => {
 
         test('Edit Occurrence Status, status -> 401', async () => {
 
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -264,7 +264,7 @@ describe('Occurrences Model', () => {
         })
 
         test('Edit Occurrence Status, status -> 200', async () => {
-            const token = await User.findOne({ where: { id: 12 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -284,7 +284,7 @@ describe('Occurrences Model', () => {
     describe('Edit Occurrence', () => {
 
         test('Edit Occurrence, status -> 403', async () =>{
-            const token = await User.findOne({ where: { id: 17 } })
+            const token = await User.findOne({ where: { id: 2 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -300,7 +300,7 @@ describe('Occurrences Model', () => {
         })
 
         test('Edit Occurrence, status -> 400 (name)', async () =>{
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -316,7 +316,7 @@ describe('Occurrences Model', () => {
         })
 
         test('Edit Occurrence, status -> 400 (description)', async () =>{
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -332,7 +332,7 @@ describe('Occurrences Model', () => {
         })
 
         test('Edit Occurrence, status -> 400 (location)', async () =>{
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -366,7 +366,7 @@ describe('Occurrences Model', () => {
         // })
 
         test('Edit Occurrence, status -> 200', async () =>{
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -397,7 +397,7 @@ describe('Occurrences Model', () => {
 
         test('Create Comment, status -> 201', async () => {
 
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {

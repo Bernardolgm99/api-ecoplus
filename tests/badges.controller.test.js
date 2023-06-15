@@ -26,7 +26,7 @@ describe('Badges Model', () => {
 
         test('Create Badge, status -> 403', async () => {
 
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -228,7 +228,7 @@ describe('Badges Model', () => {
 
         test('Delete Badge, status -> 403', async () => {
 
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {

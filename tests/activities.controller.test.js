@@ -27,7 +27,7 @@ describe('Activity Model', () => {
 
         test('Create Activity, status -> 403', async () => {
 
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -277,7 +277,7 @@ describe('Activity Model', () => {
     describe('Delete Activity', () => {
 
         test('Delete Occurrence, status -> 403', async () => {
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                 return jwt.sign({ id: user.id, role: user.role },
                     config.SECRET, {
@@ -322,7 +322,7 @@ describe('Activity Model', () => {
 
         test('Subscribe an Activity, status -> 404', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -338,7 +338,7 @@ describe('Activity Model', () => {
 
         test('Subscribe an Activity, status -> 200', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -366,7 +366,7 @@ describe('Activity Model', () => {
 
         test('Unsubscribe an Activity, status -> 404', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -382,7 +382,7 @@ describe('Activity Model', () => {
 
         test('Unsubscribe an Activity, status -> 200', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -402,7 +402,7 @@ describe('Activity Model', () => {
 
         test('Unsubscribe an Activity, status -> 404', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
@@ -418,7 +418,7 @@ describe('Activity Model', () => {
 
         test('Unsubscribe an Activity, status -> 200', async () => {
            
-            const token = await User.findOne({ where: { id: 11 } })
+            const token = await User.findOne({ where: { id: 1 } })
             .then(user => {
                   return jwt.sign({ id: user.id, role: user.role },
                         config.SECRET, {
