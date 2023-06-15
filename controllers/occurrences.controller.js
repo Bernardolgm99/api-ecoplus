@@ -139,7 +139,6 @@ exports.editStatus = async (req, res, next) => {
         if (req.loggedUser.role == "admin") {
             switch ("validationBodyData") {
                 case "validationBodyData":
-                    console.log(req.body.status)
                     if (!req.body.status && req.body.status != 0) { res.status(400).json(messages.errorBadRequest(1, "Status")); break; };
 
                     if (![0, 1, 2].includes(req.body.status)) { res.status(400).json(messages.errorBadRequest(0, "Status", "integer number between 0 and 2")); break; };

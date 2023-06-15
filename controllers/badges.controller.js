@@ -2,12 +2,13 @@
 const db = require('../models/index');
 const Badge = db.badge
 const User = db.user
+const Mission = db.mission
 const messages = require('../utilities/messages');
 
 exports.findAll = async (req, res) => {
     try {
         let badge = await Badge.findAll();
-        if(badge) {
+        if (badge) {
             res.status(200).json(badge);
         } else res.status(404).json(messages.errorNotFound('Badges'));
 
@@ -26,7 +27,6 @@ exports.findByID = async (req, res) => {
         res.status(500).json(messages.errorInternalServerError());
     };
 };
-
 
 exports.create = async (req, res) => {
     try {
@@ -83,7 +83,6 @@ exports.delete = async (req, res) => {
     };
 };
 
-
 exports.verifyEvent = async (req, res) => {
     try {
         if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
@@ -101,32 +100,52 @@ exports.verifyEvent = async (req, res) => {
     };
 };
 
+
 exports.verifyActivity = async (req, res) => {
     try {
-        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
+        if (!req.user) req.user = await User.findByPk(req.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'activity' } });
         await req.user.countActivities()
             .then(count => {
-                console.log("bom dia", 2)
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
                     };
                 });
             });
+        /* the same thing for missions */
+        const missions = await Mission.findAll({ where: { typeOf: 'EVENT' } });
+        await req.user.countMissions()
+            .then(count => {
+                missions.forEach(async mission => {
+                    if (count >= mission.objective) {
+                        await req.user.addMission(mission);
+                    };
+                });
+            });
+        next();
     } catch (err) {
         console.log(err);
     };
 };
 exports.verifyOccurrence = async (req, res, next) => {
     try {
-        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
+        if (!req.user) req.user = await User.findByPk(req.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'occurrence' } });
         await req.user.countOccurrences()
             .then(count => {
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
+                    };
+                });
+            });
+        const missions = await Mission.findAll({ where: { typeOf: 'OCCURRENCE' } });
+        await req.user.countMissions()
+            .then(count => {
+                missions.forEach(async mission => {
+                    if (count >= mission.objective) {
+                        await req.user.addMission(mission);
                     };
                 });
             });
@@ -137,13 +156,22 @@ exports.verifyOccurrence = async (req, res, next) => {
 };
 exports.verifyComment = async (req, res) => {
     try {
-        if (!req.user) req.user = await User.findByPk(req.params.loggedUser.id);
+        if (!req.user) req.user = await User.findByPk(req.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'comment' } });
         await req.user.countComments()
             .then(count => {
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
+                    };
+                });
+            });
+        const missions = await Mission.findAll({ where: { typeOf: 'OTHER' } });
+        await req.user.countMissions()
+            .then(count => {
+                missions.forEach(async mission => {
+                    if (count >= mission.objective) {
+                        await req.user.addMission(mission);
                     };
                 });
             });
