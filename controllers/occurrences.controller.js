@@ -26,7 +26,7 @@ exports.findAll = async (req, res) => {
             occurrences = await Occurrence.findAll({where: { status: [1, 2] }, order: [['createdAt', 'DESC']], offset: page, limit: limit, include: { model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']] } });
 
             occurrences.forEach(occurrence => {
-                occurrence.image = occurrence.image.toString('base64');
+                if(occurrences.image) occurrence.image = occurrence.image.toString('base64');
             })
 
 
