@@ -280,7 +280,7 @@ exports.changeRoleOrBlock = async (req, res, next) => {
     if(req.body.block && typeof(req.body.block) != 'boolean') { messages.errorBadRequest(0, 'block', 'boolean'); return;}
 
     let user = await User.findByPk(req.params.userId)
-    if (user == undefined) res.status(404).json(messages.errorNotFound);
+    if (user == undefined) { res.status(404).json(messages.errorNotFound()); return; }
     
     if (req.body.role) user.role = req.body.role;
     if (req.body.block) user.block = req.body.block;
