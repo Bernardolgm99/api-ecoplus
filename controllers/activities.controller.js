@@ -24,14 +24,25 @@ exports.create = async (req, res, next) => {
 };
 exports.findAll = async (req, res) => {
   try {
-    let activities = await Activity.findAll({include: {model: User, attributes: ["username", "id", "role"], through: {attributes: []}}});
-    if(activities === null){
-      return res.status(404).json(messages.errorNotFound('Activity'));
-  }
+    let page = 0, limit = 5;
+    if (req.query.page)
+        page = +req.query.page;
+
+    if (req.query.limit)
+        limit = +req.query.limit;
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
+
+    let activities = await Activity.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']], include: { model: User, attributes: ['username'] } }] });
+
+
     activities.forEach(activity => {
       if (activity.image) activity.image = activity.image.toString('base64');
     })
 
+    
     res.status(200).json(activities);
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError())
