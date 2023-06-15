@@ -42,7 +42,7 @@ exports.findAll = async (req, res) => {
       if (activity.image) activity.image = activity.image.toString('base64');
     })
 
-    
+
     res.status(200).json(activities);
   } catch (err) {
     res.status(500).json(messages.errorInternalServerError())
@@ -53,7 +53,8 @@ exports.findOne = async (req, res) => {
     let activity = await Activity.findByPk(req.params.activityId)
     if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`));
     
-    activity.image = activity.image.toString('base64');
+    if (activity.image) activity.image = activity.image.toString('base64');
+    
     res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published
