@@ -21,7 +21,6 @@ exports.create = async (req, res) => {
     if (!req.body.password) { res.status(400).json(messages.errorBadRequest(1, "password")); return }
     if (!req.body.schoolDesc) { res.status(400).json(messages.errorBadRequest(1, "schoolDesc")); return }
     if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthDate")); return }
-    if (!req.body.contact) { res.status(400).json(messages.errorBadRequest(1, "contact")); return }
 
 
     if (typeof (req.body.name) != "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); return };
@@ -34,8 +33,6 @@ exports.create = async (req, res) => {
       else return true
     })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return };
     if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", `include in ["M", "F", "OTHER"]`)); return };
-    if (!!req.body.contact && typeof (req.body.contact) != "number") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return };
-
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     let newUser = await User.create(req.body)
