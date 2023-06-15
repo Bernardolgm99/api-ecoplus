@@ -48,7 +48,7 @@ exports.create = async (req, res, next) => {
                 if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
                 if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
                 if (!req.body.location) { res.status(400).json(messages.errorBadRequest(1, "location")); break; };
-                if (!req.files.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
+                if (!req.body.image) { res.status(400).json(messages.errorBadRequest(1, "image")); break; };
 
 
                 // Validation if body values are passed parameters with the correct type
@@ -64,11 +64,11 @@ exports.create = async (req, res, next) => {
                 if(req.body.locationDescription && typeof (req.body.locationDescription) != "string") { res.status(400).json(messages.errorBadRequest(0, "Location Description", "string")); break; }
                 else occurrence.locationDescription = req.body.locationDescription;
 
-                if (typeof (req.files.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
-                else occurrence.image = req.files.image.data;
+                if (typeof (req.body.image) != "object") { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                else occurrence.image = req.body.image;
 
-                const imgData = req.files.image.data;
-                occurrence.image = imgData
+                // const imgData = req.files.image.data;
+                // occurrence.image = imgData
 
                 occurrence.userId = req.loggedUser.id;
 
