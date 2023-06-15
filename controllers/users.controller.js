@@ -195,7 +195,6 @@ exports.edit = async (req, res, next) => {
     } else {
 
       if (req.loggedUser.id == req.params.userId) {
-        console.log(req.body)
         if (req.body.username && typeof req.body.username != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return }
         else if (req.body.username) {
           if (await User.findOne({ where: { username: req.body.username } })) {

@@ -16,13 +16,11 @@ exports.findAll = async (req, res) => {
         
         if (req.query.createdAt)
         createdAt = req.query.createdAt;
-        
-        console.log(createdAt, limit, page);
+        console.log(createdAt)
+        console.log(createdAt, limit, page, "oi");
         if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "page", "number")); return; };
 
         if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "limit", "number")); return; };
-
-        if (!(createdAt instanceof Date)) { res.status(400).json(messages.errorBadRequest(0, "cretedAt", "instance of date")); return; };
 
         let events = await Event.findAll({
             where: {
@@ -72,7 +70,7 @@ exports.findAll = async (req, res) => {
         res.status(200).json(eventsOccurrences);
 
     } catch (err) {
-        // console.log(err);
+        console.log(err);
         res.status(500).json(messages.errorInternalServerError());
     };
 };

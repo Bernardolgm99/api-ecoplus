@@ -1,22 +1,35 @@
 const db = require('../models/index');
 const Mission = db.mission;
 const User = db.user;
-const { validationDate, validationImage } = require('../utilities/validation');
+const { Op } = require('sequelize');
 const messages = require('../utilities/messages');
 
 exports.findAll = async (req, res) => {
     try {
-        let missions
-        if (req.params.userId == undefined) missions = await Mission.findAll({ order: [['createdAt']] })
+        let result
+        if (req.params.userId == undefined) result = await Mission.findAll({ order: [['createdAt']], offset: 0, limit: 3 })
         else {
-            let thisUser = await User.findByPk(req.params.userId, { include: { model: Mission, through: { attributes: [] } } })
-            missions = await thisUser.getMissions()
+            let allMissions = await Mission.findAll({ order: [['createdAt']] })
+            let thisUser = await User.findByPk(req.params.userId)
+            let userMissions = await thisUser.getMissions()
+            let missionsIds = allMissions.map(obj => obj.id)
+            let userIds = userMissions.map(obj => obj.id)
+            result = await Mission.findAll({
+                order: [['createdAt']],
+                where: {
+                    id: {
+                        [Op.and]: [
+                            { [Op.in]: missionsIds },
+                            { [Op.notIn]: userIds },
+                        ]
+                    }
+                }, offset: 0, limit: 3
+            })
         }
-        res.status(200).json(missions);
-        console.log(missions)
+        res.status(200).json(result);
     } catch (err) {
         console.log(err)
-        /* res.status(500).json(messages.errorInternalServerError()); */
+        res.status(500).json(messages.errorInternalServerError());
     };
 }
 
@@ -41,6 +54,8 @@ exports.create = async (req, res) => {
         else mission.end = req.body.end;
         if (typeof (req.body.objective) != "number") res.status(400).json(messages.errorBadRequest(0, "objective", "integer"))
         else mission.objective = req.body.objective;
+        if (typeof (req.body.image) != "string") res.status(400).json(messages.errorBadRequest(0, "image", "string"))
+        else mission.image = req.body.image;
 
         let newMission = await Mission.create(mission);
         res.status(201).json(messages.successCreated("mission", newMission.id))
@@ -69,10 +84,12 @@ exports.edit = async (req, res) => {
         else updateMission.end = req.body.end;
         if (req.body.objective && typeof (req.body.objective) != "number") res.status(400).json(messages.errorBadRequest(0, "objective", "integer"))
         else updateMission.objective = req.body.objective;
+        if (req.body.image && typeof (req.body.image) != "string") res.status(400).json(messages.errorBadRequest(0, "image", "string"))
+        else updateMission.image = req.body.image;
         //if (req.body.image) res.status(400).json(messages.errorBadRequest(1, "image"));
 
         await Mission.update(updateMission, { where: { id: mission.id } });
-        res.status(200).json({ msg: `Mission ${updateMission.id} was successfully changed!` });
+        res.status(200).json({ msg: `Mission ${mission.id} was successfully changed!` });
     } catch (err) {
         console.log(err);
         res.status(500).json(messages.errorInternalServerError());
@@ -94,24 +111,6 @@ exports.delete = async (req, res) => {
     };
 }
 
-exports.userMissions = async (req, res) => {
-    try {
-        let userMissions = await Mission.findAll({
-            where: {
-                createdAt: {
-                    [Op.lt]: createdAt
-                },
-                isValid: true
-            },
-            order: [['createdAt', 'DESC']],
-            offset: 0, limit: 3
-        })
-        res.status(200).json(userMissions);
-    } catch (err) {
-
-    }
-}
-
 exports.findOneById = async (req, res) => {
     try {
         let mission = await Mission.findByPk(req.params.missionId);
@@ -123,4 +122,3 @@ exports.findOneById = async (req, res) => {
         res.status(500).json(messages.errorInternalServerError());
     };
 }
-
