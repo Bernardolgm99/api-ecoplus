@@ -36,7 +36,7 @@ router.route('/:userId')
         .get(userController.findOne)
         .delete(authController.verifyToken, userController.delete, logsController.createLog)
         .put(authController.verifyToken, userController.edit, logsController.createLog)
-        .patch(authController.verifyToken, userController.block, logsController.createLog)
+        .patch(authController.verifyToken, userController.changeRoleOrBlock, logsController.createLog)
 
 router.route('/:userId/eventsOccurrences')
         .get(userController.findAllEventsOccurrences)
@@ -46,5 +46,6 @@ router.route('/:userId/events')
 
 router.route('/:userId/occurrences')
         .get(userController.findAllOccurrences)
+
 //export this router
 module.exports = router;
