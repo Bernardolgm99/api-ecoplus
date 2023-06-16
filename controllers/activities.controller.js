@@ -81,7 +81,7 @@ exports.edit = async (req, res, next) => {
       if (req.body.location &&  typeof req.body.location != "string") res.status(400).json(messages.errorBadRequest(0, "Location", "string"))
       else activity.location = req.body.location;
       if (req.files.image && typeof req.files.image != "object") res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
-      else activity.image = req.files.image.data;
+      else if (req.files.image) activity.image = req.files.image.data;
       // FECHAR POR CAUSA DOS LOGS
       Activity.update(
         {name: req.body.name,
@@ -99,6 +99,7 @@ exports.edit = async (req, res, next) => {
     }
     res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
+    console.log(err)
     res.status(500).json(messages.errorInternalServerError);
   }
 }
