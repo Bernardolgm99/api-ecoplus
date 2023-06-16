@@ -14,7 +14,7 @@ const messages = require('../utilities/messages');
 
 exports.create = async (req, res) => {
   try {
-
+    console.log(req.body)
     if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); return }
     if (!req.body.username) { res.status(400).json(messages.errorBadRequest(1, "username")); return }
     if (!req.body.email) { res.status(400).json(messages.errorBadRequest(1, "email")); return }

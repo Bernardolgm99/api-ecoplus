@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull:  false
         },
         logo: {
-            type: DataTypes.BLOB
+            type: DataTypes.STRING,
+            allowNull: false
         },
         description: {
             type: DataTypes.STRING,
