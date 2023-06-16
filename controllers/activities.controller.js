@@ -24,13 +24,24 @@ exports.create = async (req, res, next) => {
 };
 exports.findAll = async (req, res) => {
   try {
-    let activities = await Activity.findAll({include: {model: User, attributes: ["username", "id", "role"], through: {attributes: []}}});
-    if(activities === null){
-      return res.status(404).json(messages.errorNotFound('Activity'));
-  }
+    let page = 0, limit = 5;
+    if (req.query.page)
+        page = +req.query.page;
+
+    if (req.query.limit)
+        limit = +req.query.limit;
+
+    if (typeof (page) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Page", "number")); return; };
+
+    if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
+
+    let activities = await Activity.findAll({ offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']], include: { model: User, attributes: ['username'] } }] });
+
+
     activities.forEach(activity => {
-      activity.image = activity.image.toString('base64');
+      if (activity.image) activity.image = activity.image.toString('base64');
     })
+
 
     res.status(200).json(activities);
   } catch (err) {
@@ -39,10 +50,11 @@ exports.findAll = async (req, res) => {
 }
 exports.findOne = async (req, res) => {
   try{
-    let activity = await Activity.findByPk(req.params.activityId)
+    let activity = await Activity.findByPk(req.params.activityId, { include: { model: User, attributes: ["username", "image", "role"], through: { attributes: [] } } })
     if(activity === null) return res.status(404).json(messages.errorNotFound(`Activity ${req.params.activityId}`));
     
-    activity.image = activity.image.toString('base64');
+    if (activity.image) activity.image = activity.image.toString('base64');
+
     res.status(200).json(activity);
   } catch (err) {
     if (err instanceof ValidationError) // Tutorial model as validations for title and published

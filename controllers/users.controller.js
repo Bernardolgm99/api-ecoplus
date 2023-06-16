@@ -286,49 +286,29 @@ exports.edit = async (req, res, next) => {
   }
 }
 
-
-exports.block = async (req, res, next) => {
+exports.changeRoleOrBlock = async (req, res, next) => {
   try {
+    if (req.loggedUser.role === 'admin') {
 
-    if (req.loggedUser.role == 'admin') {
+    if(req.body.role && typeof(req.body.role) != 'string') { messages.errorBadRequest(0, 'role', 'string'); return;}
+    if(req.body.block && typeof(req.body.block) != 'boolean') { messages.errorBadRequest(0, 'block', 'boolean'); return;}
 
-      let user = await User.findByPk(req.params.userId)
+    let user = await User.findByPk(req.params.userId)
+    if (user == undefined) { res.status(404).json(messages.errorNotFound()); return; }
+    
+    if (req.body.role) user.role = req.body.role;
+    if (req.body.block) user.block = req.body.block;
+    await user.save()
 
-      if (user == undefined || user == null) {
-        res.status(404).json({
-          sucess: false,
-          msg: `User not found`
-        })
-
-      } else if (typeof req.body.block == 'string') {
-        res.status(400).json({
-          success: false,
-          msg: `Invalid value!`
-        })
-
-      } else {
-
-        User.update({ block: req.body.block },
-          {
-            where: { id: req.params.userId }
-          })
-
-        res.status(202).json({
-          succes: true,
-          msg: `User ${user.username} updated successfully. Block is now set to ${req.body.block}`
-        })
-        next()
-      }
+    res.status(200).json(messages.successOk);
+    next();
     } else {
-      res.status(403).json({ message: `You are not allowed to block this user.` })
+      res.status(401).json(messages.errorUnathorizedErrorMessage());
     }
-
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      msg: err.message || 'Some error occurred while creating a new user.'
-    })
-  }
+    console.error(err)
+    res.status(500).json(messages.errorInternalServerError())
+  };
 }
 
 exports.findAllEventsOccurrences = async (req, res) => {

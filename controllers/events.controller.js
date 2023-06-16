@@ -18,9 +18,8 @@ exports.findAll = async (req, res) => {
         if (typeof (limit) != 'number') { res.status(400).json(messages.errorBadRequest(0, "Limit", "number")); return; };
 
         let events = await Event.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: [{ model: db.comment, offset: 0, limit: 2, order: [['createdAt', 'DESC']], include: { model: User, attributes: ['username'] } }] });
-        
-        console.log(events)
-        
+
+
         events.forEach(event => {
             if(event.image) event.image = event.image.toString('base64');
             if(event.files) event.files = event.files.toString('base64');
