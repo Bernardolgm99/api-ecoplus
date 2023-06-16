@@ -22,20 +22,21 @@ exports.create = async (req, res) => {
     if (!req.body.schoolDesc) { res.status(400).json(messages.errorBadRequest(1, "schoolDesc")); return }
     if (!req.body.birthDate) { res.status(400).json(messages.errorBadRequest(1, "birthDate")); return }
     if (!req.body.contact) { res.status(400).json(messages.errorBadRequest(1, "contact")); return }
-
-
+    if (!req.body.genreDesc) { res.status(400).json(messages.errorBadRequest(1, "genreDesc")); return }
+    if (!req.body.schoolId) { res.status(400).json(messages.errorBadRequest(1, "schoolId")); return }
+    
     if (typeof (req.body.name) != "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); return };
     if (typeof (req.body.username) != "string") { res.status(400).json(messages.errorBadRequest(0, "username", "string")); return };
     if (typeof (req.body.email) != "string") { res.status(400).json(messages.errorBadRequest(0, "email", "string")); return };
     if (typeof (req.body.password) != "string") { res.status(400).json(messages.errorBadRequest(0, "password", "string")); return };
     if (validation.validationDates(req.body.birthDate)) { res.status(400).json(messages.errorBadRequest(0, "birthday", "instace of Date")); return };
-    if (await School.findOne({ where: { school: req.body.schoolDesc } }).then(result => {
+    if (await School.findOne({ where: { id: req.body.schoolId } }).then(result => {
       if (result) return false;
       else return true
-    })) { res.status(400).json(messages.errorBadRequest(2, "schoolDesc")); return };
+    })) { res.status(400).json(messages.errorBadRequest(2, "schoolId")); return };
     if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", `include in ["M", "F", "OTHER"]`)); return };
     if (!!req.body.contact && typeof (req.body.contact) != "number") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return };
-
+    if (typeof (req.body.genreDesc) != "string") { res.status(400).json(messages.errorBadRequest(1, "genreDesc")); return }
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     let newUser = await User.create(req.body)
@@ -122,8 +123,18 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }] })
-    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [{ model: Badge, attributes: ['id'], through: { attributes: [] } }] })
+    if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [
+      { model: db.badge, attributes: ['id'], through: { attributes: [] } },
+      { model: db.event, attributes: ['id'], through: { attributes: [] } },
+      { model: db.activity, attributes: ['id'], through: { attributes: [] } },
+      { model: db.occurrence, attributes: ['id'] }
+    ] })
+    else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [
+      { model: db.badge, attributes: ['id'], through: { attributes: [] } },
+      { model: db.event, attributes: ['id'], through: { attributes: [] } },
+      { model: db.activity, attributes: ['id'], through: { attributes: [] } },
+      { model: db.occurrence, attributes: ['id'] }
+    ] })
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
