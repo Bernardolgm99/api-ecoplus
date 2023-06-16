@@ -86,8 +86,7 @@ exports.edit = async (req, res, next) => {
         description: req.body.description,
         start: req.body.start,
         end: req.body.end,
-        location: req.body.location,
-        image: req.files.image.data},
+        location: req.body.location},
         {
           where: {id: req.params.activityId}
         }
