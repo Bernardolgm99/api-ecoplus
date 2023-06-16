@@ -80,8 +80,6 @@ exports.edit = async (req, res, next) => {
       else activity.end = req.body.end;
       if (req.body.location &&  typeof req.body.location != "string") res.status(400).json(messages.errorBadRequest(0, "Location", "string"))
       else activity.location = req.body.location;
-      if (req.files.image && typeof req.files.image != "object") res.status(400).json(messages.errorBadRequest(0, "Image", "object"))
-      else if (req.files.image) activity.image = req.files.image.data;
       // FECHAR POR CAUSA DOS LOGS
       Activity.update(
         {name: req.body.name,
