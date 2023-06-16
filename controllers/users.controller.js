@@ -297,7 +297,7 @@ exports.changeRoleOrBlock = async (req, res, next) => {
     if (user == undefined) { res.status(404).json(messages.errorNotFound()); return; }
     
     if (req.body.role) user.role = req.body.role;
-    if (req.body.block) user.block = req.body.block;
+    if (typeof(req.body.block) == "boolean") user.block = req.body.block;
     await user.save()
 
     res.status(200).json(messages.successOk);
