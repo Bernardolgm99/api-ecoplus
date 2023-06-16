@@ -79,8 +79,10 @@ exports.findAll = async (req, res) => {
             comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { eventId: req.params.eventId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
         } else if (req.originalUrl.split('/')[1] == 'activities') {
             comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { activityId: req.params.activityId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
-        } else {
+        } else if (req.originalUrl.split('/')[1] == 'occurrences') {
             comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, where: { occurrenceId: req.params.occurrenceId }, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
+        } else {
+            comments = await Comment.findAll({ order: [['createdAt', 'DESC']], offset: page, limit: limit, include: [{ model: db.user, attributes: ['username'] }, { model: db.rating }] })
         }
 
         comments.forEach((comment) => {
