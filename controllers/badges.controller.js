@@ -81,13 +81,13 @@ exports.edit = async (req, res) => {
         else badge.description = req.body.description;
         if (req.body.conditionType && typeof req.body.conditionType !== "string") { res.status(400).json(messages.errorBadRequest(0, "conditionType", "string")); }
         else badge.conditionType = req.body.conditionType;
-        if (req.body.value && typeof req.body.value !== "string") { res.status(400).json(messages.errorBadRequest(0, "value", "number")); }
+        if (req.body.value && typeof req.body.value !== "number") { res.status(400).json(messages.errorBadRequest(0, "value", "number")); }
         else badge.value = +req.body.value;
         if (req.body.logo && typeof req.body.logo !== "string") { res.status(400).json(messages.errorBadRequest(0, "logo", "image")); }
         else badge.logo = req.body.logo;
 
-        let newBadge = await Badge.update(badge, { where: { id: req.params.id } });
-        res.status(200).json({ msg: `Badge ${newBadge.id} was successfully changed!` });
+        await Badge.update(badge, { where: { id: req.params.id } });
+        res.status(200).json({ msg: `Badge ${req.params.id} was successfully changed!` });
     } catch (err) {
         console.log(err);
         res.status(500).json(messages.errorInternalServerError());
@@ -120,15 +120,8 @@ exports.verifyEvent = async (req, res) => {
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
-                    };
-                });
-            });
-        /* the same thing for missions */
-        const missions = await Mission.findAll({ where: { typeOf: 'EVENT' } });
-        await req.user.countMissions()
-            .then(count => {
-                missions.forEach(async mission => {
-                    if (count >= mission.objective) {
+                        /* the same thing for missions */
+                        const mission = await Mission.findAll({ where: { typeOf: 'EVENT', objective: badge.value } });
                         await req.user.addMission(mission);
                     };
                 });
@@ -146,15 +139,8 @@ exports.verifyActivity = async (req, res) => {
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
-                    };
-                });
-            });
-        /* the same thing for missions */
-        const missions = await Mission.findAll({ where: { typeOf: 'ACTIVITY' } });
-        await req.user.countMissions()
-            .then(count => {
-                missions.forEach(async mission => {
-                    if (count >= mission.objective) {
+                        /* the same thing for missions */
+                        const mission = await Mission.findAll({ where: { typeOf: 'ACTIVITY', objective: badge.value } });
                         await req.user.addMission(mission);
                     };
                 });
@@ -173,14 +159,8 @@ exports.verifyOccurrence = async (req, res, next) => {
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
-                    };
-                });
-            });
-        const missions = await Mission.findAll({ where: { typeOf: 'OCCURRENCE' } });
-        await req.user.countMissions()
-            .then(count => {
-                missions.forEach(async mission => {
-                    if (count >= mission.objective) {
+                        /* the same thing for missions */
+                        const mission = await Mission.findAll({ where: { typeOf: 'OCCURRENCE', objective: badge.value } });
                         await req.user.addMission(mission);
                     };
                 });
@@ -199,14 +179,8 @@ exports.verifyComment = async (req, res) => {
                 badges.forEach(async badge => {
                     if (count >= badge.value) {
                         await req.user.addBadge(badge);
-                    };
-                });
-            });
-        const missions = await Mission.findAll({ where: { typeOf: 'OTHER' } });
-        await req.user.countMissions()
-            .then(count => {
-                missions.forEach(async mission => {
-                    if (count >= mission.objective) {
+                        /* the same thing for missions */
+                        const mission = await Mission.findAll({ where: { typeOf: 'OTHER', objective: badge.value } });
                         await req.user.addMission(mission);
                     };
                 });
