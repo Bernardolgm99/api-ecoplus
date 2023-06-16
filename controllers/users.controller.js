@@ -124,13 +124,13 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   try {
     if (!req.loggedUser) findUser = await User.findOne({ where: { id: req.params.userId }, include: [
-      { model: db.badge, attributes: ['id'], through: { attributes: [] } },
+      { model: db.badge, through: { attributes: [] } },
       { model: db.event, attributes: ['id'], through: { attributes: [] } },
       { model: db.activity, attributes: ['id'], through: { attributes: [] } },
       { model: db.occurrence, attributes: ['id'] }
     ] })
     else findUser = await User.findOne({ where: { id: req.loggedUser.id }, include: [
-      { model: db.badge, attributes: ['id'], through: { attributes: [] } },
+      { model: db.badge, through: { attributes: [] } },
       { model: db.event, attributes: ['id'], through: { attributes: [] } },
       { model: db.activity, attributes: ['id'], through: { attributes: [] } },
       { model: db.occurrence, attributes: ['id'] }
