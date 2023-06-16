@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
             typeOf: {
                 type: DataTypes.STRING,
                 validate: {
-                    isIn: [['EVENT', 'OCCURRENCE', 'OTHER']]
+                    isIn: [['EVENT', 'ACTIVITY', 'OCCURRENCE', 'OTHER']]
                 },
                 allowNull: false
             },

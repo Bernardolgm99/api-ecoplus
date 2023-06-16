@@ -86,7 +86,6 @@ exports.edit = async (req, res) => {
         else updateMission.objective = req.body.objective;
         if (req.body.image && typeof (req.body.image) != "string") res.status(400).json(messages.errorBadRequest(0, "image", "string"))
         else updateMission.image = req.body.image;
-        //if (req.body.image) res.status(400).json(messages.errorBadRequest(1, "image"));
 
         await Mission.update(updateMission, { where: { id: mission.id } });
         res.status(200).json({ msg: `Mission ${mission.id} was successfully changed!` });
@@ -98,9 +97,8 @@ exports.edit = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        const mission = await Mission.findOne({ where: { id: req.params.missionId } })
-
-        if (req.loggedUser.id == mission.userId || req.loggedUser.role == "admin") {
+        if (req.loggedUser.role == "admin") {
+            const mission = await Mission.findOne({ where: { id: req.params.missionId } })
             await mission.destroy({ where: { id: req.params.missionId } });
             res.status(200).json({ msg: `Mission ${req.params.missionId} was successfully deleted!` });
         } else {

@@ -12,7 +12,7 @@ router.route('/')
 
 router.route('/:id')
     .get(badgesController.findByID)
-    // .put(auth.verifyToken, badgesController.edit)
+    .put(auth.verifyToken, badgesController.edit)
     .delete(auth.verifyToken, badgesController.delete);
 
 //export this router

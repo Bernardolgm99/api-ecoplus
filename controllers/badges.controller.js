@@ -8,9 +8,8 @@ const messages = require('../utilities/messages');
 exports.findAll = async (req, res) => {
     try {
         let badge = await Badge.findAll();
-        if (badge) {
-            res.status(200).json(badge);
-        } else res.status(404).json(messages.errorNotFound('Badges'));
+        if (badge) res.status(200).json(badge);
+        else res.status(404).json(messages.errorNotFound('Badges'));
 
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
@@ -20,9 +19,8 @@ exports.findAll = async (req, res) => {
 exports.findByID = async (req, res) => {
     try {
         let badge = await Badge.findByPk(req.params.id);
-        if (!badge) {
-            res.status(404).json({ error: `${req.params.id} not founded` });
-        } else res.status(200).json(badge);
+        if (badge) res.status(200).json(badge);
+        else res.status(404).json({ error: `${req.params.id} not founded` });
     } catch (err) {
         res.status(500).json(messages.errorInternalServerError());
     };
@@ -40,6 +38,7 @@ exports.create = async (req, res) => {
                 // Validation if body have everything required
                 if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); break; };
                 if (!req.body.description) { res.status(400).json(messages.errorBadRequest(1, "description")); break; };
+
                 if (!req.body.conditionType) { res.status(400).json(messages.errorBadRequest(1, "conditionType")); break; };
                 if (!req.body.value) { res.status(400).json(messages.errorBadRequest(1, "value")); break; };
                 if (!req.body.logo) { res.status(400).json(messages.errorBadRequest(1, "logo")); break; };
@@ -58,7 +57,7 @@ exports.create = async (req, res) => {
                 if (typeof req.body.value !== "number") { res.status(400).json(messages.errorBadRequest(0, "value", "number")); break; }
                 else badge.value = req.body.value;
 
-                if (typeof req.body.logo !== "object") { res.status(400).json(messages.errorBadRequest(0, "logo", "image")); break; }
+                if (typeof req.body.logo !== "string") { res.status(400).json(messages.errorBadRequest(0, "logo", "image")); break; }
                 else badge.logo = req.body.logo;
 
             case "create":
@@ -66,15 +65,43 @@ exports.create = async (req, res) => {
                 res.status(201).json(messages.successCreated("Badge", newBadge.id));
         };
     } catch (err) {
+        console.log(err);
         res.status(500).json(messages.errorInternalServerError());
     };
+};
+
+exports.edit = async (req, res) => {
+    try {
+        if (req.loggedUser.role !== "admin") res.status(403).json(messages.errorForbidden());
+
+        let badge = {}
+        if (req.body.name && typeof req.body.name !== "string") { res.status(400).json(messages.errorBadRequest(0, "name", "string")); }
+        else badge.name = req.body.name;
+        if (req.body.description && typeof req.body.description !== "string") { res.status(400).json(messages.errorBadRequest(0, "description", "string")); }
+        else badge.description = req.body.description;
+        if (req.body.conditionType && typeof req.body.conditionType !== "string") { res.status(400).json(messages.errorBadRequest(0, "conditionType", "string")); }
+        else badge.conditionType = req.body.conditionType;
+        if (req.body.value && typeof req.body.value !== "string") { res.status(400).json(messages.errorBadRequest(0, "value", "number")); }
+        else badge.value = +req.body.value;
+        if (req.body.logo && typeof req.body.logo !== "string") { res.status(400).json(messages.errorBadRequest(0, "logo", "image")); }
+        else badge.logo = req.body.logo;
+
+        let newBadge = await Badge.update(badge, { where: { id: req.params.id } });
+        res.status(200).json({ msg: `Badge ${newBadge.id} was successfully changed!` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(messages.errorInternalServerError());
+    }
 };
 
 exports.delete = async (req, res) => {
     try {
         if (req.loggedUser.role == "admin") {
-            await Badge.destroy({ where: { id: req.params.id } });
-            res.status(200).json({ msg: `Badge ${req.params.id} was successfully deleted!` });
+            let badge = await Badge.findByPk(req.params.id)
+            if (badge) {
+                await Badge.destroy({ where: { id: req.params.id } });
+                res.status(200).json({ msg: `Badge ${req.params.id} was successfully deleted!` });
+            } else res.status(404).json(messages.errorNotFound(`badge with id ${req.params.id}`));
         } else {
             res.status(403).json(messages.errorForbidden());
         }
@@ -82,6 +109,7 @@ exports.delete = async (req, res) => {
         res.status(500).json(messages.errorInternalServerError());
     };
 };
+
 
 exports.verifyEvent = async (req, res) => {
     try {
@@ -95,12 +123,20 @@ exports.verifyEvent = async (req, res) => {
                     };
                 });
             });
+        /* the same thing for missions */
+        const missions = await Mission.findAll({ where: { typeOf: 'EVENT' } });
+        await req.user.countMissions()
+            .then(count => {
+                missions.forEach(async mission => {
+                    if (count >= mission.objective) {
+                        await req.user.addMission(mission);
+                    };
+                });
+            });
     } catch (err) {
         console.log(err);
     };
 };
-
-
 exports.verifyActivity = async (req, res) => {
     try {
         if (!req.user) req.user = await User.findByPk(req.loggedUser.id);
@@ -114,7 +150,7 @@ exports.verifyActivity = async (req, res) => {
                 });
             });
         /* the same thing for missions */
-        const missions = await Mission.findAll({ where: { typeOf: 'EVENT' } });
+        const missions = await Mission.findAll({ where: { typeOf: 'ACTIVITY' } });
         await req.user.countMissions()
             .then(count => {
                 missions.forEach(async mission => {
