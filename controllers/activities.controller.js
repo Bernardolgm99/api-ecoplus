@@ -93,8 +93,9 @@ exports.edit = async (req, res, next) => {
         )
       res.status(202).json(messages.successAccepted);
       next()
+    } else {
+      res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
     }
-    res.status(403).json(messages.errorBadRequest(1, 'token', 'valid credential'));
   } catch (err) {
     console.log(err)
     res.status(500).json(messages.errorInternalServerError);
