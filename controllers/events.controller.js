@@ -146,7 +146,7 @@ exports.edit = async (req, res, next) => {
                     if (req.files.files && !validationFiles(req.files.files)) { res.status(400).json(messages.errorBadRequest(0, "Files", "instance of File")); break; }
                     else event.files = req.files.files.data;
 
-                    if (req.files.image && !validationImage(req.files.image)) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
+                    if (req.files.image) { res.status(415).json(messages.errorBadRequest(0, "Image", "image")); break; }
                     else event.image = req.files.image.data;
 
                 case "update":
