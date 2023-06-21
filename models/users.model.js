@@ -69,10 +69,10 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
             image: {
-                type: DataTypes.BLOB
+                type: DataTypes.BLOB('medium')
             },
             icone: {
-                type: DataTypes.BLOB
+                type: DataTypes.BLOB('medium')
             },
             //If block is 0 - the user is allowed to interact with the platform
             //If block is 1 - the user is not allowed to interact with the platform

@@ -14,7 +14,6 @@ const messages = require('../utilities/messages');
 
 exports.create = async (req, res) => {
   try {
-    console.log(req.body)
     if (!req.body.name) { res.status(400).json(messages.errorBadRequest(1, "name")); return }
     if (!req.body.username) { res.status(400).json(messages.errorBadRequest(1, "username")); return }
     if (!req.body.email) { res.status(400).json(messages.errorBadRequest(1, "email")); return }
@@ -34,9 +33,12 @@ exports.create = async (req, res) => {
       if (result) return false;
       else return true
     })) { res.status(400).json(messages.errorBadRequest(2, "schoolId")); return };
-    if (!!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", `include in ["M", "F", "OTHER"]`)); return };
-    if (!!req.body.contact && typeof (req.body.contact) != "number") { res.status(400).json(messages.errorBadRequest(0, "contact", "string")); return };
+    if (!req.body.genreDesc && req.body.genreDesc.toUpperCase().includes(["M", "F", "OTHER"])) { res.status(400).json(messages.errorBadRequest(0, "genreDesc", `include in ["M", "F", "OTHER"]`)); return };
+    if (!req.body.contact) { res.status(400).json(messages.errorBadRequest(0, "contact", "number")); return };
     if (typeof (req.body.genreDesc) != "string") { res.status(400).json(messages.errorBadRequest(1, "genreDesc")); return }
+
+    if(req.files.icone) req.body.icone = req.files.icone
+    if(req.files.image) req.body.image = req.files.image
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     let newUser = await User.create(req.body)
@@ -101,6 +103,10 @@ exports.findAll = async (req, res) => {
       ]
     }
     )
+    users.forEach(item => {
+      if(item.image) item.image = item.image.toString('base64');
+      if(item.icone) item.icone = item.icone.toString('base64');
+  })
     if (users != null) {
       res.status(200).json({
         success: true,
@@ -135,6 +141,8 @@ exports.findOne = async (req, res) => {
       { model: db.activity, attributes: ['id'], through: { attributes: [] } },
       { model: db.occurrence, attributes: ['id'] }
     ] })
+    if(findUser.image) findUser.image = findUser.image.toString('base64');
+    if(findUser.icone) findUser.icone = findUser.icone.toString('base64');
     if (findUser != null) {
       res.status(200).json({
         sucess: true,
@@ -361,8 +369,11 @@ exports.findAllEventsOccurrences = async (req, res) => {
     eventsOccurrences = eventsOccurrences.sort((a, b) => b.createdAt - a.createdAt)
     eventsOccurrences = eventsOccurrences.slice(0, limit)
 
+    console.log(eventsOccurrences)
+    eventsOccurrences.forEach(item => {
+      if(item.image) item.image = item.image.toString('base64');
+    })
     res.status(200).json(eventsOccurrences);
-
   } catch (err) {
     console.log(err);
     res.status(500).json(messages.errorInternalServerError());
@@ -400,6 +411,9 @@ exports.findAllEvents = async (req, res) => {
       }]
     })
 
+    events.forEach(item => {
+      if(item.image) item.image = item.image.toString('base64');
+    })
     res.status(200).json(events);
   } catch (err) {
     console.log(err);
@@ -436,6 +450,12 @@ exports.findAllOccurrences = async (req, res) => {
         model: User,
         where: { id: req.params.userId }
       }]
+    })
+
+    console.log(occurrences)
+
+    occurrences.forEach(item => {
+      if(item.image) item.image = item.image.toString('base64');
     })
 
     res.status(200).json(occurrences);
