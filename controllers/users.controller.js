@@ -37,8 +37,8 @@ exports.create = async (req, res) => {
     if (!req.body.contact) { res.status(400).json(messages.errorBadRequest(0, "contact", "number")); return };
     if (typeof (req.body.genreDesc) != "string") { res.status(400).json(messages.errorBadRequest(1, "genreDesc")); return }
 
-    if(req.files.icone) req.body.icone = req.files.icone
-    if(req.files.image) req.body.image = req.files.image
+    if(req.files.icone) req.body.icone = req.files.icone.data
+    if(req.files.image) req.body.image = req.files.image.data
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     let newUser = await User.create(req.body)

@@ -72,7 +72,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.BLOB('medium')
             },
             icone: {
-                type: DataTypes.BLOB('medium')
+                type: DataTypes.BLOB('medium'),
+                allowNull: true
             },
             //If block is 0 - the user is allowed to interact with the platform
             //If block is 1 - the user is not allowed to interact with the platform
