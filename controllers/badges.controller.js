@@ -130,7 +130,7 @@ exports.verifyEvent = async (req, res) => {
         console.log(err);
     };
 };
-exports.verifyActivity = async (req, res) => {
+exports.verifyActivity = async (req, res, next) => {
     try {
         if (!req.user) req.user = await User.findByPk(req.loggedUser.id);
         const badges = await Badge.findAll({ where: { conditionType: 'activity' } });
